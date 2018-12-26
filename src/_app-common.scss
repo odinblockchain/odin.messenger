@@ -4,87 +4,209 @@
 .fa {
     font-family: "FontAwesome";
 }
+
+.montserrat-extralight {
+  font-family: "Montserrat-ExtraLight";
+}
+
+.montserrat-light {
+  font-family: "Montserrat-Light";
+}
+
+.montserrat-regular {
+  font-family: "Montserrat-Regular";
+}
+
+.montserrat-semibold {
+  font-family: "Montserrat-SemiBold";
+}
+
+.page {
+  font-family: "Montserrat-Regular";
+  color: $text-color;
+}
+
+.btn {
+  font-family: "Montserrat-Regular";
+  letter-spacing: 0.05;
+  border-radius: 4;
+  // padding: 10;
+  // margin-bottom: 15;
+}
+
+// .btn-primary {
+//   margin: 30 5 15 5;
+// }
+
+.header,
+.h1 {
+  font-family: "Montserrat-SemiBold";
+  color: $text-color;
+}
+
+.sub-header,
+.h2 {
+  font-family: "Montserrat-Regular";
+  color: $text-color;
+}
+
 // Common page class
 .page-content {
     .page-placeholder {
-        color: $page-icon-color;
-        font-size: $page-content-placeholder-font-size;
-        vertical-align: center;
-        horizontal-align: center;
+      // color: $page-icon-color;
+      // font-size: $page-content-placeholder-font-size;
+      vertical-align: center;
+      horizontal-align: center;
     }
 
     .page-icon {
-        font-size: 72;
-        vertical-align: top;
-        horizontal-align: center;
-        color: $page-icon-color;
-        margin-top: 20%;
+      font-size: 72;
+      vertical-align: top;
+      horizontal-align: center;
+      // color: $page-icon-color;
+      margin-top: 20%;
     }
 }
 
 //Action bar
 ActionBar .action-bar-title {
-    horizontal-align: center;
+  horizontal-align: center;
+}
+
+.sidedrawer {
+  background-color: #282c30;
+}
+
+.sidedrawer-header {
+  background-color: #282c30;
+  height: 190;
+}
+
+.sidedrawer-avatar {
+  border-radius: 50%;
+  width: 100;
+  height: 100;
+  border-width: 4;
+  border-color: #48b1ec;
+}
+
+.sidedrawer-header-text {
+  color: white;
+  font-size: 24;
+  font-weight: bold;
+  margin-top: 10;
+  text-align: center;
+}
+
+.sidedrawer-header-footnote {
+  color: white;
+  text-align: center;
+  font-size: 16;
+}
+
+.sidedrawer-icon {
+  font-size: 22;
+  border-radius: 50%;
+  border-width: 3;
+  border-color: #393b3f;
+  width: 40;
+  height: 40;
+  background-color: #393b3f;
+  vertical-align: center;
+  color: white;
+  text-align: center;
+}
+
+.sidedrawer-list-item {
+  color: white;
+  padding-left: 30;
+  fontSize: 22;
+  fontWeight: bold;
+  height: 80;
+}
+
+.sidedrawer-item {
+  vertical-align: center;
+}
+
+.sidedrawer-list-item-active {
+  background-color: #a6a450;
+}
+
+.btn.btn-primary {
+  font-weight: bold;
+
+  &:active {
+    background-color: darken($accent, 10%);
+  }
 }
 
  // Drawer navigation custom styles
-$sidedrawer-header-image-size: 60;
-$sidedrawer-header-image-offset-top: 20;
-$sidedrawer-header-image-offset-bottom: 5;
-$sidedrawer-list-item-offset-left: 15;
-$sidedrawer-list-icon-offset: 10;
-$sidedrawer-list-icon-size: 20;
+// $sidedrawer-header-image-size: 60;
+// $sidedrawer-header-image-offset-top: 20;
+// $sidedrawer-header-image-offset-bottom: 5;
+// $sidedrawer-list-item-offset-left: 15;
+// $sidedrawer-list-icon-offset: 10;
+// $sidedrawer-list-icon-size: 20;
 
-.sidedrawer {
-    &.sidedrawer-left {
-        background-color: $ab-background;
+// .sidedrawer {
+//     &.sidedrawer-left {
+//         background-color: $ab-background;
 
-        .sidedrawer-header-image {
-            color: $background-dark;
-            height: $sidedrawer-header-image-size;
-            width: $sidedrawer-header-image-size;
-            font-size: $sidedrawer-header-image-size;
-            padding: 0;
-            margin-bottom: $sidedrawer-header-image-offset-bottom;
-            margin-top: $sidedrawer-header-image-offset-top;
-        }
+//         .sidedrawer-header-image {
+//             color: $background-dark;
+//             height: $sidedrawer-header-image-size;
+//             width: $sidedrawer-header-image-size;
+//             font-size: $sidedrawer-header-image-size;
+//             padding: 0;
+//             margin-bottom: $sidedrawer-header-image-offset-bottom;
+//             margin-top: $sidedrawer-header-image-offset-top;
+//         }
 
-        .footnote {
-            color: rgba($ab-color, 0.5);
-        }
-    }
+//         .footnote {
+//             color: rgba($ab-color, 0.5);
+//         }
+//     }
 
-    .sidedrawer-header {
-        background-color: $ab-background;
+//     .sidedrawer-header {
+//         background-color: $ab-background;
 
-        .sidedrawer-header-brand {
-            color: $ab-color;
-        }
-    }
+//         .sidedrawer-header-brand {
+//             color: $ab-color;
+//         }
+//     }
 
-    .sidedrawer-content {
-        background-color: $side-drawer-background;
+//     .sidedrawer-content {
+//         background-color: $side-drawer-background;
 
-        $sidedrawer-list-item-offset-left: 15;
-        $sidedrawer-list-icon-offset: 10;
-        $sidedrawer-list-icon-size: 20;
+//         $sidedrawer-list-item-offset-left: 15;
+//         $sidedrawer-list-icon-offset: 10;
+//         $sidedrawer-list-icon-size: 20;
 
-        .sidedrawer-list-item {
-            padding-left: $sidedrawer-list-item-offset-left;
-            Label {
-                vertical-align: center;
-                color: $blue-dark;
-            }
-            .fa {
-                width: $sidedrawer-list-icon-size;
-                margin-right: $sidedrawer-list-icon-offset;
-            }
-            &.selected {
-                background-color: $item-active-background;
-                Label {
-                    color: $item-active-color;
-                }
-            }
-        }
-    }
+//         .sidedrawer-list-item {
+//             padding-left: $sidedrawer-list-item-offset-left;
+//             Label {
+//                 vertical-align: center;
+//                 color: $blue-dark;
+//             }
+//             .fa {
+//                 width: $sidedrawer-list-icon-size;
+//                 margin-right: $sidedrawer-list-icon-offset;
+//             }
+//             &.selected {
+//                 background-color: $item-active-background;
+//                 Label {
+//                     color: $item-active-color;
+//                 }
+//             }
+//         }
+//     }
+// }
+
+.u-w100 {
+  width: 100%;
+}
+
+.u-w80 {
+  width: 80%;
 }
