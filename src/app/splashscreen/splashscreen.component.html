@@ -1,0 +1,35 @@
+<ActionBar class="action-bar">
+    <!-- 
+    Use the NavigationButton as a side-drawer button in Android
+    because ActionItems are shown on the right side of the ActionBar
+    -->
+    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+    <!-- 
+    Use the ActionItem for IOS with position set to left. Using the
+    NavigationButton as a side-drawer button in iOS is not possible,
+    because its function is to always navigate back in the application.
+    -->
+    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
+        ios.position="left">
+    </ActionItem>
+    <Label class="action-bar-title" text="Settings"></Label>
+</ActionBar>
+
+<FlexboxLayout class="page">
+  <StackLayout class="form u-w100">
+    <Image class="logo" #logo src="~/app/images/splashscreen-logo--websafe.png"></Image>
+
+    <Label class="header" text="OSM"></Label>
+    <Label class="sub-header">
+      <FormattedString>
+        <Span text="Alpha Release (v0.1.0)"></Span>
+      </FormattedString>
+    </Label>
+
+    <StackLayout class="u-w80">
+      <Button text="Import Account" class="btn btn-primary" [nsRouterLink]="['/home']" pageTransition="slideRight"></Button>
+
+      <Button text="Create Account" class="btn btn-primary" [nsRouterLink]="['/home']" pageTransition="slideLeft"></Button>
+    </StackLayout>
+  </StackLayout>
+</FlexboxLayout>
