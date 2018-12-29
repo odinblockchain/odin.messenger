@@ -2,23 +2,21 @@ import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptCommonModule } from "nativescript-angular/common";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 
-import { FloatLabel } from "../components/float-label.component";
-
-import { HomeRoutingModule } from "./home-routing.module";
-import { HomeComponent } from "./home.component";
+import { CreateAccountRoutingModule } from "./create-account.routing.module";
+import { CreateAccountComponent } from "./create-account.component";
 
 @NgModule({
+  providers: [],
   imports: [
     NativeScriptCommonModule,
-    HomeRoutingModule,
+    CreateAccountRoutingModule,
     NativeScriptFormsModule
   ],
   declarations: [
-    FloatLabel,
-    HomeComponent
+    CreateAccountComponent
   ],
   schemas: [
     NO_ERRORS_SCHEMA
   ]
 })
-export class HomeModule { }
+export class CreateAccountModule { }

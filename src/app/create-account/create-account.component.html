@@ -1,0 +1,114 @@
+<ScrollView>
+
+  <FlexboxLayout class="view" *ngIf="user.saveData.registered">
+    <Label class="h1 header u-text-align-center" textWrap="true" text="OSM Account Active"></Label>
+
+    <!-- <Label text="{{ user.saveData | json }}" textWrap="true"></Label> -->
+    
+    <StackLayout class="hr-light"></StackLayout>
+
+    <ContentView class="card">
+      <StackLayout class="card-content">
+        <Label class="body" textWrap="true" text="Your OSM Identity has been registered! Your public username is {{user.saveData.hashAccount}}."></Label>
+        <Label class="body last" textWrap="true" text="You can share this username with others and begin conversing securely. All messages are end-to-end encrypted and stored in a secure location."></Label>
+      </StackLayout>
+    </ContentView>
+  </FlexboxLayout>
+
+  <FlexboxLayout class="view" *ngIf="!user.saveData.registered">
+
+    <Label class="h1 header u-text-align-center" textWrap="true" text="Create OSM Account"></Label>
+
+    <!-- <Label text="{{ user.saveData | json }}" textWrap="true"></Label> -->
+    
+    <StackLayout class="hr-light"></StackLayout>
+
+    <ContentView *ngIf="activeStep === 1" class="card">
+      <StackLayout class="card-content">
+        <Label class="h2" textWrap="true" text="Generate Master Seed"></Label>
+        <Label class="body" textWrap="true" text="To start with your account creation you'll need to generate a &#34;Master Seed&#34;."></Label>
+        <Label class="body last" textWrap="true" text="This seed will be used to create a unique Obsidian wallet as well as a username for the messenger. You'll be able to back up and restore your account through this seed.&nbsp;"></Label>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView *ngIf="activeStep === 1" class="card card--input" (touch)="onTouch($event)">
+      <StackLayout class="card-content">
+        <Label *ngIf="!mnemonicSaved" class="h2" textWrap="true" text="{{ seeder.get('seedCount') }} / {{ seeder.get('seedLimit') }}"></Label>
+        
+        <StackLayout *ngIf="!seeder.get('poolBusy')" class="body">
+          <Label textWrap="true" text="Move your finger around to begin generating."></Label>>
+          <Label textWrap="true" class="fa u-font-size-xl u-text-align-center" text="&#xf0a6;"></Label>
+        </StackLayout>
+
+        <Label *ngIf="!mnemonicSaved && seeder.get('poolBusy')" class="seedPool" textWrap="true" text="{{ seeder.get('poolHex') }}"></Label>
+        <Label *ngIf="mnemonicSaved" class="fa u-font-size-xl u-text-align-center" textWrap="true" text="&#xf00c;"></Label>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView *ngIf="activeStep === 2" class="card">
+      <StackLayout class="card-content">
+        <Label class="h2" textWrap="true" text="Backup your Master Seed"></Label>
+        <Label class="body" textWrap="true" text="Your Master Seed has been hashed and shortened to be uniquely represented as 12 random words. This collection is known as a &#34;Mnemonic Phrase&#34;."></Label>
+        <Label class="body" textWrap="true" text="Mnemonic Phrases allow users to backup important information in a more meaningful context versus a mix of letters and numbers."></Label>
+        <Label class="body last" textWrap="true" text="Store this information, in the exact order, in a safe place and click Continue when you are ready."></Label>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView *ngIf="activeStep === 2" class="card card--input">
+      <StackLayout class="card-content">
+        <Label class="h2" textWrap="true" text="Mnemonic Phrase"></Label>
+
+        <TextView textWrap="true" [text]="user.saveData.mnemonicPhrase" editable="false"></TextView>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView *ngIf="activeStep === 3" class="card">
+      <StackLayout class="card-content">
+        <Label class="h2" textWrap="true" text="Verify your Mnemonic Phrase"></Label>
+        <Label class="body" textWrap="true" text="Before we create your account please ensure you have backed up the correct Mnemonic Phrase."></Label>
+        <Label class="body" textWrap="true" text="If you don't wish to verify you will assume the risk of losing access to your account and/or funds in the future."></Label>
+        <Label class="body last" textWrap="true" text="Accounts cannot be restored and your identity information are only stored within your device."></Label>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView *ngIf="activeStep === 3" class="card card--input">
+      <StackLayout class="card-content">
+        <TextField textWrap="true" [(ngModel)]="verifyBackupPhrase" returnKeyType="next" (returnPress)="onAdvanceStep(4)" class="input input-border" hint="Please enter your mnemonic phrase..."></TextField>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView *ngIf="activeStep === 4" class="card">
+      <StackLayout class="card-content">
+        <Label class="h2" textWrap="true" text="Register OSM Account"></Label>
+        <Label class="body" textWrap="true" text="Now that you have generated a unique master seed and backed up your Mnemonic Phrase you can now register with your unique username."></Label>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView *ngIf="activeStep === 4" class="card">
+      <StackLayout class="card-content">
+        <Label class="h2" textWrap="true" text="OSM Identity"></Label>
+        <Label class="body last" [text]="user.saveData.hashAccount"></Label>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView class="actions">
+      <StackLayout>
+        <!-- <Button class="btn btn-primary" text="Go" (tap)="user.onSaveMasterSeed('lol')"></Button> -->
+
+        <Button *ngIf="activeStep === 1 && mnemonicSaved" class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(2)"></Button>
+        <!-- <Button *ngIf="activeStep === 1 && seeder.get('poolFilled')" class="btn btn-primary" text="Continue" (tap)="accountModel.onSaveMasterSeed(seeder.get('poolHex'))"></Button> -->
+        
+
+        <Button *ngIf="activeStep === 2" class="btn btn-outline" text="Copy to Clipboard" (tap)="onCopyText(user.saveData.mnemonicPhrase)"></Button>
+        <Button *ngIf="activeStep === 2" class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(3)"></Button>
+
+
+        <Button *ngIf="activeStep === 3" class="btn btn-outline" text="Skip Verification" (tap)="onSkipVerifyMnemonic()"></Button>
+        <Button *ngIf="activeStep === 3" class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(4)"></Button>
+
+        <Button *ngIf="activeStep === 4" class="btn btn-primary" text="Register" (tap)="onRegisterAccount()"></Button>
+      </StackLayout>
+    </ContentView>
+    
+  </FlexboxLayout>
+</ScrollView>
