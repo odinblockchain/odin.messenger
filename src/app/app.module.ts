@@ -4,10 +4,21 @@ import { NativeScriptUISideDrawerModule } from "nativescript-ui-sidedrawer/angul
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+// import { AccountService, StorageService, UserModel } from './shared';
+import { AccountService } from './shared/account.service';
+import { StorageService } from './shared/storage.service';
+import { UserModel } from './shared/user.model';
+import { OSMClientService } from './shared/osm-client.service';
 
 @NgModule({
   bootstrap: [
     AppComponent
+  ],
+  providers: [
+    AccountService,
+    StorageService,
+    OSMClientService,
+    UserModel
   ],
   imports: [
     AppRoutingModule,

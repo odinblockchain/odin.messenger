@@ -9,21 +9,35 @@
   font-family: "Montserrat-ExtraLight";
 }
 
-.montserrat-light {
+.montserrat-light,
+.light {
   font-family: "Montserrat-Light";
 }
 
-.montserrat-regular {
+.montserrat-regular,
+.regular {
   font-family: "Montserrat-Regular";
 }
 
-.montserrat-semibold {
+.montserrat-semibold,
+.bold {
   font-family: "Montserrat-SemiBold";
 }
 
 .page {
   font-family: "Montserrat-Regular";
   color: $text-color;
+}
+
+.view {
+  background-color: $background;
+  font-size: 18;
+  margin-top: 10;
+
+  .header {
+    // margin-bottom: auto;
+    // flex-shrink: 0;
+  }
 }
 
 .btn {
@@ -39,19 +53,24 @@
 // }
 
 .header,
-.h1 {
+.h1,
+.h2 {
   font-family: "Montserrat-SemiBold";
   color: $text-color;
 }
 
-.sub-header,
-.h2 {
+.sub-header  {
   font-family: "Montserrat-Regular";
   color: $text-color;
 }
 
+RadSideDrawer {
+  background-color: $background;
+}
+
 // Common page class
 .page-content {
+  background-color: $background;
     .page-placeholder {
       // color: $page-icon-color;
       // font-size: $page-content-placeholder-font-size;
@@ -133,13 +152,36 @@ ActionBar .action-bar-title {
   background-color: #a6a450;
 }
 
-.btn.btn-primary {
-  font-weight: bold;
+.btn {
+  height: 50;
+  font-family: "Montserrat-SemiBold";
 
-  &:active {
-    background-color: darken($accent, 10%);
+  &.btn-primary {
+    &:active {
+      background-color: darken($accent, 10%);
+    }
+  }
+
+  &.btn-outline {
+    &:active {
+      background-color: $accent;
+      color: #ffffff;
+    }
   }
 }
+
+.header {
+  horizontal-align: center;
+  font-size: 25;
+  font-weight: 600;
+  margin-bottom: 10;
+  text-align: center;
+
+  span {
+    border: 3 solid #000000;
+  }
+}
+
 
  // Drawer navigation custom styles
 // $sidedrawer-header-image-size: 60;
@@ -203,10 +245,34 @@ ActionBar .action-bar-title {
 //     }
 // }
 
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
 .u-w100 {
   width: 100%;
 }
 
 .u-w80 {
   width: 80%;
+}
+
+.u-text-align-left {
+  text-align: left;
+  align-self: flex-start;
+}
+
+.u-text-align-center {
+  text-align: center;
+  align-self: center;
+}
+
+.u-text-align-right {
+  text-align: right;
+  align-self: flex-end;
+}
+
+.u-font-size-xl {
+  font-size: 40;
 }
