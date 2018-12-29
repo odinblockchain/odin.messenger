@@ -5,8 +5,11 @@
 // @import '~nativescript-theme-core/css/grey.css';
 
 // Obsidian Light
-$background: #fefefe;
+
+$base: #000;
+$background: #fcf9f1;
 $text-color: #333333;
+$ab-background: $background;
 
 // Obsidian Dark
 // $background: #1F271B;

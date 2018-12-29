@@ -1,6 +1,6 @@
 {
   "name": "osm-client-native",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Obsidian Secure Messenger developed on NativeScript",
   "nativescript": {
     "id": "org.obsidianplatform.osm",
@@ -23,12 +23,20 @@
     "@angular/platform-browser": "~7.0.0",
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
+    "buffer": "^5.2.1",
+    "hashids": "^1.2.2",
     "nativescript-angular": "~7.0.0",
     "nativescript-appversion": "^1.4.1",
+    "nativescript-clipboard": "^1.1.7",
+    "nativescript-electrumx-client": "^0.1.2",
+    "nativescript-libsignal-protocol": "^0.1.3",
+    "nativescript-randombytes": "^1.0.0",
+    "nativescript-snackbar": "^4.0.0",
     "nativescript-theme-core": "~1.0.4",
     "nativescript-ui-sidedrawer": "~5.0.0",
     "reflect-metadata": "~0.1.10",
     "rxjs": "~6.3.0",
+    "sha.js": "^2.4.11",
     "tns-core-modules": "~5.0.2",
     "zone.js": "~0.8.18"
   },
