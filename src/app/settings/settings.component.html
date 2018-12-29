@@ -16,6 +16,43 @@
 </ActionBar>
 
 <GridLayout class="page page-content">
-    <Label class="page-icon fa" text="&#xf013;"></Label>
-    <Label class="page-placeholder" text="<!-- Page content goes here -->"></Label>
+  <ScrollView class="page">
+    <StackLayout class="home-panel form input-field">
+      <Label text="Store and retrieve data locally by using Application Settings (similar to 'local storage' on the web)." textWrap="true"
+        class="lbl"></Label>
+   
+      <!-- store/retrieve number -->
+      <Label text="Number" class="heading"></Label>
+      <TextField [(ngModel)]="num" hint="Enter a Number..." class="input input-border" keyboardType="number"></TextField>
+      <StackLayout orientation="horizontal" horizontalAlignment="center">
+        <Button text="Save" (tap)="saveNumber()" class="btn btn-primary"></Button>
+        <Button text="Remove" (tap)="removeNumber()" class="btn btn-primary"></Button>
+      </StackLayout>
+  
+      <!-- store/retrieve string -->
+      <Label text="String" class="heading"></Label>
+      <TextField [(ngModel)]="str" hint="Enter a String..." class="input input-border"></TextField>
+      <StackLayout orientation="horizontal" horizontalAlignment="center">
+        <Button text="Save" (tap)="saveString()" class="btn btn-primary"></Button>
+        <Button text="Remove" (tap)="removeString()" class="btn btn-primary"></Button>
+      </StackLayout>
+  
+      <!-- store/retrieve boolean -->
+      <Label text="Boolean" class="heading"></Label>
+      <Switch checked="false" [(ngModel)]="bool" class="switch"></Switch>
+      <StackLayout orientation="horizontal" horizontalAlignment="center">
+        <Button text="Save" (tap)="saveBoolean()" class="btn btn-primary"></Button>
+        <Button text="Remove" (tap)="removeBoolean()" class="btn btn-primary"></Button>
+      </StackLayout>
+  
+      <StackLayout class="hr-light"></StackLayout>
+  
+      <Button text="Remove All App Settings" (tap)="removeAll()" class="btn btn-primary"></Button>
+
+      <Button text="Clear OSM Session" (tap)="onClearSession()" class="btn btn-primary"></Button>
+
+      <TextField #item hint="Confirm Password" class="form-input" textAlignment="center"></TextField>
+
+    </StackLayout>
+  </ScrollView>
 </GridLayout>
