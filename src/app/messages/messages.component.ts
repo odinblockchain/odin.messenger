@@ -7,6 +7,8 @@ import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import * as app from "tns-core-modules/application";
 import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { GridLayout } from "ui/layouts/grid-layout";
+import { RouterExtensions } from "nativescript-angular/router";
+import { UserModel, IRemoteContact } from '../shared/user.model';
 
 @Component({
 	moduleId: module.id,
@@ -16,15 +18,26 @@ import { GridLayout } from "ui/layouts/grid-layout";
 })
 
 export class MessagesComponent implements OnInit {
+  public friends: IRemoteContact[];
 
-	constructor(private _page: Page) {
+	constructor(
+    private _page: Page,
+    private _router: RouterExtensions,
+    private _user: UserModel) {
     // this._page.actionBarHidden = true;
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.friends = this._user.friends;
+  }
   
   onAddContact() {
     console.log('CTA::AddContact');
+    this._router.navigate(["/contact-add"], {
+      transition: {
+        name: "slideLeft"
+      }
+    });
   }
 
   /**
