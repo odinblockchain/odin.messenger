@@ -1,6 +1,6 @@
 {
   "name": "osm-client-native",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Obsidian Secure Messenger developed on NativeScript",
   "nativescript": {
     "id": "org.obsidianplatform.osm",
@@ -29,6 +29,7 @@
     "nativescript-appversion": "^1.4.1",
     "nativescript-clipboard": "^1.1.7",
     "nativescript-electrumx-client": "^0.1.2",
+    "nativescript-floatingactionbutton": "^5.0.0",
     "nativescript-libsignal-protocol": "^0.1.3",
     "nativescript-randombytes": "^1.0.0",
     "nativescript-snackbar": "^4.0.0",

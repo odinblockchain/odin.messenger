@@ -7,6 +7,9 @@ import { UserModel } from './shared/user.model';
 import * as app from "tns-core-modules/application";
 import * as platformModule from 'tns-core-modules/platform';
 import { Observable, Page, PropertyChangeData } from "tns-core-modules/ui/page/page";
+import { registerElement } from 'nativescript-angular/element-registry';
+
+registerElement('Fab', () => require('nativescript-floatingactionbutton').Fab);
 
 // import { app } from 'application';
 // import * as applicationModule from "tns-core-modules/application";

@@ -24,6 +24,27 @@
   font-family: "Montserrat-SemiBold";
 }
 
+.icoPB {
+  font-family: "player-btns";
+  color: #fff;
+}
+
+.pb {
+  font-family: player-btns;
+}
+
+.sli {
+  font-family: 'simple-line-icons';
+
+  &.menu {
+    content: "foos";
+  }
+}
+
+.p15{
+  padding: 15;
+}
+
 .page {
   font-family: "Montserrat-Regular";
   color: $text-color;
@@ -88,8 +109,21 @@ RadSideDrawer {
 }
 
 //Action bar
-ActionBar .action-bar-title {
-  horizontal-align: center;
+.action-bar {
+  background-color: $ab-background;
+  color: $ab-color;
+
+  .action-bar--button {
+
+  }
+
+  .action-bar--item {
+
+  }
+
+  .action-bar--title {
+    font-size: 24;
+  }
 }
 
 .sidedrawer {
@@ -182,6 +216,15 @@ ActionBar .action-bar-title {
   }
 }
 
+.fab-button {
+	height: 60;
+	width: 60; /// this is required on iOS - Android does not require width so you might need to adjust styles
+	margin: 15;
+	background-color: $accent;
+	horizontal-align: right;
+  vertical-align: bottom;
+  color: #ffffff;
+}
 
  // Drawer navigation custom styles
 // $sidedrawer-header-image-size: 60;
@@ -271,6 +314,18 @@ ActionBar .action-bar-title {
 .u-text-align-right {
   text-align: right;
   align-self: flex-end;
+}
+
+.u-font-size-sm {
+  font-size: 18;
+}
+
+.u-font-size-md {
+  font-size: 24;
+}
+
+.u-font-size-lg {
+  font-size: 32;
 }
 
 .u-font-size-xl {

@@ -3,6 +3,7 @@
 
     <!-- Application theme -->
     <style name="AppTheme" parent="AppThemeBase">
+        <item name="colorControlNormal">#fff</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:datePickerStyle">@style/SpinnerDatePicker</item>
         <item name="android:timePickerStyle">@style/SpinnerTimePicker</item>

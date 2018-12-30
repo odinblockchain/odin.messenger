@@ -1,0 +1,91 @@
+@import '~/app-variables';
+
+.border{
+  border-bottom-width: 1px;
+  border-bottom-color: #ebebeb;
+  border-bottom-style: solid
+}
+.gr{
+  color: #bdbdbd;
+}
+.dg{
+  color: #8590A7;
+}
+.artist-bg{
+  background-image: url('https://via.placeholder.com/400');
+  background-size: 100% 60%;
+  background-repeat: no-repeat;
+}
+.backbtn{
+  // background-image: url('https://via.placeholder.com/50');
+  // background-size: contain;
+  // background-repeat: no-repeat;
+  z-index: 99;
+
+  background: rgb(255,89,162);
+  background: linear-gradient(to right, rgb(255,89,162) 0%,rgb(255,233,123) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff59a2', endColorstr='#ffe97b',GradientType=1 );
+}
+
+.contact {
+  padding: 0 15;
+
+
+  // margin: 0 15;
+
+  // background-color: green;
+
+  .contact--wrap {
+    border-bottom-width: 2;
+    border-bottom-color: #eeeeee;
+    border-bottom-style: solid;
+    padding-bottom: 15;
+    padding-top: 15;
+  }
+
+  .contact--flex {
+    background-color: $primary;
+    color: #ffffff;
+    width: 45;
+    height: 45;
+    margin-right: 15;
+    border-radius: 5;
+    // margin-left: 15;
+
+    Label {
+      vertical-align: center;
+      horizontal-align: center;
+    }
+  }
+
+  .contact--image {
+    width: 45;
+    height: 45;
+    margin-right: 15;
+    border-radius: 5;
+  }
+
+  .contact--name {
+    color: #333333;
+    font-size: 16;
+  }
+
+  .contact--meta {
+    color: #666666;
+  }
+
+  .contact--action {
+    color: #333333;
+    font-size: 20;
+    padding-left: 15;
+    vertical-align: center;
+  }
+
+  &.-last {
+    border-bottom-width: 0;
+  }
+
+  &.-active {
+    background-color: #f1f1f1;
+  }
+}

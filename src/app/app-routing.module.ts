@@ -11,10 +11,15 @@ const routes: Routes = [
   { path: "splashscreen", loadChildren: "~/app/splashscreen/splashscreen.module#SplashscreenModule" },
   { path: "settings", loadChildren: "~/app/settings/settings.module#SettingsModule" },
   { path: "create", loadChildren: "~/app/create-account/create-account.module#CreateAccountModule" },
+  { path: "messages", loadChildren: "~/app/messages/messages.module#MessagesModule" }
 ];
 
 @NgModule({
-    imports: [NativeScriptRouterModule.forRoot(routes)],
-    exports: [NativeScriptRouterModule]
+  imports: [
+    NativeScriptRouterModule.forRoot(routes)
+  ],
+  exports: [
+    NativeScriptRouterModule
+  ]
 })
 export class AppRoutingModule { }
