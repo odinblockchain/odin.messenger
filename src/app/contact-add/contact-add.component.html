@@ -1,0 +1,30 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
+  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
+      ios.position="left">
+  </ActionItem>
+  <ActionItem class="action-bar--item" android.systemIcon="ic_menu_save" (tap)="onAddContact(contact)"
+      android.position="right" >
+  </ActionItem>
+  <Label class="action-bar--title" text="Add New Contact"></Label>
+</ActionBar>
+
+<GridLayout [ngClass]="{'disabled': processing}" class="page page-content" rows="auto, auto, auto">
+
+  <StackLayout row="0" class="form input-field">
+    <Label text="OSM Identity*" class="label bold u-font-size-md"></Label>
+    <TextField [isEnabled]="!processing" [(ngModel)]="contact.identity" hint="ABC123@ODN..." class="input input-border regular"></TextField>
+  </StackLayout>
+
+  <StackLayout row="1" class="form input-field">
+    <Label text="Display Name" class="label bold u-font-size-md"></Label>
+    <TextField [isEnabled]="!processing" [(ngModel)]="contact.displayName" hint="Optional display name..." class="input input-border regular"></TextField>
+  </StackLayout>
+
+  <Button [isEnabled]="!processing" row="2" text="Add Contact" (tap)="onAddContact(contact)" class="btn btn-primary"></Button>
+
+  <ActivityIndicator class="activity-indicator" rowSpan="3" [busy]="processing"></ActivityIndicator>
+
+</GridLayout>
+  
+  
