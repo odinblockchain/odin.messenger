@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { request } from "http";
 
-const API = 'http://e92e3429.ngrok.io';
+const API = 'http://17901b60.ngrok.io';
 
 export interface IRegistrationData {
   address: {
@@ -24,8 +24,37 @@ export class OSMClientService {
   constructor() {
   }
 
-  public foo(): string {
-    return 'bar';
+  public fetchContact(contactIdentity: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      console.log('--- Fetch Contact ---');
+      request({
+        url: `${API}/keys/?user=${contactIdentity}`,
+        method: "GET"
+      }).then((response) => {
+        console.log('OSM-Server Response');
+        console.dir(response);
+
+        if (response.statusCode !== 200) {
+          return reject(new Error('Bad_Status'));
+        }
+
+        console.log('OSM-Server Content');
+        console.log(response.content);
+
+        try {
+          console.log('-- content.toJSON');
+          console.dir(response.content.toJSON());
+          return resolve(response.content.toJSON());
+        } catch (err) {
+          return reject(err);
+        }
+      }, (e) => {
+        console.log('Error occurred');
+        console.log(e.message ? e.message : e);
+        console.dir(e);
+        return reject(e);
+      });
+    });
   }
 
   public checkRegistration(hashAccountName: string): Promise<any> {
@@ -96,9 +125,5 @@ export class OSMClientService {
         console.dir(e);
       });
     });
-  }
-
-  static bat(): string {
-    return 'lol';
   }
 }
