@@ -9,6 +9,7 @@ import { AccountService } from './shared/account.service';
 import { StorageService } from './shared/storage.service';
 import { UserModel } from './shared/user.model';
 import { OSMClientService } from './shared/osm-client.service';
+import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 
 @NgModule({
   bootstrap: [
@@ -18,7 +19,8 @@ import { OSMClientService } from './shared/osm-client.service';
     AccountService,
     StorageService,
     OSMClientService,
-    UserModel
+    UserModel,
+    SnackBar
   ],
   imports: [
     AppRoutingModule,

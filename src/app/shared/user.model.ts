@@ -3,7 +3,7 @@ import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from 
 // import {Router} from "@angular/router";
 import { StorageService } from './index';
 import { OSMClientService } from './osm-client.service';
-import {RouterExtensions} from "nativescript-angular/router";
+import { RouterExtensions } from "nativescript-angular/router";
 
 import { Buffer } from 'buffer';
 import { Obsidian } from '../bundle.obsidian.js';
@@ -28,6 +28,23 @@ export class UserSaveData {
   registered: boolean;
 }
 
+export interface IRemoteContact {
+  address: {
+    name: string
+  };
+  displayName?: string;
+  identityPubKey: string;
+  signedPreKey: {
+    id: number,
+    pubKey: string,
+    signature: string
+  };
+  publicPreKey: {
+    id: number,
+    pubKey: string
+  };
+}
+
 export interface ISignalClient {
   client: {
     username: string,
@@ -48,6 +65,7 @@ export class UserModel extends Observable {
 
   public saveData: UserSaveData;
   public COIN: string;
+  public friends: IRemoteContact[];
 
   constructor(
     private _router: RouterExtensions
@@ -58,6 +76,7 @@ export class UserModel extends Observable {
     this._store         = new StorageService();
     this._osmClient     = new OSMClientService();
     this._signalClient  = null;
+    this.friends        = [];
     this.saveData       = {
       masterSeed: '',
       mnemonicPhrase: '',
@@ -83,6 +102,11 @@ export class UserModel extends Observable {
       if (this._store.hasKey('signalClient')) {
         console.log('>> ATTEMPT RESTORE CLIENT');
         await this.loadSignalClient();
+      }
+
+      if (this._store.hasKey('contactList')) {
+        console.log('>> ATTEMPT RESTORE FRIENDS');
+        await this.loadContacts();
       }
     } else {
       await this.clearSession();
@@ -156,6 +180,61 @@ export class UserModel extends Observable {
     this.notify(eventData);
 
     return this._signalClient;
+  }
+
+  async loadContacts() {
+    console.log('...loading Contacts');
+    this.friends = [];
+
+    try {
+      let savedContacts: string = this._store.getString('contactList');
+      let restoredContacts: IRemoteContact[] = JSON.parse(savedContacts);
+      console.log('attempting to restore...', {
+        total: restoredContacts.length,
+        example: restoredContacts[0]
+      });
+
+      this.friends = restoredContacts;
+    } catch (err) {
+      console.log('UNABLE TO RESTORE FRIENDS');
+      console.log(err.message ? err.message : err);
+      
+      alert("We were unable to restore your saved contacts. You'll need to initiate new sessions to continue conversations.");
+    }
+
+    let eventData = {
+      eventName: "ContactsRestored",
+      object: this
+    };
+    this.notify(eventData);
+
+    return this.friends;
+  }
+
+  async addFriend(remoteContact: IRemoteContact, displayName?: string): Promise<boolean> {
+    console.log('>>> ADD REMOTE FRIEND');
+    if (typeof displayName === 'undefined') displayName = '';
+    remoteContact.displayName = displayName;
+
+    if (await this.hasFriend(remoteContact.address.name)) {
+      throw new Error('ContactExists');
+    } else {
+      console.log('ADD');
+      this.friends.push(remoteContact);
+      
+      this._store.setString('contactList', JSON.stringify(this.friends));
+      console.log('STORED CONTACT LIST', this._store.hasKey('contactList'));
+
+      return this._store.hasKey('contactList');
+    }
+  }
+
+  async hasFriend(contactIdentity: string): Promise<boolean> {
+    let contactIndex = this.friends.findIndex((_friend) => {
+      return !!(_friend.address.name === contactIdentity)
+    });
+
+    return !!(contactIndex >= 0);
   }
 
   async onSaveMasterSeed(masterSeed: any) {

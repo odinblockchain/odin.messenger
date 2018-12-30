@@ -1,0 +1,42 @@
+.home-panel{
+  font-size: 16;
+  margin: 15;
+}
+
+.page {
+  padding: 20;
+}
+
+.description-label{
+  margin-bottom: 15;
+}
+
+.btn {
+  font-size: 18;
+}
+
+.lbl {
+  margin-bottom: 20;
+}
+
+.label {
+  margin-bottom: 10;
+}
+
+.input {
+  margin-bottom: 45;
+}
+
+.hr-light {
+  margin: 10;
+}
+
+.disabled {
+  .label {
+    opacity: 0.5;
+  }
+
+  :disabled {
+    opacity: 0.5;
+  }  
+}

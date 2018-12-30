@@ -1,21 +1,5 @@
 @import '~/app-variables';
 
-.border{
-  border-bottom-width: 1px;
-  border-bottom-color: #ebebeb;
-  border-bottom-style: solid
-}
-.gr{
-  color: #bdbdbd;
-}
-.dg{
-  color: #8590A7;
-}
-.artist-bg{
-  background-image: url('https://via.placeholder.com/400');
-  background-size: 100% 60%;
-  background-repeat: no-repeat;
-}
 .backbtn{
   // background-image: url('https://via.placeholder.com/50');
   // background-size: contain;
@@ -29,11 +13,6 @@
 
 .contact {
   padding: 0 15;
-
-
-  // margin: 0 15;
-
-  // background-color: green;
 
   .contact--wrap {
     border-bottom-width: 2;
@@ -50,7 +29,6 @@
     height: 45;
     margin-right: 15;
     border-radius: 5;
-    // margin-left: 15;
 
     Label {
       vertical-align: center;
