@@ -3,7 +3,7 @@ import { Routes } from "@angular/router";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
 
 const routes: Routes = [
-  { path: "", redirectTo: "/splashscreen", pathMatch: "full" },
+  { path: "", redirectTo: "/home", pathMatch: "full" },
   { path: "home", loadChildren: "~/app/home/home.module#HomeModule" },
   { path: "browse", loadChildren: "~/app/browse/browse.module#BrowseModule" },
   { path: "search", loadChildren: "~/app/search/search.module#SearchModule" },

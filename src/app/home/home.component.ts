@@ -1,24 +1,33 @@
 import { Component, OnInit } from "@angular/core";
-import { RadSideDrawer } from "nativescript-ui-sidedrawer";
-import * as app from "tns-core-modules/application";
+import { Page } from "ui/page";
+import { RouterExtensions } from "nativescript-angular/router";
+import { UserModel } from "../shared/user.model";
 
 @Component({
-    selector: "Home",
+    selector: "Splashscreen",
     moduleId: module.id,
-    templateUrl: "./home.component.html"
+    templateUrl: "./home.component.html",
+    styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
 
-    constructor() {
-        // Use the component constructor to inject providers.
-    }
+  constructor(
+    private _page: Page,
+    private _router: RouterExtensions,
+    private _user: UserModel) {
+    this._page.actionBarHidden = true;
+  }
 
-    ngOnInit(): void {
-        // Init your component properties here.
+  ngOnInit(): void {
+    console.log('---save data---');
+    console.log(this._user.saveData);
+    if (this._user.saveData.registered) {
+      console.log('>> Session exists, redirect to messages home');
+      this._router.navigate(['/messages']);
+    } else {
+      console.log('>> No session exists, redirect to splashscreen');
+      this._router.navigate(['/splashscreen']);
     }
-
-    onDrawerButtonTap(): void {
-        const sideDrawer = <RadSideDrawer>app.getRootView();
-        sideDrawer.showDrawer();
-    }
+  }
 }
+

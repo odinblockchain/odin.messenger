@@ -1,0 +1,13 @@
+@import '~/app-variables';
+
+.page {
+  background-color: $ab-background;
+
+  align-items: center;
+  justify-content: center;
+
+  .activity-indicator {
+    width: 50;
+    height: 50;
+  }
+}
