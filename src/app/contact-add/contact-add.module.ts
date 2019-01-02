@@ -4,7 +4,6 @@ import { NativeScriptFormsModule } from "nativescript-angular/forms"
 
 import { ContactAddRoutingModule } from './contact-add.routing.module';
 import { ContactAddComponent } from './contact-add.component';
-import { FloatLabel } from "../components/float-label.component";
 
 @NgModule({
   imports: [
@@ -13,8 +12,7 @@ import { FloatLabel } from "../components/float-label.component";
     NativeScriptFormsModule
   ],
   declarations: [
-    ContactAddComponent,
-    FloatLabel
+    ContactAddComponent
   ],
   schemas: [
     NO_ERRORS_SCHEMA

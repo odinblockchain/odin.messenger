@@ -31,8 +31,8 @@ export class ContactAddComponent implements OnInit {
   ngOnInit() {
     this.processing = false;
     this.contact = {
-      displayName: '',
-      identity: ''
+      displayName: 'Demo Account1',
+      identity: 'aQ1Vwq2X@ODN'
     };
   }
 
@@ -46,22 +46,26 @@ export class ContactAddComponent implements OnInit {
     this.processing = true;
     this._sb.simple('Fetching contact details', '#ffffff', '#333333', 3, false);
 
-    try {
-      if (this._user.hasFriend(this.contact.identity)) {
+    try { 
+      if (await this._user.hasFriend(this.contact.identity)) {
         this.processing = false;
         return alert("This user is already on your local contacts list!");
       }
 
       let contactDetails = await this._osmClient.fetchContact(this.contact.identity);
 
-      await this._user.addFriend(contactDetails, this.contact.displayName);
-      this.processing = false;
-      this.contact = {
-        displayName: '',
-        identity: ''
-      };
-
-      return alert(`Successfully added ${this.contact.identity} to your local contacts!`);
+      if (await this._user.addFriend(contactDetails, this.contact.displayName)) {
+        this.processing = false;
+        this.contact = {
+          displayName: '',
+          identity: ''
+        };
+  
+        return alert(`Successfully added ${this.contact.identity} to your local contacts!`);
+      } else {
+        this.processing = false;
+        return alert(`An error occurred while adding this contact locally, please try again.`);
+      }
     } catch (err) {
       console.log('Unable to add remote contact');
       console.log(err.message ? err.message : err);

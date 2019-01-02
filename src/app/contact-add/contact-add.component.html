@@ -16,10 +16,10 @@
     <TextField [isEnabled]="!processing" [(ngModel)]="contact.identity" hint="ABC123@ODN..." class="input input-border regular"></TextField>
   </StackLayout>
 
-  <StackLayout row="1" class="form input-field">
+  <!-- <StackLayout row="1" class="form input-field">
     <Label text="Display Name" class="label bold u-font-size-md"></Label>
     <TextField [isEnabled]="!processing" [(ngModel)]="contact.displayName" hint="Optional display name..." class="input input-border regular"></TextField>
-  </StackLayout>
+  </StackLayout> -->
 
   <Button [isEnabled]="!processing" row="2" text="Add Contact" (tap)="onAddContact(contact)" class="btn btn-primary"></Button>
 
