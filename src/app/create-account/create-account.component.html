@@ -103,8 +103,9 @@
         <Button *ngIf="activeStep === 2" class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(3)"></Button>
 
 
-        <Button *ngIf="activeStep === 3" class="btn btn-outline" text="Skip Verification" (tap)="onSkipVerifyMnemonic()"></Button>
         <Button *ngIf="activeStep === 3" class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(4)"></Button>
+        <Button *ngIf="activeStep === 3" class="btn btn-outline" text="Skip Verification" (tap)="onSkipVerifyMnemonic()"></Button>
+        
 
         <Button *ngIf="activeStep === 4" class="btn btn-primary" text="Register" (tap)="onRegisterAccount()"></Button>
       </StackLayout>
