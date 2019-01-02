@@ -1,0 +1,137 @@
+@import '~/app-variables';
+
+ListView {
+  separator-color: transparent;
+}
+
+.message-view {
+  margin-top: 10;
+  // background-color: red;
+}
+
+.placeholder {
+  height: 90%;
+}
+
+.message-wrap {
+  height: 0;
+
+  &.active {
+    height: 90%;
+    padding: 5;
+  }
+}
+
+.msg {
+  font-size: 14;
+  // padding: 5;
+  // margin-left: 15;
+  padding-left: 15;
+  padding-right: 15;
+  // margin-bottom: 15;
+  padding-bottom: 15;
+}
+
+.author {
+  border-radius: 100%;
+  vertical-align: top;
+  height: 30;
+  width: 30;
+  align-items: center;
+  justify-content: center;
+  background-color: blue;
+  margin-right: 10;
+  // verticalAlignment="top" height="30" width="30" alignItems="center" justifyContent="center" backgroundColor="blue"
+}
+
+.innerLabel {
+  color: #ffffff;
+  // align-self: center;
+  // justify-self: center;
+  // text-align: center;
+  // vertical-align: center;
+}
+
+.me .msg_text {
+  background-color: #30A9FF;
+  color: white;
+  padding: 8;
+  // margin-right: 10;
+  border-radius: 10 3 10 10;
+}
+
+.them .msg_text {
+  background-color: #f0f0f0;
+  color: #333;
+  padding: 7;
+  border-radius: 3 10 10 10;
+  // margin-right: 40;
+  // margin-left: 15;
+  // margin-right: 15;
+}
+
+.authorimg {
+  margin: 0 5 5 5;
+  width: 30;
+  height: 30;
+  border-radius: 15;
+}
+
+
+.chatbox {
+  // background-color: #30A9FF;
+
+  .chatbox--wrap {
+    // background-color: rgba(255, 0, 0, 0.3);
+    margin-top: 1;
+    border-top-width: 1;
+    border-top-style: solid;
+    border-top-color: #e4e4e4;
+    // margin-bottom: 
+    // padding-bottom: 10;
+  }
+
+  .chatbox--input {
+    // background-color: #e4e4e4;
+    background-color: transparent;
+    height: 45;
+    margin-left: 10;
+    border-bottom-color: #e4e4e4;
+    border-bottom-width: 0;
+    border-bottom-style: solid;
+  }
+
+  .chatbox--btn {
+    margin-right: 10;
+    height: 45;
+    border-radius: 0 4 4 0;
+
+  }
+}
+
+// #chatbox {
+
+//   .chatbox--wrap {
+//     background-color: red;
+//     padding-top: 10;
+//     border-top-width: 1;
+//     border-top-style: solid;
+//     border-top-color: #e4e4e4;
+//   }
+
+//   .chatbox--input {
+//     // padding: 5;
+//     // background-color: #ffffff85;
+//     // background-color: rgba(255, 255, 255, 1);
+//     // border-radius: 4;
+//   }
+// }
+
+// Button {
+//   padding: 5;
+//   margin: 5;
+//   background-color: dodgerblue;
+//   color: white;
+//   height: 40;
+//   border-radius: 5;
+// }

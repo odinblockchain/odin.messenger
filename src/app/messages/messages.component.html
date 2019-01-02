@@ -4,6 +4,7 @@
       ios.position="left">
   </ActionItem>
   <ActionItem text="Add Contact" ios.position="popup" android.position="popup" (tap)="onAddContact()"></ActionItem>
+  <ActionItem text="Fetch Messages" ios.position="popup" android.position="popup" (tap)="onFetchMessages()"></ActionItem>
   <Label class="action-bar--title" text="Messages"></Label>
 </ActionBar>
 
@@ -17,10 +18,10 @@
 
               <Label *ngIf="friends.length === 0" text="NO CONTACTS ADDED" class="bold p15 u-font-size-sm" color="#374064"></Label>
 
-              <GridLayout *ngFor="let contact of friends" class="contact" rows="*, auto" columns="*" (touch)="onTouchContact($event)">
+              <GridLayout *ngFor="let contact of friends" class="contact" rows="*, auto" columns="*" (touch)="onTouchContact($event)" (tap)="onViewMessages(contact.name)">
                 <GridLayout class="contact--wrap" rows="auto, auto" columns="auto, *, auto">
-                  <Label class="contact--name regular" row="0" col="1" [text]="contact.displayName || 'New Contact'"></Label>
-                  <Label class="contact--meta light" row="1" col="1" text="ID: {{contact.address.name}}"></Label>
+                  <Label class="contact--name regular" row="0" col="1" [text]="contact.name "></Label>
+                  <Label class="contact--meta light" row="1" col="1" text="New Account"></Label>
                   <!-- <Label class="contact--action pb" row="0" col="2" rowSpan="2" text="g"></Label> -->
                 </GridLayout>
               </GridLayout>

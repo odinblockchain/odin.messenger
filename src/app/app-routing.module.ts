@@ -4,7 +4,6 @@ import { NativeScriptRouterModule } from "nativescript-angular/router";
 
 const routes: Routes = [
   { path: "", redirectTo: "/splashscreen", pathMatch: "full" },
-  // { path: "", redirectTo: "/contact-add", pathMatch: "full" },
   { path: "home", loadChildren: "~/app/home/home.module#HomeModule" },
   { path: "browse", loadChildren: "~/app/browse/browse.module#BrowseModule" },
   { path: "search", loadChildren: "~/app/search/search.module#SearchModule" },
@@ -12,7 +11,8 @@ const routes: Routes = [
   { path: "settings", loadChildren: "~/app/settings/settings.module#SettingsModule" },
   { path: "create", loadChildren: "~/app/create-account/create-account.module#CreateAccountModule" },
   { path: "messages", loadChildren: "~/app/messages/messages.module#MessagesModule" },
-  { path: "contact-add", loadChildren: "~/app/contact-add/contact-add.module#ContactAddModule" }
+  { path: "contact-add", loadChildren: "~/app/contact-add/contact-add.module#ContactAddModule" },
+  { path: "message", loadChildren: "~/app/message-view/message-view.module#MessageViewModule" }
 ];
 
 @NgModule({

@@ -60,6 +60,10 @@ export class AppComponent implements OnInit {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
     });
 
+    this.userModel.on("ContactsRestored", function(eventData) {
+      console.log(`[UserModel Event] --- ${eventData.eventName}`);
+    });
+
     this.router.events
     .pipe(filter((event: any) => event instanceof NavigationEnd))
     .subscribe((event: NavigationEnd) => this._activatedUrl = event.urlAfterRedirects);
