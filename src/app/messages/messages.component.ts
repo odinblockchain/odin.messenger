@@ -8,7 +8,7 @@ import * as app from "tns-core-modules/application";
 import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { GridLayout } from "ui/layouts/grid-layout";
 import { RouterExtensions } from "nativescript-angular/router";
-import { UserModel, IRemoteContact } from '../shared/user.model';
+import { UserModel, ISignalAddress } from '../shared/user.model';
 
 @Component({
 	moduleId: module.id,
@@ -18,17 +18,23 @@ import { UserModel, IRemoteContact } from '../shared/user.model';
 })
 
 export class MessagesComponent implements OnInit {
-  public friends: IRemoteContact[];
+  public friends: ISignalAddress[];
 
 	constructor(
     private _page: Page,
     private _router: RouterExtensions,
     private _user: UserModel) {
     // this._page.actionBarHidden = true;
+    let _this = this;
+    this._user.on("ContactsRestored", function(eventData) {
+      console.log(`[UserModel Event] --- ${eventData.eventName}`);
+      _this.friends = eventData.object.get('friends');
+    });
   }
 
   ngOnInit() {
     this.friends = this._user.friends;
+    console.log('friends?', this._user.friends);
   }
   
   onAddContact() {
@@ -36,6 +42,18 @@ export class MessagesComponent implements OnInit {
     this._router.navigate(["/contact-add"], {
       transition: {
         name: "slideLeft"
+      }
+    });
+  }
+
+  onViewMessages(contactIdentity: string) {
+    this._router.navigate(['/message', contactIdentity], {
+      queryParams: {
+        name: 'foobar',
+        id: 123
+      },
+      transition: {
+        name: 'slideLeft'
       }
     });
   }
@@ -60,5 +78,9 @@ export class MessagesComponent implements OnInit {
   onDrawerButtonTap(): void {
     const sideDrawer = <RadSideDrawer>app.getRootView();
     sideDrawer.showDrawer();
+  }
+
+  onFetchMessages() {
+    this._user.fetchMessages();
   }
 }

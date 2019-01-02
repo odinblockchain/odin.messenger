@@ -1,0 +1,39 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
+  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
+      ios.position="left">
+  </ActionItem>
+  <ActionItem text="Edit Contact" ios.position="popup" android.position="popup" (tap)="onEditContact()"></ActionItem>
+  <ActionItem text="Delete Contact" ios.position="popup" android.position="popup" (tap)="onDeleteContact()"></ActionItem>
+  <ActionItem text="Fetch Messages" ios.position="popup" android.position="popup" (tap)="onFetchMessages()"></ActionItem>
+  <Label class="action-bar--title" [text]="contactIdentity"></Label>
+</ActionBar>
+
+<ScrollView>
+  <StackLayout class="message-view" height="98%">
+
+      <Label *ngIf="contactMessages.length == 0" text="No messages yet! Say hi!" class="bold p15 u-font-size-sm placeholder" color="#374064"></Label>
+
+      <ListView [ngClass]="{'active': contactMessages.length > 0}" class="message-wrap" #list [items]="contactMessages">
+          <ng-template let-message="item">
+              <GridLayout columns="*" rows="auto" class="msg">
+                  <StackLayout [class]="filter(message.from)" orientation="horizontal" [horizontalAlignment]="align(message.from)">
+                      <FlexboxLayout [visibility]="showImage(message.from)" class="author" col="1">
+                        <Label class="innerLabel bold" [text]="contactIdentityShort"></Label>
+                      </FlexboxLayout>
+                      <Label [text]='message.message' class="msg_text" textWrap="true" verticalAlignment="top"></Label>
+                  </StackLayout>
+              </GridLayout>
+          </ng-template>
+      </ListView>
+
+      <StackLayout #chatbox class="chatbox" height="10%">
+        <GridLayout class="chatbox--wrap" columns="*, auto">
+          <TextField #textfield class="chatbox--input" row="0" col="0" [(ngModel)]="message" hint="Type a message..." returnKeyType="send" (returnPress)="chat(message)"></TextField>
+          <Button #btn class="chatbox--btn btn btn-primary" row="0" col="1" text="send" (tap)=chat(message)></Button>
+        </GridLayout>
+      </StackLayout>
+
+  </StackLayout>
+</ScrollView>
+  
