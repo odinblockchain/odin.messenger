@@ -1,10 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-import { View } from "tns-core-modules/ui/core/view";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
-import { alert } from "ui/dialogs";
 import * as app from "tns-core-modules/application";
-import * as appSettings from "application-settings";
 import { UserModel } from '../shared/user.model';
+import { PreferencesService } from '../shared/preferences.service';
+import { alert, confirm } from "ui/dialogs";
 
 @Component({
   selector: "Settings",
@@ -13,37 +12,22 @@ import { UserModel } from '../shared/user.model';
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
-  // @ViewChild("btn") btnRef: ElementRef;
-  @ViewChild("item") angularItem: ElementRef;
-
-  private item: View;
-  private btnItem: View;
-
-  public num: string;
-  public str: string;
-  public bool: boolean;
+  public remoteBundles: number;
+  public localBundles: number;
+  public preferences: any;
   
   constructor(
-    private _user: UserModel
+    private _user: UserModel,
+    private _pref: PreferencesService
   ) {
-    // Use the component constructor to inject providers.
-    this.num = '0';
-    this.str = '';
-    this.bool = false;
+    this.remoteBundles  = 0;
+    this.localBundles   = 0;
+    this.preferences    = this._pref.preferences;
   }
 
   ngOnInit(): void {
-    // Init your component properties here.
-    const num   = appSettings.getNumber("someNumber", 0);
-    this.num    = num === 0 ? '0' : num.toString();
-    this.str    = appSettings.getString("someString", "");
-    this.bool   = appSettings.getBoolean("someBoolean", false);
-    // this.btnItem = this.btnRef.nativeElement;
-    this.item = this.angularItem.nativeElement;
-
-    // this.btnItem.translateY = -50;
-    this.item.scaleX = 0;
-    this.item.scaleY = 0;
+    this.remoteBundles  = this._user.remotePreKeyBundles;
+    this.localBundles   = this._user.localPreKeyBundles;
   }
 
   onDrawerButtonTap(): void {
@@ -51,85 +35,31 @@ export class SettingsComponent implements OnInit {
     sideDrawer.showDrawer();
   }
 
-  saveNumber() {
-    console.log('save number', this.num);
-
-    if (!isNaN(parseFloat(this.num))) {
-      appSettings.setNumber("someNumber", parseFloat(this.num));
-      alert("You saved: " + appSettings.getNumber("someNumber"));
-    }
-  }
-
-  removeNumber() {
-    appSettings.remove("someNumber");
-    this.num = "";
-    alert("You removed the number from app settings!");
-  }
-
-  saveString() {
-    appSettings.setString("someString", this.str);
-    alert("You saved: " + appSettings.getString("someString"));
-  }
-
-  removeString() {
-    appSettings.remove("someString");
-    this.str = "";
-    alert("You removed the string from app settings!");
-  }
-
-  saveBoolean() {
-    appSettings.setBoolean("someBoolean", this.bool);
-    alert("You saved: " + appSettings.getBoolean("someBoolean"));
-  }
-
-  removeBoolean() {
-    appSettings.remove("someBoolean");
-    this.bool = false;
-    alert("You removed the boolean from app settings!");
+  onUpdate() {
+    this._pref.setPreferences(this.preferences);
+    console.log('prefs', this.preferences);
   }
 
   async onClearSession() {
-    console.log('>> Working to clear OSM session');
-    await this._user.clearSession();
-
-    alert({
-      title: "OSM Session Cleared",
-      message: "We've cleared the local OSM identity session from this device. To restore your identity, you must import your details again using the mnemonic phrase you backed up.",
-      okButtonText: "Ok"
-    });
+    let shouldClear = await confirm("Are you sure you wish to clear your local OSM session?")
+    if (shouldClear) {
+      console.log('>> Working to clear OSM session');
+      await this._user.clearSession();
+    }
   }
 
-  removeAll() {
-
-    console.log('removeall');
-
-    this.item.animate({
-      scale: { x: 1.6, y: 1.6 },
-      duration: 300
-    }).then(() => {
-
-      this.item.animate({ scale: { x: 1, y: 1 }, duration: 200 });
-      appSettings.clear();
-      this.num = "";
-      this.str = "";
-      this.bool = false;
-      
-      alert("All app settings values have been cleared!");
-    });
-
-    // this.btnItem.animate({
-    //   translate: { x: 0, y: 0 },
-    //   duration: 200
-    // }).then(() => {
-
-      
-
-    //   this.item.animate({
-    //     scale: { x: 1.6, y: 1.6 },
-    //     duration: 300
-    //   }).then(() => {
-    //     this.item.animate({ scale: { x: 1, y: 1 }, duration: 200 })
-    //   });
-    // });
+  async onPublishTokens() {
+    console.log('>> Working to publush tokens');
+    try {
+      if (await this._user.onPublishNewPrekeys()) {
+        alert('Successfully pushed new batch of one-time use Tokens to OSM-Server.');
+      } else {
+        alert('Something went wrong while publishing a new batch of one-time use Tokens to OSM-Server. Please check your configurations and try again.');
+      }
+    } catch (err) {
+      console.log('Caught unexpected error while publishing tokens...');
+      console.log(err.message ? err.message : err);
+      alert('Something unexpected occurred while publishing a new batch of one-time use Tokens to OSM-Server. Please check your configurations and try again.');
+    }
   }
 }
