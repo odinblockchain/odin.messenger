@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { request } from "http";
+import { PreferencesService } from "./preferences.service";
 
-const API = 'http://3043d3e7.ngrok.io';
 
 export interface IRegistrationData {
   address: {
@@ -29,14 +29,15 @@ export interface IPutMessage {
 @Injectable()
 export class OSMClientService {
 
-  constructor() {
-  }
+  constructor(
+    private _pref: PreferencesService
+  ) { }
 
   public fetchContact(contactIdentity: string): Promise<any> {
     console.log(`OSMClientService... FetchContact (${contactIdentity})`);
     return new Promise((resolve, reject) => {
       request({
-        url: `${API}/keys/?user=${contactIdentity}`,
+        url: `${this._pref.preferences.api_url}/keys/?user=${contactIdentity}`,
         method: "GET"
       }).then((response) => {
         if (response.statusCode !== 200) {
@@ -68,7 +69,7 @@ export class OSMClientService {
     console.log(`OSMClientService... CheckRegistration (${hashAccountName})`);
     return new Promise((resolve, reject) => {
       request({
-        url: `${API}/keys/count?user=${hashAccountName}`,
+        url: `${this._pref.preferences.api_url}/keys/count?user=${hashAccountName}`,
         method: "GET"
       }).then((response) => {
         if (response.statusCode !== 200) {
@@ -103,7 +104,7 @@ export class OSMClientService {
 
     return new Promise((resolve, reject) => {
       request({
-        url: `${API}/keys`,
+        url: `${this._pref.preferences.api_url}/keys`,
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         content: JSON.stringify(clientDetails)
@@ -139,7 +140,7 @@ export class OSMClientService {
 
     return new Promise((resolve, reject) => {
       request({
-        url: `${API}/messages`,
+        url: `${this._pref.preferences.api_url}/messages`,
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         content: JSON.stringify(putMessageBody)
@@ -173,8 +174,40 @@ export class OSMClientService {
 
     return new Promise((resolve, reject) => {
       request({
-        url: `${API}/messages?deviceId=${deviceId}&registrationId=${registrationId}`,
+        url: `${this._pref.preferences.api_url}/messages?deviceId=${deviceId}&registrationId=${registrationId}`,
         method: "GET",
+      }).then((response) => {
+        if (response.statusCode !== 200) {
+          console.log('OSMClientService... RESPONSE');
+          console.dir(response);
+          return reject(new Error('Bad_Status'));
+        }
+
+        console.log(`OSMClientService... CONTENT`);
+        console.log(response.content);
+
+        try {
+          console.log('-- content.toJSON');
+          console.dir(response.content.toJSON());
+          return resolve(response.content.toJSON());
+        } catch (err) {
+          return reject(err);
+        }
+      }, (e) => {
+        console.log('Error occurred');
+        console.log(e.message ? e.message : e);
+        console.dir(e);
+      });
+    });
+  }
+
+  public delMessage(messageKey: string) {
+    console.log(`OSMClientService... DeleteMessage (${messageKey})`);
+
+    return new Promise((resolve, reject) => {
+      request({
+        url: `${this._pref.preferences.api_url}/messages?key=${messageKey}`,
+        method: "DELETE",
       }).then((response) => {
         if (response.statusCode !== 200) {
           console.log('OSMClientService... RESPONSE');
