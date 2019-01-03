@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, OnInit } from "@angular/core";
 import { Page } from "ui/page";
+import { alert } from "tns-core-modules/ui/dialogs";
 
 @Component({
     selector: "Splashscreen",
@@ -14,5 +15,9 @@ export class SplashscreenComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  onImport(): void {
+    alert('OSM Account importing is not available at this time.');
   }
 }

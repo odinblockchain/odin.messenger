@@ -29,7 +29,7 @@ export class PreferencesService {
 
   private defaultPreferences(): any {
     return {
-      api_url: 'http://c94577f6.ngrok.io'
+      api_url: 'https://osm-testnet.obsidianplatform.com'
     };
   }
 }

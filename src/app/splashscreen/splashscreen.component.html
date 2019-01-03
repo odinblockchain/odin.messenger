@@ -10,7 +10,7 @@
     </Label>
 
     <StackLayout class="u-w80">
-      <Button text="Import Account" class="btn btn-primary" [nsRouterLink]="['/home']" pageTransition="slideRight"></Button>
+      <Button text="Import Account" class="btn btn-primary" (tap)="onImport()" pageTransition="slideRight"></Button>
 
       <Button text="Create Account" class="btn btn-primary" [nsRouterLink]="['/create']" pageTransition="slideLeft"></Button>
     </StackLayout>
