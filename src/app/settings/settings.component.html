@@ -17,8 +17,8 @@
       </StackLayout>
 
       <Label text="Remote Tokens" class="heading"></Label>
-      <Label text="These are one-time use public tokens that others can use to communicate with you via OSM." class="hint" textWrap="true"></Label>
-      <TextField class="input input-border" [text]="remoteBundles" editable="false"></TextField>
+      <Label text="These are one-time use public tokens stored on the OSM-Server that others can use to communicate with you." class="hint" textWrap="true"></Label>
+      <TextField class="input input-border" [text]="user.get('remotePreKeyBundles')" editable="false"></TextField>
 
       <StackLayout class="hr-light"></StackLayout>
   
