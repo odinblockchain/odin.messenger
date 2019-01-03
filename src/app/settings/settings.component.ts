@@ -12,22 +12,18 @@ import { alert, confirm } from "ui/dialogs";
   styleUrls: ['./settings.component.css']
 })
 export class SettingsComponent implements OnInit {
-  public remoteBundles: number;
-  public localBundles: number;
   public preferences: any;
+  public user: UserModel;
   
   constructor(
     private _user: UserModel,
     private _pref: PreferencesService
   ) {
-    this.remoteBundles  = 0;
-    this.localBundles   = 0;
-    this.preferences    = this._pref.preferences;
+    this.user         = this._user;
+    this.preferences  = this._pref.preferences;
   }
 
   ngOnInit(): void {
-    this.remoteBundles  = this._user.remotePreKeyBundles;
-    this.localBundles   = this._user.localPreKeyBundles;
   }
 
   onDrawerButtonTap(): void {
@@ -59,7 +55,11 @@ export class SettingsComponent implements OnInit {
     } catch (err) {
       console.log('Caught unexpected error while publishing tokens...');
       console.log(err.message ? err.message : err);
-      alert('Something unexpected occurred while publishing a new batch of one-time use Tokens to OSM-Server. Please check your configurations and try again.');
+      if (err.message === 'Max_PreKeys') {
+        alert("You've hit the limit for the maximum amount of one-time use Public Tokens to store on the OSM-Server. Please wait some time before attempting to add again.");
+      } else {
+        alert('Something unexpected occurred while publishing a new batch of one-time use Public Tokens to OSM-Server. Please check your configurations and try again.');
+      }
     }
   }
 }
