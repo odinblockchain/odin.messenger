@@ -41,11 +41,16 @@
   }
 }
 
-.p15{
+.p15 {
   padding: 15;
 }
 
 .page {
+  font-family: "Montserrat-Regular";
+  color: $text-color;
+}
+
+.form {
   font-family: "Montserrat-Regular";
   color: $text-color;
 }
@@ -87,6 +92,15 @@
 
 RadSideDrawer {
   background-color: $background;
+}
+
+.no-connection {
+  background-color: #A61B1B;
+  color: #fefefe;
+  font-family: "Montserrat-SemiBold";
+  text-align: center;
+  padding: 12 0;
+  font-size: 16;
 }
 
 // Common page class

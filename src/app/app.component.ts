@@ -4,6 +4,7 @@ import { RouterExtensions } from "nativescript-angular/router";
 import { DrawerTransitionBase, RadSideDrawer, SlideInOnTopTransition } from "nativescript-ui-sidedrawer";
 import { filter } from "rxjs/operators";
 import { UserModel } from './shared/user.model';
+import { PreferencesService } from './shared/preferences.service';
 import * as app from "tns-core-modules/application";
 import * as platformModule from 'tns-core-modules/platform';
 import { Observable, Page, PropertyChangeData } from "tns-core-modules/ui/page/page";
@@ -25,11 +26,15 @@ export class AppComponent implements OnInit {
   private _activatedUrl: string;
   private _sideDrawerTransition: DrawerTransitionBase;
   public userAccount: any;
+  public connected: boolean;
 
   constructor(
     private router: Router,
     private routerExtensions: RouterExtensions,
-    private userModel: UserModel) { }
+    private userModel: UserModel,
+    private _pref: PreferencesService) {
+      this.connected = true;
+  }
 
   ngOnInit(): void {
     this._activatedUrl = "/splashscreen";
@@ -62,6 +67,16 @@ export class AppComponent implements OnInit {
 
     this.userModel.on("ContactsRestored", function(eventData) {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
+    });
+
+    this.userModel.on("NoConnection", function(eventData) {
+      console.log(`[UserModel Event] --- ${eventData.eventName}`);
+      this.connected = false;
+    });
+
+    this.userModel.on("Connected", function(eventData) {
+      console.log(`[UserModel Event] --- ${eventData.eventName}`);
+      this.connected = true;
     });
 
     this.router.events
