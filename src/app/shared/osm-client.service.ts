@@ -75,7 +75,11 @@ export class OSMClientService {
         if (response.statusCode !== 200) {
           console.log('OSMClientService... RESPONSE');
           console.dir(response);
-          return reject(new Error('Bad_Status'));
+          if (response.content && response.content.toString().indexOf('Key not found in database') != -1) {
+            return reject(new Error('Not_Registered'));
+          } else {
+            return reject(new Error('Bad_Status'));
+          }
         }
 
         console.log(`OSMClientService... CONTENT`);
@@ -112,6 +116,12 @@ export class OSMClientService {
         if (response.statusCode !== 200) {
           console.log('OSMClientService... RESPONSE');
           console.dir(response);
+          if (response.content && response.content.toString().indexOf('UserMaxPreKeys') != -1) {
+            return reject(new Error('Max_PreKeys'));
+          } else {
+            return reject(new Error('Bad_Status'));
+          }
+
           return reject(new Error('Bad_Status'));
         }
 
