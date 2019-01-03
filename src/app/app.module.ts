@@ -7,6 +7,7 @@ import { AppComponent } from "./app.component";
 // import { AccountService, StorageService, UserModel } from './shared';
 import { AccountService } from './shared/account.service';
 import { StorageService } from './shared/storage.service';
+import { PreferencesService } from './shared/preferences.service';
 import { UserModel } from './shared/user.model';
 import { OSMClientService } from './shared/osm-client.service';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
@@ -18,6 +19,7 @@ import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
   providers: [
     AccountService,
     StorageService,
+    PreferencesService,
     OSMClientService,
     UserModel,
     SnackBar

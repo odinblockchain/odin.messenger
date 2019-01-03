@@ -50,6 +50,19 @@ export interface IRemoteContact {
   publicPreKey: IPublicPreKey;
 } 
 
+export interface IRemoteMessage {
+  key: string;
+  value: {
+    destinationDeviceId: number;
+    destinationRegistrationId: number;
+    deviceId: number;
+    registrationId: number;
+    accountHash: string;
+    ciphertextMessage: string;
+    timestamp: number;
+  }
+}
+
 export interface ISignalClient {
   store: any; //LibsignalProtocol.Interface.ISignalProtocolStore;
   registrationId: number;
@@ -126,23 +139,27 @@ export interface IStoredMessage {
 @Injectable()
 export class UserModel extends Observable {
   private _store: StorageService;
-  private _osmClient: OSMClientService;
   private _signalClient: LibsignalProtocol.Client;
 
   public saveData: UserSaveData;
   public COIN: string;
   public friends: ISignalAddress[];
   public messages: any;
+  public remotePreKeyBundles: number;
+  public localPreKeyBundles: number;
+  
+  public osmConnected: boolean;
 
   constructor(
-    private _router: RouterExtensions
+    private _router: RouterExtensions,
+    private _osmClient: OSMClientService
   ) {
     super();
 
     this.COIN             = 'ODN';
     this._store           = new StorageService();
-    this._osmClient       = new OSMClientService();
     this._signalClient    = null;
+    this.osmConnected     = false;
     this.friends          = [];
     this.messages         = [];
     this.saveData         = {
@@ -157,6 +174,9 @@ export class UserModel extends Observable {
       deviceId: 0,
       registered: false
     };
+    
+    this.remotePreKeyBundles = 0;
+    this.localPreKeyBundles = 0;
 
     this.initialize();
   }
@@ -237,12 +257,25 @@ export class UserModel extends Observable {
       
       if (storedPreKeys.count) {
         console.log('--- Remote Session Restored ---');
+        this.notify({
+          eventName: "Connected",
+          object: this
+        });
+
+        this.remotePreKeyBundles = storedPreKeys.count;
+        this.osmConnected = true;
         return true;
       }
       return false;
     } catch (err) {
       console.log('Unable to check registration status');
       console.log(err.message ? err.message : err);
+      this.osmConnected = false;
+      this.notify({
+        eventName: "NoConnection",
+        object: this
+      });
+      alert('There was an issue communicating with the OSM-Server. Please try again later or check your network status.');
       return false;
     }
   }
@@ -295,6 +328,8 @@ export class UserModel extends Observable {
         preKeys:          restoredClient.preKeys.length,
         preKey0:          restoredClient.preKeys[0]
       });
+
+      this.localPreKeyBundles = restoredClient.preKeys.length;
 
       await this.createSignalClient(
         restoredClient.identityKeyPair,
@@ -417,7 +452,6 @@ export class UserModel extends Observable {
     throw new Error('Missing Friend');
   }
 
-
   /**
    * Send a message to an added contact.
    * Must first prefetch a fresh bundle from the server
@@ -454,6 +488,7 @@ export class UserModel extends Observable {
       destinationRegistrationId: contact.registrationId,
       deviceId: this.saveData.deviceId,
       registrationId: this.saveData.registrationId,
+      accountHash: this.saveData.hashAccount,
       ciphertextMessage: encodedMessage
     };
 
@@ -476,7 +511,6 @@ export class UserModel extends Observable {
       return false;
     }
   }
-
 
   /**
    * Stores a contact locally by adding a session to the `SignalClient` instance
@@ -502,13 +536,23 @@ export class UserModel extends Observable {
    * @param sender 
    * @param recipient 
    * @param message 
+   * @param timestamp 
    */
-  async storeMessage(sender: string, recipient: string, message: string): Promise<boolean> {
+  async storeMessage(sender: string, recipient: string, message: string, timestamp?: number): Promise<boolean> {
     console.log(`UserModel... Storing Message (${sender})>>(${recipient}) "${message}"`);
+
+    if (typeof message !== 'string') {
+      console.log(`UserModel... Storing Message FAILED... Not String`);
+      console.log(message);
+      console.log('---');
+      throw new Error('InvalidMessage');
+    }
 
     let contactName;
     if (sender === 'me') contactName = recipient;
     else contactName = sender;
+
+    if (typeof timestamp === 'undefined') timestamp = (new Date()).getTime();
 
     let messages = [];
     try {
@@ -522,7 +566,7 @@ export class UserModel extends Observable {
     let newMessage = {
       to:       recipient,
       from:     sender,
-      date:     (new Date()).getTime(),
+      date:     timestamp,
       message:  message
     };
 
@@ -543,6 +587,10 @@ export class UserModel extends Observable {
     });
 
     return true;
+  }
+
+  async onPublishNewPrekeys(): Promise<boolean> {
+    throw new Error('Method not implemented');
   }
 
   async onSaveMasterSeed(masterSeed: any) {
@@ -610,13 +658,85 @@ export class UserModel extends Observable {
     }
   }
 
+  /**
+   * Handle a new message sent from another client.
+   * - Check if local client has them stored as a known contact
+   * (store as a new friend)
+   * 
+   * - Attempt to decrypt message
+   * 
+   * - Store decrypted message
+   * 
+   * @param remoteMessage 
+   */
+  async handleNewMessage(remoteMessage: IRemoteMessage): Promise<boolean> {
+    console.log(`UserModel... HANDLE Incoming Message`);
+    console.log(remoteMessage);
+
+    let remoteIdentity = remoteMessage.value.accountHash;
+    let remoteContactDetails: IRemoteContact = await this._osmClient.fetchContact(remoteIdentity);
+    // if (!remoteContactDetails.publicPreKey) {
+    //   console.log(`UserModel... ERROR! Remote Contact has no more prekeys! (${toIdentity})`);
+    //   alert('Recipient has ran out of message tokens, please try again later when they have refreshed.');
+    //   return false;
+    // }
+    console.log(`UserModel... HANDLE Incoming Message... Got remote bundle`);
+
+    if (!this._signalClient.hasSession(remoteIdentity)) {
+      console.log(`UserModel... new session detected`);
+      
+      if (!await this.addFriend(remoteContactDetails, remoteIdentity)) {
+        console.log(`UserModel... ERROR! Unable to add friend... ${remoteIdentity}`);
+        return false;
+      }
+    } else {
+      let contact: ISignalAddress = await this.getFriend(remoteIdentity);
+      let preKeyBundle = this.buildBundlePackage(remoteContactDetails);
+      await this.storeContact(contact, preKeyBundle);
+    }
+
+    try {
+      let plainTextMessage = await this._signalClient.decryptEncodedMessage(remoteIdentity, remoteMessage.value.ciphertextMessage);
+      console.log(`UserModel... HANDLE Incoming Message... Decrypted... "${plainTextMessage}"`);
+
+      await this._osmClient.delMessage(remoteMessage.key);
+      console.log(`UserModel... HANDLE Incoming Message... Deleted:${remoteMessage.key}`);
+
+      if (plainTextMessage !== 'string') {
+        if ((plainTextMessage+'').indexOf('Unable to decrypt')) {
+
+          console.log('WAS UNABLE TO DECRYPT!!');
+        }
+      }
+
+      await this.storeMessage(remoteIdentity, 'me', plainTextMessage, remoteMessage.value.timestamp);
+      console.log(`UserModel... HANDLE Incoming Message... Stored Message"`);
+
+      return true;
+    } catch (err) {
+      console.log('Unable to decrypt ALICE >> BOB');
+      console.log(err.message ? err.message : err);
+      return false;
+    }
+  }
+
   async fetchMessages() {
     try {
+      console.log(`UserModel... FETCH Messages from OSM-Server`);
+
       let response: any = await this._osmClient.getMessages(this.saveData.registrationId, this.saveData.deviceId);
-      console.log('GET response', response);
       if (response.status && response.status === 'ok') {
+        console.log(`UserModel... FETCH Messages >> OK... Total:${response.messages.length}...`);
+        
         if (response.messages && response.messages.length > 0) {
-          this.parseMessages(response.messages);
+          let handleMessages = [];
+          response.messages.forEach((message: IRemoteMessage) => {
+            console.log('message', message);
+            handleMessages.push(this.handleNewMessage(message));
+          });
+
+          await Promise.all(handleMessages);
+          console.log(`UserModel... DOEN! Fetched Messages!`);
         }
       } else {
         alert('Unable to fetch messages from server. Please try again later.');
@@ -718,7 +838,6 @@ export class UserModel extends Observable {
 
   private async clearSaveData() {
     this._store           = new StorageService();
-    this._osmClient       = new OSMClientService();
     this._signalClient    = null;
     this.friends          = [];
     this.messages         = [];
@@ -734,6 +853,8 @@ export class UserModel extends Observable {
       deviceId: 0,
       registered: false
     };
+    this.remotePreKeyBundles = 0;
+    this.localPreKeyBundles = 0;
     
     return true;
   }

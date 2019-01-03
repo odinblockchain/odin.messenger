@@ -17,20 +17,9 @@ import {
   clear
 } from "tns-core-modules/application-settings";
 
-// import { User } from "./user.model";
-// import { BackendService } from "./backend.service";
-// import { DatabaseService } from "../database/sqlite.service";
-
 @Injectable()
 export class StorageService {
-  private db;
-
-  public fudge;
-
-  constructor() {
-    // this.db = new Couchbase("test-database");
-    this.fudge = 'packer';
-  }
+  constructor() { }
 
   public hasKey(key: string) {
     return hasKey(key);

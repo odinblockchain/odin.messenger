@@ -1,58 +1,34 @@
 <ActionBar class="action-bar">
-    <!-- 
-    Use the NavigationButton as a side-drawer button in Android
-    because ActionItems are shown on the right side of the ActionBar
-    -->
-    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
-    <!-- 
-    Use the ActionItem for IOS with position set to left. Using the
-    NavigationButton as a side-drawer button in iOS is not possible,
-    because its function is to always navigate back in the application.
-    -->
-    <ActionItem icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
-        ios.position="left">
-    </ActionItem>
-    <Label class="action-bar-title" text="Settings"></Label>
+  <NavigationButton class="action-bar--button" ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
+  </ActionItem>
+  <Label class="action-bar--title" text="OSM Settings"></Label>
 </ActionBar>
 
 <GridLayout class="page page-content">
-  <ScrollView class="page">
-    <StackLayout class="home-panel form input-field">
-      <Label text="Store and retrieve data locally by using Application Settings (similar to 'local storage' on the web)." textWrap="true"
-        class="lbl"></Label>
-   
-      <!-- store/retrieve number -->
-      <Label text="Number" class="heading"></Label>
-      <TextField [(ngModel)]="num" hint="Enter a Number..." class="input input-border" keyboardType="number"></TextField>
+  <ScrollView>
+    <StackLayout class="form input-field">
+
+      <Label text="OSM-Server" class="heading"></Label>
+      <Label text="This is the current OSM-Server instance you are communicating with." class="hint" textWrap="true"></Label>
+      <TextField [(ngModel)]="preferences.api_url" hint="OSM-Server URL..." class="input input-border"></TextField>
       <StackLayout orientation="horizontal" horizontalAlignment="center">
-        <Button text="Save" (tap)="saveNumber()" class="btn btn-primary"></Button>
-        <Button text="Remove" (tap)="removeNumber()" class="btn btn-primary"></Button>
+        <Button text="Update" (tap)="onUpdate()" class="btn btn-primary"></Button>
       </StackLayout>
-  
-      <!-- store/retrieve string -->
-      <Label text="String" class="heading"></Label>
-      <TextField [(ngModel)]="str" hint="Enter a String..." class="input input-border"></TextField>
-      <StackLayout orientation="horizontal" horizontalAlignment="center">
-        <Button text="Save" (tap)="saveString()" class="btn btn-primary"></Button>
-        <Button text="Remove" (tap)="removeString()" class="btn btn-primary"></Button>
-      </StackLayout>
-  
-      <!-- store/retrieve boolean -->
-      <Label text="Boolean" class="heading"></Label>
-      <Switch checked="false" [(ngModel)]="bool" class="switch"></Switch>
-      <StackLayout orientation="horizontal" horizontalAlignment="center">
-        <Button text="Save" (tap)="saveBoolean()" class="btn btn-primary"></Button>
-        <Button text="Remove" (tap)="removeBoolean()" class="btn btn-primary"></Button>
-      </StackLayout>
-  
+
+      <Label text="Remote Tokens" class="heading"></Label>
+      <Label text="These are one-time use public tokens that others can use to communicate with you via OSM." class="hint" textWrap="true"></Label>
+      <TextField class="input input-border" [text]="remoteBundles" editable="false"></TextField>
+
       <StackLayout class="hr-light"></StackLayout>
   
-      <Button text="Remove All App Settings" (tap)="removeAll()" class="btn btn-primary"></Button>
+      <Label text="If your remote tokens count is low, you'll need to publish new tokens to the OSM-Server. Publishing new tokens does not invalidate previous ones." class="hint" textWrap="true"></Label>
+      <Button text="Publish New Tokens" (tap)="onPublishTokens()" class="btn btn-primary"></Button>
 
+      <StackLayout class="hr-light"></StackLayout>
+
+      <Label text="Wipe your local OSM Session. OSM Session importing is currently not supported yet, use at your own risk." class="hint" textWrap="true"></Label>
       <Button text="Clear OSM Session" (tap)="onClearSession()" class="btn btn-primary"></Button>
-
-      <TextField #item hint="Confirm Password" class="form-input" textAlignment="center"></TextField>
-
     </StackLayout>
   </ScrollView>
 </GridLayout>
