@@ -7,7 +7,10 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
 
   <GridLayout tkDrawerContent rows="auto, *" class="sidedrawer sidedrawer-left">
     <StackLayout row="0" class="sidedrawer-header">
-      <Image src="https://placem.at/people?random=11&w=500&h=500&txt=0" class="sidedrawer-avatar" ></Image>
+      <FlexboxLayout class="author">
+        <Label class="innerLabel bold" text="{{ userAccount.hashAccount[0] }}"></Label>
+      </FlexboxLayout>
+      <!-- <Label class="innerLabel bold" text="ME"></Label> -->
       <Label class="sidedrawer-header-text var" [text]="userAccount.hashAccount"></Label>
     </StackLayout>
 
@@ -19,27 +22,6 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
         <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Messages" [class.selected]="isComponentSelected('/messages')" (tap)="onNavItemTap('/messages')">
           <Label row="0" col="0" text="&#xf015;" class="fa sidedrawer-icon"></Label>
           <Label row="0" col="1" text="Messages" class="m-l-20 sidedrawer-item"></Label>
-        </GridLayout>
-
-        <StackLayout class="hr-light"></StackLayout>
-
-        <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Friends" [class.selected]="isComponentSelected('/browse')" (tap)="onNavItemTap('/browse')">
-          <Label row="0" col="0" text="&#xf007;" class="fa sidedrawer-icon"></Label>
-          <Label row="0" col="1" text="Browse" class="m-l-20 sidedrawer-item"></Label>
-        </GridLayout>
-
-        <StackLayout class="hr-light"></StackLayout>
-
-        <GridLayout columns="auto, *" class="sidedrawer-list-item" title="To-Do List" [class.selected]="isComponentSelected('/search')" (tap)="onNavItemTap('/search')">
-          <Label row="0" col="0" text="&#xf0ca;" class="fa sidedrawer-icon"></Label>
-          <Label row="0" col="1" text="Search" class="m-l-20 sidedrawer-item"></Label>
-        </GridLayout>
-
-        <StackLayout class="hr-light"></StackLayout>
-
-        <GridLayout columns="auto, *" class="sidedrawer-list-item" title="To-Do List" [class.selected]="isComponentSelected('/splashscreen')" (tap)="onNavItemTap('/splashscreen')">
-          <Label row="0" col="0" text="&#xf0ca;" class="fa sidedrawer-icon"></Label>
-          <Label row="0" col="1" text="Splashscreen" class="m-l-20 sidedrawer-item"></Label>
         </GridLayout>
 
         <StackLayout class="hr-light"></StackLayout>

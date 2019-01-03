@@ -12,7 +12,7 @@ import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from 
 import { ListView } from 'ui/list-view';
 import { TextField } from 'ui/text-field';
 import { ScrollView } from 'ui/scroll-view';
-import {Page} from "ui/page"
+import { Page } from "ui/page"
 import { UserModel } from '../shared/user.model';
 
 import { displayedEvent, exitEvent, launchEvent, lowMemoryEvent, 

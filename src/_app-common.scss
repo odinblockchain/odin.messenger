@@ -66,18 +66,6 @@
   }
 }
 
-.btn {
-  font-family: "Montserrat-Regular";
-  letter-spacing: 0.05;
-  border-radius: 4;
-  // padding: 10;
-  // margin-bottom: 15;
-}
-
-// .btn-primary {
-//   margin: 30 5 15 5;
-// }
-
 .header,
 .h1,
 .h2 {
@@ -203,6 +191,10 @@ RadSideDrawer {
 .btn {
   height: 50;
   font-family: "Montserrat-SemiBold";
+  // font-family: "Montserrat-Regular";
+  letter-spacing: 0.05;
+  border-radius: 4;
+  background-color: $accent; 
 
   &.btn-primary {
     &:active {
@@ -211,6 +203,9 @@ RadSideDrawer {
   }
 
   &.btn-outline {
+    background-color: transparent;
+    color: $accent;
+
     &:active {
       background-color: $accent;
       color: #ffffff;
@@ -240,6 +235,44 @@ RadSideDrawer {
   color: #ffffff;
 }
 
+
+.sidedrawer {
+  font-family: "Montserrat-Light";
+
+  .author {
+    border-radius: 100%;
+    vertical-align: top;
+    height: 100;
+    width: 100;
+    align-items: center;
+    justify-content: center;
+    background-color: $accent;
+
+    .innerLabel {
+      color: #ffffff;
+      font-size: 18;
+    }
+  }
+
+  .sidedrawer-header-text {
+    font-size: 20;
+    letter-spacing: 0.05;
+  }
+
+  .sidedrawer-list-item {
+    font-family: "Montserrat-Light";
+    font-size: 18;
+
+    
+      // verticalAlignment="top" height="30" width="30" alignItems="center" justifyContent="center" backgroundColor="blue"
+    
+  }
+
+  .sidedrawer-item {
+    font-family: "Montserrat-Light";
+    font-size: 18;
+  }
+}
  // Drawer navigation custom styles
 // $sidedrawer-header-image-size: 60;
 // $sidedrawer-header-image-offset-top: 20;
