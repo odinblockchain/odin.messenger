@@ -175,8 +175,8 @@ export class UserModel extends Observable {
       registered: false
     };
     
-    this.remotePreKeyBundles = 0;
-    this.localPreKeyBundles = 0;
+    this.remotePreKeyBundles  = 0;
+    this.localPreKeyBundles   = 0;
 
     this.initialize();
   }
@@ -262,7 +262,15 @@ export class UserModel extends Observable {
           object: this
         });
 
-        this.remotePreKeyBundles = storedPreKeys.count;
+        this.set('remotePreKeyBundles', storedPreKeys.count);
+        if (storedPreKeys.count <= 20) {
+          alert({
+            title: "Low Token Count",
+            message: `The OSM-Server currently contains ${storedPreKeys.count} public single-use communication tokens. To ensure there is no distruption in receiving messages from other users, please visit the Settings page to generate more.`,
+            okButtonText: "Ok"
+          });
+        }
+        
         this.osmConnected = true;
         return true;
       }
@@ -270,12 +278,18 @@ export class UserModel extends Observable {
     } catch (err) {
       console.log('Unable to check registration status');
       console.log(err.message ? err.message : err);
-      this.osmConnected = false;
-      this.notify({
-        eventName: "NoConnection",
-        object: this
-      });
-      alert('There was an issue communicating with the OSM-Server. Please try again later or check your network status.');
+      if (err.message.toLowerCase() === 'not_registered') {
+        alert('Your OSM Identity could not be found on the server. There may have been an issue while registering, or you have not completed that step yet. Please try and Create your Account again.');
+      } else {
+        alert('There was an issue communicating with the OSM-Server. Please try again later or check your network status.');
+
+        this.notify({
+          eventName: "NoConnection",
+          object: this
+        });
+        this.osmConnected = false;
+      }
+      
       return false;
     }
   }
@@ -330,6 +344,7 @@ export class UserModel extends Observable {
       });
 
       this.localPreKeyBundles = restoredClient.preKeys.length;
+      console.log(`UserModel... Total local prekeys (${this.localPreKeyBundles})`);
 
       await this.createSignalClient(
         restoredClient.identityKeyPair,
@@ -590,7 +605,34 @@ export class UserModel extends Observable {
   }
 
   async onPublishNewPrekeys(): Promise<boolean> {
-    throw new Error('Method not implemented');
+    let preKeyBatch = this._signalClient.generatePreKeyBatch();
+    let registerPackage = this._signalClient.exportRegistrationObj();
+    registerPackage.preKeys = preKeyBatch.map((key) => {
+      return {
+        id: key.id,
+        pubKey: key.pubKey
+      }
+    });
+
+    try {
+      let registeredKeys = await this._osmClient.registerClient(registerPackage);
+      if (registeredKeys.count && registeredKeys.count > 0) {
+        await this._store.setString('signalClient', JSON.stringify(this._signalClient));
+        console.log(`UserModel... PUBLIST new prekeys... Saved Client`);
+        this.set('remotePreKeyBundles', registeredKeys.count);
+        return true;
+      } else {
+        throw new Error('BadPreKeyUpload');
+      }
+    } catch (err) {
+      console.log('Unable to store prekey batch');
+      console.log(err.message ? err.message : err);
+      throw err;
+    }
+    // if (registeredKeys.count) {
+    //   console.log('--- Account Update Successful ---');
+    // }
+    // throw new Error('Method not implemented');
   }
 
   async onSaveMasterSeed(masterSeed: any) {
