@@ -17,10 +17,8 @@ export class PreferencesService {
       this.preferences = this.defaultPreferences();
     }
 
-    console.log(this.preferences);
-
     this._store.setString('preferences', JSON.stringify(this.preferences));
-    console.log('STORED');
+    console.log('Preferences... UPDATED');
   }
 
   public setPreferences(preferences: any) {
@@ -31,7 +29,7 @@ export class PreferencesService {
 
   private defaultPreferences(): any {
     return {
-      api_url: 'http://622c837a.ngrok.io'
+      api_url: 'http://c94577f6.ngrok.io'
     };
   }
 }

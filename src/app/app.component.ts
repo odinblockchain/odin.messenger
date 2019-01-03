@@ -9,11 +9,15 @@ import * as app from "tns-core-modules/application";
 import * as platformModule from 'tns-core-modules/platform';
 import { Observable, Page, PropertyChangeData } from "tns-core-modules/ui/page/page";
 import { registerElement } from 'nativescript-angular/element-registry';
+import { setInterval, clearInterval } from "tns-core-modules/timer";
+import { interval } from "rxjs";
 
 registerElement('Fab', () => require('nativescript-floatingactionbutton').Fab);
 
 // import { app } from 'application';
 // import * as applicationModule from "tns-core-modules/application";
+
+import {resumeEvent, suspendEvent, ApplicationEventData, on as applicationOn, run as applicationRun } from "tns-core-modules/application";
 
 declare var android: any;
 
@@ -25,6 +29,7 @@ declare var android: any;
 export class AppComponent implements OnInit {
   private _activatedUrl: string;
   private _sideDrawerTransition: DrawerTransitionBase;
+  private _pingServer: any;
   public userAccount: any;
   public connected: boolean;
 
@@ -72,6 +77,7 @@ export class AppComponent implements OnInit {
     this.userModel.on("NoConnection", function(eventData) {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
       this.connected = false;
+      clearInterval(this._pingServer);
     });
 
     this.userModel.on("Connected", function(eventData) {
@@ -84,6 +90,28 @@ export class AppComponent implements OnInit {
     .subscribe((event: NavigationEnd) => this._activatedUrl = event.urlAfterRedirects);
 
     this.adjustStatusBar();
+
+    applicationOn(suspendEvent, (args: ApplicationEventData) => {
+      console.log("[App] Suspend OSM...");
+      if (this._pingServer) {
+        clearInterval(this._pingServer);
+        this._pingServer = false;
+      }
+    });
+
+    applicationOn(resumeEvent, (args: ApplicationEventData) => {
+      console.log("[App] Resume OSM...");
+
+      if (!this._pingServer) {
+        clearInterval(this._pingServer);
+        this._pingServer = setInterval(() => {
+          if (this.userModel.osmConnected) {
+            console.log(`[App] Ping Server...`);
+            this.userModel.fetchMessages();
+          }
+        }, (15 * 1000));
+      }
+    });
   }
 
   adjustStatusBar() {
