@@ -684,6 +684,7 @@ export class UserModel extends Observable {
       let registeredKeys = await this._osmClient.registerClient(this._signalClient.exportRegistrationObj());
       if (registeredKeys.count) {
         this.saveData.registered = true;
+        this.remotePreKeyBundles = 100;
         console.log('--- Account Creation Successful ---');
       }
 
@@ -712,54 +713,62 @@ export class UserModel extends Observable {
    * @param remoteMessage 
    */
   async handleNewMessage(remoteMessage: IRemoteMessage): Promise<boolean> {
-    console.log(`UserModel... HANDLE Incoming Message`);
-    console.log(remoteMessage);
+    return new Promise<boolean>(async (resolve, reject) => {
+      console.log(`UserModel... HANDLE Incoming Message`);
+      console.log(remoteMessage);
 
-    let remoteIdentity = remoteMessage.value.accountHash;
-    let remoteContactDetails: IRemoteContact = await this._osmClient.fetchContact(remoteIdentity);
-    // if (!remoteContactDetails.publicPreKey) {
-    //   console.log(`UserModel... ERROR! Remote Contact has no more prekeys! (${toIdentity})`);
-    //   alert('Recipient has ran out of message tokens, please try again later when they have refreshed.');
-    //   return false;
-    // }
-    console.log(`UserModel... HANDLE Incoming Message... Got remote bundle`);
+      let remoteIdentity = remoteMessage.value.accountHash;
+      let remoteContactDetails: IRemoteContact = await this._osmClient.fetchContact(remoteIdentity);
+      // if (!remoteContactDetails.publicPreKey) {
+      //   console.log(`UserModel... ERROR! Remote Contact has no more prekeys! (${toIdentity})`);
+      //   alert('Recipient has ran out of message tokens, please try again later when they have refreshed.');
+      //   return false;
+      // }
+      console.log(`UserModel... HANDLE Incoming Message... Got remote bundle`);
 
-    if (!this._signalClient.hasSession(remoteIdentity)) {
-      console.log(`UserModel... new session detected`);
-      
-      if (!await this.addFriend(remoteContactDetails, remoteIdentity)) {
-        console.log(`UserModel... ERROR! Unable to add friend... ${remoteIdentity}`);
-        return false;
-      }
-    } else {
-      let contact: ISignalAddress = await this.getFriend(remoteIdentity);
-      let preKeyBundle = this.buildBundlePackage(remoteContactDetails);
-      await this.storeContact(contact, preKeyBundle);
-    }
-
-    try {
-      let plainTextMessage = await this._signalClient.decryptEncodedMessage(remoteIdentity, remoteMessage.value.ciphertextMessage);
-      console.log(`UserModel... HANDLE Incoming Message... Decrypted... "${plainTextMessage}"`);
-
-      await this._osmClient.delMessage(remoteMessage.key);
-      console.log(`UserModel... HANDLE Incoming Message... Deleted:${remoteMessage.key}`);
-
-      if (plainTextMessage !== 'string') {
-        if ((plainTextMessage+'').indexOf('Unable to decrypt')) {
-
-          console.log('WAS UNABLE TO DECRYPT!!');
+      if (!this._signalClient.hasSession(remoteIdentity)) {
+        console.log(`UserModel... new session detected`);
+        
+        if (!await this.addFriend(remoteContactDetails, remoteIdentity)) {
+          console.log(`UserModel... ERROR! Unable to add friend... ${remoteIdentity}`);
+          return false;
         }
+      } else {
+        let contact: ISignalAddress = await this.getFriend(remoteIdentity);
+        let preKeyBundle = this.buildBundlePackage(remoteContactDetails);
+        await this.storeContact(contact, preKeyBundle);
       }
 
-      await this.storeMessage(remoteIdentity, 'me', plainTextMessage, remoteMessage.value.timestamp);
-      console.log(`UserModel... HANDLE Incoming Message... Stored Message"`);
+      try {
+        let plainTextMessage = await this._signalClient.decryptEncodedMessage(remoteIdentity, remoteMessage.value.ciphertextMessage);
+        console.log(`UserModel... HANDLE Incoming Message... Decrypted... "${plainTextMessage}"`);
 
-      return true;
-    } catch (err) {
-      console.log('Unable to decrypt ALICE >> BOB');
-      console.log(err.message ? err.message : err);
-      return false;
-    }
+        await this._osmClient.delMessage(remoteMessage.key);
+        console.log(`UserModel... HANDLE Incoming Message... Deleted:${remoteMessage.key}`);
+
+        let postClient = JSON.parse(JSON.stringify(this._signalClient));
+        console.log('POST DECRYPT SIGNAL CLIENT...', postClient.preKeys.length);
+
+        if (plainTextMessage !== 'string') {
+          if ((plainTextMessage+'').indexOf('Unable to decrypt') >= 0) {
+            console.log('WAS UNABLE TO DECRYPT!!');
+          }
+        }
+
+        await this.storeMessage(remoteIdentity, 'me', plainTextMessage, remoteMessage.value.timestamp);
+        console.log(`UserModel... HANDLE Incoming Message... Stored Message"`);
+
+        this.remotePreKeyBundles = this.remotePreKeyBundles-1;
+        return resolve(true);
+        // setTimeout(() => {
+        //   resolve(true)
+        // }, 100);
+      } catch (err) {
+        console.log('Unable to decrypt ALICE >> BOB');
+        console.log(err.message ? err.message : err);
+        return resolve(false);
+      }
+    });
   }
 
   async fetchMessages() {
@@ -769,16 +778,16 @@ export class UserModel extends Observable {
       let response: any = await this._osmClient.getMessages(this.saveData.registrationId, this.saveData.deviceId);
       if (response.status && response.status === 'ok') {
         console.log(`UserModel... FETCH Messages >> OK... Total:${response.messages.length}...`);
-        
         if (response.messages && response.messages.length > 0) {
-          let handleMessages = [];
-          response.messages.forEach((message: IRemoteMessage) => {
-            console.log('message', message);
-            handleMessages.push(this.handleNewMessage(message));
-          });
-
-          await Promise.all(handleMessages);
-          console.log(`UserModel... DOEN! Fetched Messages!`);
+          try {
+            for (let message of response.messages) {
+              console.log(`WORK MESSAGE: ${message.key}`);
+              await this.handleNewMessage(message);
+            }
+          } catch (err) {
+            console.log('Unable to parse one message, will likely try again later');
+            console.log(err.message ? err.message : err);
+          }
         }
       } else {
         alert('Unable to fetch messages from server. Please try again later.');
