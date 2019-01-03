@@ -54,5 +54,13 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
     </ScrollView>
   </GridLayout>
 
-  <page-router-outlet tkMainContent class="page page-content"></page-router-outlet>
+  <StackLayout tkMainContent>
+    <Label *ngIf="userAccount.osmConnected" class="no-connection">
+      <FormattedString>
+        <Span class="fa" text="&#xf12a;   "></Span>
+        <Span text="NOT CONNECTED"></Span>
+      </FormattedString>
+    </Label>
+    <page-router-outlet class="page page-content"></page-router-outlet>
+  </StackLayout>
 </RadSideDrawer>

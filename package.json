@@ -1,6 +1,6 @@
 {
   "name": "osm-client-native",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Obsidian Secure Messenger developed on NativeScript",
   "nativescript": {
     "id": "org.obsidianplatform.osm",
@@ -53,5 +53,6 @@
     "@angular/compiler-cli": "~7.1.0",
     "@ngtools/webpack": "~7.1.0"
   },
-  "readme": "NativeScript Application"
+  "readme": "NativeScript Application",
+  "author": "odinblockchain"
 }
