@@ -5,6 +5,14 @@
     font-family: "FontAwesome";
 }
 
+.far {
+  font-family: 'fa-regular-400';
+}
+
+.fas {
+  font-family: 'fa-solid-900';
+}
+
 .montserrat-extralight {
   font-family: "Montserrat-ExtraLight";
 }
@@ -239,7 +247,7 @@ RadSideDrawer {
 .sidedrawer {
   font-family: "Montserrat-Light";
 
-  .author {
+  .client-name {
     border-radius: 100%;
     vertical-align: top;
     height: 100;
@@ -250,7 +258,7 @@ RadSideDrawer {
 
     .innerLabel {
       color: #ffffff;
-      font-size: 18;
+      font-size: 24;
     }
   }
 
