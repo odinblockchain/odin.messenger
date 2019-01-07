@@ -60,9 +60,9 @@ export class AppComponent implements OnInit {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
       _this.userAccount = eventData.object['saveData'];
 
-      if (this._pingServer) {
-        clearInterval(this._pingServer);
-        this._pingServer = false;
+      if (_this._pingServer) {
+        clearInterval(_this._pingServer);
+        _this._pingServer = false;
       }
     });
 
@@ -79,12 +79,12 @@ export class AppComponent implements OnInit {
     this.userModel.on("IdentityRegistered", function(eventData) {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
 
-      if (!this._pingServer) {
+      if (!_this._pingServer) {
         clearInterval(this._pingServer);
-        this._pingServer = setInterval(() => {
-          if (this.userModel.osmConnected) {
+        _this._pingServer = setInterval(() => {
+          if (_this.userModel.osmConnected) {
             console.log(`[App] Ping Server...`);
-            this.userModel.fetchMessages();
+            _this.userModel.fetchMessages();
           }
         }, (15 * 1000));
       }
@@ -96,13 +96,13 @@ export class AppComponent implements OnInit {
 
     this.userModel.on("NoConnection", function(eventData) {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
-      this.connected = false;
-      clearInterval(this._pingServer);
+      _this.connected = false;
+      clearInterval(_this._pingServer);
     });
 
     this.userModel.on("Connected", function(eventData) {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
-      this.connected = true;
+      _this.connected = true;
     });
 
     this.router.events
@@ -113,21 +113,21 @@ export class AppComponent implements OnInit {
 
     applicationOn(suspendEvent, (args: ApplicationEventData) => {
       console.log("[App] Suspend OSM...");
-      if (this._pingServer) {
-        clearInterval(this._pingServer);
-        this._pingServer = false;
+      if (_this._pingServer) {
+        clearInterval(_this._pingServer);
+        _this._pingServer = false;
       }
     });
 
     applicationOn(resumeEvent, (args: ApplicationEventData) => {
       console.log("[App] Resume OSM...");
 
-      if (!this._pingServer) {
-        clearInterval(this._pingServer);
-        this._pingServer = setInterval(() => {
-          if (this.userModel.osmConnected) {
+      if (!_this._pingServer) {
+        clearInterval(_this._pingServer);
+        _this._pingServer = setInterval(() => {
+          if (_this.userModel.osmConnected) {
             console.log(`[App] Ping Server...`);
-            this.userModel.fetchMessages();
+            _this.userModel.fetchMessages();
           }
         }, (15 * 1000));
       }
