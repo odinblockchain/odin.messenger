@@ -120,7 +120,6 @@ export class CreateAccountComponent implements OnInit {
   }
 
   onRegisterAccount() {
-    console.log('ON REGISTER account');
     this.user.onRegisterUser();
   }
 
