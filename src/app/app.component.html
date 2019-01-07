@@ -7,7 +7,7 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
 
   <GridLayout tkDrawerContent rows="auto, *" class="sidedrawer sidedrawer-left">
     <StackLayout row="0" class="sidedrawer-header">
-      <FlexboxLayout class="author">
+      <FlexboxLayout class="client-name">
         <Label class="innerLabel bold" text="{{ userAccount.hashAccount[0] }}"></Label>
       </FlexboxLayout>
       <!-- <Label class="innerLabel bold" text="ME"></Label> -->
@@ -20,10 +20,17 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
         <StackLayout class="hr-light"></StackLayout>
         
         <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Messages" [class.selected]="isComponentSelected('/messages')" (tap)="onNavItemTap('/messages')">
-          <Label row="0" col="0" text="&#xf015;" class="fa sidedrawer-icon"></Label>
+          <Label row="0" col="0" text="&#xf086;" class="fa sidedrawer-icon"></Label>
           <Label row="0" col="1" text="Messages" class="m-l-20 sidedrawer-item"></Label>
         </GridLayout>
 
+        <StackLayout class="hr-light"></StackLayout>
+
+        <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Wallet" [class.selected]="isComponentSelected('/wallet')" (tap)="onNavItemTap('/wallet')">
+          <Label row="0" col="0" text="&#xf555;" class="fas sidedrawer-icon"></Label>
+          <Label row="0" col="1" text="Wallet" class="m-l-20 sidedrawer-item"></Label>
+        </GridLayout>
+        
         <StackLayout class="hr-light"></StackLayout>
 
         <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Settings" [class.selected]="isComponentSelected('/settings')" (tap)="onNavItemTap('/settings')">
