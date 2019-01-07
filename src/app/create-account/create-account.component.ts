@@ -9,6 +9,7 @@ import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { confirm } from "tns-core-modules/ui/dialogs";
 import Hashids from 'hashids';
+import * as utilityModule from "utils/utils";
 // import { AccountService, UserModel } from "../shared";
 
 import { AccountService } from '../shared/account.service';
@@ -186,5 +187,13 @@ export class CreateAccountComponent implements OnInit {
         console.log('Unable to copy to clipboard');
       }
     });
+  }
+
+  openTos() {
+    utilityModule.openUrl('https://obsidianplatform.com/wp-content/uploads/2019/01/OSM-Terms-of-Service.pdf');
+  }
+
+  openPrivacy() {
+    utilityModule.openUrl('https://obsidianplatform.com/wp-content/uploads/2019/01/OSM-Privacy-Policy.pdf');
   }
 }

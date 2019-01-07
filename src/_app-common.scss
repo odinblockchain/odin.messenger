@@ -53,9 +53,18 @@
   padding: 15;
 }
 
+.small {
+  font-size: 15;
+}
+
 .page {
   font-family: "Montserrat-Regular";
   color: $text-color;
+}
+
+.link {
+  color: #253140;
+  text-decoration: underline;
 }
 
 .form {
