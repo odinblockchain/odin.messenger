@@ -39,6 +39,14 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
         </GridLayout>
 
         <StackLayout class="hr-light"></StackLayout>
+
+        <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Help" [class.selected]="isComponentSelected('/help')" (tap)="onNavItemTap('/help')">
+          <Label row="0" col="0" text="&#xf129;" class="fas sidedrawer-icon"></Label>
+          <Label row="0" col="1" text="Help" class="m-l-20 sidedrawer-item"></Label>
+        </GridLayout>
+
+        <StackLayout class="hr-light"></StackLayout>
+        
       </StackLayout>
     </ScrollView>
 
