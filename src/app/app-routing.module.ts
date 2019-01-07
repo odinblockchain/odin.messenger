@@ -13,7 +13,8 @@ const routes: Routes = [
   { path: "messages", loadChildren: "~/app/messages/messages.module#MessagesModule" },
   { path: "contact-add", loadChildren: "~/app/contact-add/contact-add.module#ContactAddModule" },
   { path: "message", loadChildren: "~/app/message-view/message-view.module#MessageViewModule" },
-  { path: "wallet", loadChildren: "~/app/wallet/wallet.module#WalletModule" }
+  { path: "wallet", loadChildren: "~/app/wallet/wallet.module#WalletModule" },
+  { path: "help", loadChildren: "~/app/help/help.module#HelpModule" }
 ];
 
 @NgModule({
