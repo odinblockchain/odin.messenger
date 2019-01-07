@@ -1,8 +1,5 @@
 <ActionBar class="action-bar">
   <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
-  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
-      ios.position="left">
-  </ActionItem>
   <ActionItem text="Edit Contact" ios.position="popup" android.position="popup" (tap)="onEditContact()"></ActionItem>
   <ActionItem text="Delete Contact" ios.position="popup" android.position="popup" (tap)="onDeleteContact()"></ActionItem>
   <ActionItem text="Fetch Messages" ios.position="popup" android.position="popup" (tap)="onFetchMessages()"></ActionItem>
