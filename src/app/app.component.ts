@@ -59,6 +59,16 @@ export class AppComponent implements OnInit {
     this.userModel.on("ClearSession", function(eventData) {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
       _this.userAccount = eventData.object['saveData'];
+
+      if (this._pingServer) {
+        clearInterval(this._pingServer);
+        this._pingServer = false;
+      }
+    });
+
+    this.userModel.on("SaveDataPurged", function(eventData) {
+      console.log(`[UserModel Event] --- ${eventData.eventName}`);
+      _this.userAccount = eventData.object['saveData'];
     });
 
     this.userModel.on("SessionRestored", function(eventData) {
@@ -68,6 +78,16 @@ export class AppComponent implements OnInit {
 
     this.userModel.on("IdentityRegistered", function(eventData) {
       console.log(`[UserModel Event] --- ${eventData.eventName}`);
+
+      if (!this._pingServer) {
+        clearInterval(this._pingServer);
+        this._pingServer = setInterval(() => {
+          if (this.userModel.osmConnected) {
+            console.log(`[App] Ping Server...`);
+            this.userModel.fetchMessages();
+          }
+        }, (15 * 1000));
+      }
     });
 
     this.userModel.on("ContactsRestored", function(eventData) {

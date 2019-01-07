@@ -685,6 +685,7 @@ export class UserModel extends Observable {
       if (registeredKeys.count) {
         this.saveData.registered = true;
         this.remotePreKeyBundles = 100;
+        this.osmConnected = true;
         console.log('--- Account Creation Successful ---');
       }
 
@@ -878,21 +879,23 @@ export class UserModel extends Observable {
     await this.clearSaveData();
     this._router.navigate(["/splashscreen"], { clearHistory: true });
 
-    let eventData = {
+    this.notify({
       eventName: "ClearSession",
       object: this
-    };
-    this.notify(eventData);
+    });
 
     return true;
   }
 
   private async clearSaveData() {
-    this._store           = new StorageService();
-    this._signalClient    = null;
-    this.friends          = [];
-    this.messages         = [];
-    this.saveData         = {
+    this._store               = new StorageService();
+    this._signalClient        = null;
+    this.remotePreKeyBundles  = 0;
+    this.localPreKeyBundles   = 0;
+    this.friends              = [];
+    this.messages             = [];
+
+    this.saveData = {
       masterSeed: '',
       mnemonicPhrase: '',
       seedHex: '',
@@ -904,9 +907,12 @@ export class UserModel extends Observable {
       deviceId: 0,
       registered: false
     };
-    this.remotePreKeyBundles = 0;
-    this.localPreKeyBundles = 0;
     
+    this.notify({
+      eventName: "SaveDataPurged",
+      object: this
+    });
+
     return true;
   }
 }
