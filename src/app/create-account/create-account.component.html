@@ -124,6 +124,16 @@
         <Button *ngIf="activeStep === 4" class="btn btn-primary" text="Register" (tap)="onRegisterAccount()"></Button>
       </StackLayout>
     </ContentView>
+
+    <ContentView *ngIf="activeStep === 4" >
+      <StackLayout>
+        <Label class="small" textWrap="true" text="By registering you agree to the following:"></Label>
+        <GridLayout columns="auto, auto">
+          <Label marginRight="10" col="0" class="small link" text="Privacy Policy" (tap)="openPrivacy()"></Label>
+          <Label marginLeft="10" col="1" class="small link" text="Terms of Service" (tap)="openTos()"></Label>
+        </GridLayout>
+      </StackLayout>
+    </ContentView>
     
   </FlexboxLayout>
 </ScrollView>
