@@ -1,0 +1,13 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
+      ios.position="left">
+  </ActionItem>
+  <ActionItem text="Refresh Wallet" ios.position="popup" android.position="popup" (tap)="onRefreshWallet()"></ActionItem>
+  <Label class="action-bar--title" text="Wallet"></Label>
+</ActionBar>
+
+<GridLayout class="page page-content">
+  <Label class="page-icon fas" text="&#xf204;"></Label>
+  <Label class="page-placeholder" text="Wallet Module Coming Soon!"></Label>
+</GridLayout>
