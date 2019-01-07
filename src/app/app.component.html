@@ -5,7 +5,7 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
 -->
 <RadSideDrawer [drawerTransition]="sideDrawerTransition" [gesturesEnabled]="userAccount.registered">
 
-  <GridLayout tkDrawerContent rows="auto, *" class="sidedrawer sidedrawer-left">
+  <GridLayout tkDrawerContent rows="auto, *, 50" class="sidedrawer sidedrawer-left">
     <StackLayout row="0" class="sidedrawer-header">
       <FlexboxLayout class="client-name">
         <Label class="innerLabel bold" text="{{ userAccount.hashAccount[0] }}"></Label>
@@ -41,6 +41,10 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
         <StackLayout class="hr-light"></StackLayout>
       </StackLayout>
     </ScrollView>
+
+    <FlexboxLayout class="version" row="2">
+      <Label class="version--text" text="v0.1.15"></Label>
+    </FlexboxLayout>
   </GridLayout>
 
   <StackLayout tkMainContent>

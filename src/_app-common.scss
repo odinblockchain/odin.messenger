@@ -196,6 +196,17 @@ RadSideDrawer {
   background-color: #a6a450;
 }
 
+.version {
+  justify-content: center;
+  align-items: center;
+
+  .version--text {
+    color: #cccccc;
+    font-size: 12;
+    letter-spacing: 0.5;
+  }
+}
+
 .btn {
   height: 50;
   font-family: "Montserrat-SemiBold";
