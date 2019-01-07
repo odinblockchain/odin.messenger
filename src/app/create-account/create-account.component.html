@@ -107,7 +107,7 @@
     </ContentView>
 
     <ContentView class="actions">
-      <StackLayout>
+      <StackLayout class="actions">
         <!-- <Button class="btn btn-primary" text="Go" (tap)="user.onSaveMasterSeed('lol')"></Button> -->
 
         <Button *ngIf="activeStep === 1 && mnemonicSaved" class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(2)"></Button>

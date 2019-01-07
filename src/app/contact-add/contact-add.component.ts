@@ -32,7 +32,7 @@ export class ContactAddComponent implements OnInit {
     this.processing = false;
     this.contact = {
       displayName: 'Demo Account1',
-      identity: 'aQ1Vwq2X@ODN'
+      identity: ''
     };
   }
 
