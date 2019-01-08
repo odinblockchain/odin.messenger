@@ -1,78 +1,38 @@
-# NativeScript with Angular Drawer Navigation Template
+# OSM Client Native
 
-App templates help you jump start your native cross-platform apps with built-in UI elements and best practices. Save time writing boilerplate code over and over again when you create new apps.
+###### ALPHA v0.1.x
 
-App template featuring a RadSideDrawer component for navigation. The RadSideDrawer component is part of [Progress NativeScript UI](https://github.com/telerik/nativescript-ui-feedback).
+This is the new official Obsidian Secure Messenger (OSM). Originally produced by Claus Ehrenberg, the OSM has been redone completely from the ground up. The OSM is meant to provide a secure means of conversing with others without sacrificing your personal identity. The OSM is the first step towards truly private conversations.
 
-<img src="/tools/assets/phone-drawer-ios.png" height="400" /> <img src="/tools/assets/phone-drawer-android.png" height="400" />
+## Summary
 
-## Key Features
+This native client is built using both the NativeScript and Angular framework and is currently available for Android devices. The OSM relies on two plugins developed specifically for this application:
 
-- Side drawer navigation
-- Five blank pages hooked to the drawer navigation
-- Customizable theme
-- UX and development best practices
-- Easy to understand code
+#### nativescript-libsignal-protocol [›› source](https://github.com/Manbearpixel/nativescript-libsignal-protocol)
 
-## Quick Start
+This plugin provides a wrapper for the [Libsignal Protocol](https://github.com/signalapp/libsignal-protocol-java/) JAVA library developed by Open Whisper Systems and Signal. It exposes primary functionality of the JAVA library which is utilized in the OSM to secure conversations between two users.
 
-Execute the following command to create an app from this template:
+#### nativescript-electrumx-client [›› source](https://github.com/Manbearpixel/nativescript-electrumx-client)
 
-``` shell
-tns create my-drawer-ng --template tns-template-drawer-navigation-ng
-```
+This plugin allows communication between OSM and an ElectrumX instance to utilize core functionalities of a wallet. It currently supports connections via TCP.
 
-> Note: This command will create a new NativeScript app that uses the latest version of this template published to [npm](https://www.npmjs.com/package/tns-template-drawer-navigation-ng).
+## Development Setup
 
-If you want to create a new app that uses the source of the template from the `master` branch, you can execute the following:
+You'll need to ensure you have [NodeJS](https://nodejs.org/en/download/) installed as well as NPM, the Node Package Manager. NPM should come installed with any NodeJS installation.
 
-``` shell
-tns create my-drawer-ng --template https://github.com/NativeScript/template-drawer-navigation-ng
-```
+The rest of the development setup can be found by running through this [Quick Setup](https://docs.nativescript.org/angular/start/quick-setup) guide provided by NativeScript. It is recommended you also go through their [Full Setup](https://docs.nativescript.org/angular/start/quick-setup#full-setup) which is on the same page as it details how to get your local Android environment setup. This is required for running this application natively on your phone or through an Android Emulator.
 
-**NB:** Please, have in mind that the master branch may refer to dependencies that are not on NPM yet!
-
-## Walkthrough
-
-### Architecture
-
-The RadSideDrawer component is set up as an application starting point in:
-
-- `/app-component.ts` - sets up the side drawer content and defines a page router outlet for the pages.
-
-RadSideDrawer has the following component structure:
-
-- `RadSideDrawer` - The component to display a drawer on the page.
-- `tkDrawerContent` directive - Marks the component that will hold the drawer content.
-- `tkMainContent` directive - Marks the component that will hold the app main content.
-
-There are five blank components located in these folders:
-
-- `/browse`
-- `/featured`
-- `/home`
-- `/search`
-- `/settings`
-
-### Styling
-
-This template is set up to use SASS for styling. All classes used are based on the {N} core theme – consult the [documentation](https://docs.nativescript.org/angular/ui/theme.html#theme) to understand how to customize it. Check it out to see what classes you can use on which component.
-
-It has 4 global style files that are located at the root of the app folder:
-
-- `_app-variables.scss` - holds the global SASS variables that are imported on each component's styles.
-- `_app-common.scss` - the global common style sheet. These style rules are applied to both Android and iOS.
-- `app.android.scss` - the global Android style sheet. These style rules are applied to Android only.
-- `app.ios.scss` - the global iOS style sheet. These style rules are applied to iOS only.
+Once you've got your environment setup and `tns doctor` reports back all green, you can run the command `npm run build.android` to build the Android environment for OSM and then `tns run android` to run OSM on either an Android Emulator or connected Android Device. Make sure you have Developer Mode activated on your Android phone!
 
 ## Get Help
 
-The NativeScript framework has a vibrant community that can help when you run into problems.
+Most of the community can be found throughout Discord and Reddit. If you'd like to help contribute back to this project, ask a question about OSM, or offer a suggestion please reach out to us there!
 
-Try [joining the NativeScript community Slack](http://developer.telerik.com/wp-login.php?action=slack-invitation). The Slack channel is a great place to get help troubleshooting problems, as well as connect with other NativeScript developers.
+- https://discord.gg/X5rmND6
+- https://www.reddit.com/r/ObsidianProject
 
-If you have found an issue with this template, please report the problem in the [NativeScript repository](https://github.com/NativeScript/NativeScript/issues).
+For NativeScript related questions, their community is very vibrant and you're likely bound to find help through them! You can join their [community slack](http://developer.telerik.com/wp-login.php?action=slack-invitation), or by submitting a question on StackOverflow and adding the `#nativescript` tag.
 
 ## Contributing
 
-We love PRs, and accept them gladly. Feel free to propose changes and new ideas. We will review and discuss, so that they can be accepted and better integrated.
+We love PRs, and accept them gladly. Feel free to propose changes and new ideas. We will review and discuss, so that they can be accepted and better integrated. In order to create an official PR, please first clone this repository. Then on your instance, create a new `feature` or `bug` branch (depending on what you are working on) with a short descriptive name. Feel free to make a PR early on and start the conversation of what you're working on!

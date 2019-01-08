@@ -9,7 +9,21 @@
     }
   },
   "readme": "NativeScript Application",
-  "author": "odinblockchain",
+  "author": {
+    "name": "obsidianplatform",
+    "url": "https://obsidianplatform.com"
+  },
+  "contributors": [
+    {
+      "name": "Pixxlated",
+      "url": "https://twitter.com/pixxlated"
+    }
+  ],
+  "keywords": [
+    "obsidian",
+    "osm",
+    "obsidianplatform",
+  ],
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
