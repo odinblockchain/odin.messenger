@@ -35,7 +35,7 @@ import {
   remove,
   clear
 } from "tns-core-modules/application-settings";
-import { StorageService } from '~/app/shared/StorageService';
+import { StorageService } from '~/app/shared/storage.service';
 
 @Component({
 	moduleId: module.id,
