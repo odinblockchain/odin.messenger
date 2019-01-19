@@ -1,19 +1,19 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef  } from '@angular/core';
 import { PageRoute } from "nativescript-angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
-import { switchMap } from "rxjs/operators";
+// import { switchMap } from "rxjs/operators";
 import { ActivatedRoute } from '@angular/router';
 import { alert } from "tns-core-modules/ui/dialogs";
 import * as app from "application";
 
 import { ObservableArray, ChangedData } from "tns-core-modules/data/observable-array";
 
-import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
+// import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
 import { ListView } from 'ui/list-view';
 import { TextField } from 'ui/text-field';
-import { ScrollView } from 'ui/scroll-view';
+// import { ScrollView } from 'ui/scroll-view';
 import { Page } from "ui/page"
-import { UserModel } from '../shared/user.model';
+import { UserModel } from '~/app/shared/user.model';
 
 import { displayedEvent, exitEvent, launchEvent, lowMemoryEvent, 
   orientationChangedEvent, resumeEvent, suspendEvent, uncaughtErrorEvent, 

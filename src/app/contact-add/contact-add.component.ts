@@ -3,8 +3,8 @@ import { RouterExtensions } from "nativescript-angular/router";
 
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { alert } from "tns-core-modules/ui/dialogs";
-import { OSMClientService } from "../shared/osm-client.service";
-import { UserModel } from "../shared/user.model";
+import { OSMClientService } from "~/app/shared/osm-client.service";
+import { UserModel } from "~/app/shared/user.model";
 
 export interface IAddContact {
   identity: string;

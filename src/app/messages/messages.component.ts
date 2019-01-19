@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Page } from "ui/page";
-import { ScrollView, ScrollEventData } from 'tns-core-modules/ui/scroll-view';
-import { EventData } from "tns-core-modules/data/observable";
-import { View } from 'tns-core-modules/ui/core/view';
+// import { ScrollView, ScrollEventData } from 'tns-core-modules/ui/scroll-view';
+// import { EventData } from "tns-core-modules/data/observable";
+// import { View } from 'tns-core-modules/ui/core/view';
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import * as app from "tns-core-modules/application";
 import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { GridLayout } from "ui/layouts/grid-layout";
 import { RouterExtensions } from "nativescript-angular/router";
-import { UserModel, ISignalAddress } from '../shared/user.model';
+import { UserModel, ISignalAddress } from '~/app/shared/user.model';
 
 @Component({
 	moduleId: module.id,

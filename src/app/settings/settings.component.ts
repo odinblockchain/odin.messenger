@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import * as app from "tns-core-modules/application";
-import { UserModel } from '../shared/user.model';
-import { PreferencesService } from '../shared/preferences.service';
+import { UserModel } from '~/app/shared/user.model';
+import { PreferencesService } from '~/app/shared/preferences.service';
 import { alert, confirm } from "ui/dialogs";
 
 @Component({

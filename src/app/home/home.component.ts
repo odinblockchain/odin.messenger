@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { Page } from "ui/page";
 import { RouterExtensions } from "nativescript-angular/router";
-import { UserModel } from "../shared/user.model";
+import { UserModel } from "~/app/shared/user.model";
 
 @Component({
     selector: "Splashscreen",

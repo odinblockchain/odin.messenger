@@ -4,19 +4,19 @@ import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from 
 import { StorageService } from './index';
 import { OSMClientService } from './osm-client.service';
 import { RouterExtensions } from "nativescript-angular/router";
-import { setInterval, clearInterval } from "tns-core-modules/timer";
+// import { setInterval, clearInterval } from "tns-core-modules/timer";
 import { ObservableArray, ChangedData } from "tns-core-modules/data/observable-array";
 
-import { Buffer } from 'buffer';
-import { Obsidian } from '../bundle.obsidian.js';
-import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
-import { confirm } from "tns-core-modules/ui/dialogs";
+// import { Buffer } from 'buffer';
+import { Obsidian } from '~/app/bundle.obsidian.js';
+// import * as Clipboard from 'nativescript-clipboard';
+// import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
+// import { confirm } from "tns-core-modules/ui/dialogs";
 import Hashids from 'hashids';
 import { alert } from "ui/dialogs";
 
 import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
-import { timestamp } from "rxjs/operators";
+// import { timestamp } from "rxjs/operators";
 
 export class UserSaveData {
   masterSeed: string;

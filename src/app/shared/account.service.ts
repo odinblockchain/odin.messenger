@@ -2,13 +2,13 @@ import { Injectable } from "@angular/core";
 import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
 
 import { Buffer } from 'buffer';
-import { Obsidian } from '../bundle.obsidian.js';
-import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
-import { confirm } from "tns-core-modules/ui/dialogs";
+import { Obsidian } from '~/app/bundle.obsidian.js';
+// import * as Clipboard from 'nativescript-clipboard';
+// import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
+// import { confirm } from "tns-core-modules/ui/dialogs";
 import Hashids from 'hashids';
 
-import { StorageService } from './storage.service';
+// import { StorageService } from './storage.service';
 
 export class User {
   mnemonicPhrase: string;
