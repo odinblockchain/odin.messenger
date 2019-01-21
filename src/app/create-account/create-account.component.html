@@ -25,9 +25,11 @@
 
     <ContentView class="actions">
       <StackLayout>
+        <Button class="btn btn-outline" text="Copy Identiy to Clipboard" (tap)="onCopyText(user.saveData.identity)"></Button>
         <Button class="btn btn-primary" text="Go to Messages" [nsRouterLink]="['/messages']" clearHistory="true"></Button>
       </StackLayout>
     </ContentView>
+    
   </FlexboxLayout>
 
   <FlexboxLayout class="view" *ngIf="!user.saveData.registered">

@@ -119,18 +119,27 @@ export class MessageViewComponent implements OnInit {
    * @param message Plaintext message to encrypt, encode, and push forward
    */
   async chat(message: string) {
-    try {
-      if (await this._user.sendMessage(this.contactIdentity, message)) {
-        this.scroll(this.list.items.length);
-        this.textfield.text = '';
-      } else {
-        console.log(`MessageView... Something went wrong while delivering...`);
+
+    if(message.length == 0) {
+      // Empty messages should not be sent. 
+      alert('Make sure you have entered a message');
+    } else {
+      try {
+        if (await this._user.sendMessage(this.contactIdentity, message)) {
+          this.scroll(this.list.items.length);
+          this.textfield.text = '';
+          this.textfield.dismissSoftInput(); // Hide Keyboard. 
+        } else {
+          console.log(`MessageView... Something went wrong while delivering...`);
+        }
+      } catch (err) {
+        console.log(`MessageView... Something unexpected happened while delivering...`);
+        console.log(err.message ? err.message : err);
+        alert('Something unexpected occurred while delivering your message, please try again.');
       }
-    } catch (err) {
-      console.log(`MessageView... Something unexpected happened while delivering...`);
-      console.log(err.message ? err.message : err);
-      alert('Something unexpected occurred while delivering your message, please try again.');
+
     }
+
   }
 
   // ***
