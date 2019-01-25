@@ -22,18 +22,18 @@ export class HelpComponent implements OnInit {
   }
 
   onTapWebsite() {
-    utilityModule.openUrl('https://obsidianplatform.com/');
+    utilityModule.openUrl('https://odinblockchain.org/');
   }
 
   onTapTwitter() {
-    utilityModule.openUrl('https://twitter.com/obsidiancrypto');
+    utilityModule.openUrl('https://twitter.com/odinblockchain');
   }
 
   onTapDiscord() {
-    utilityModule.openUrl('https://discord.gg/Wyagm4f');
+    utilityModule.openUrl('https://discord.me/odinblockchain');
   }
 
   onTapReddit() {
-    utilityModule.openUrl('https://www.reddit.com/r/ObsidianProject');
+    utilityModule.openUrl('https://twitter.com/odinblockchain');
   }
 }

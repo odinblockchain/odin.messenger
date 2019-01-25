@@ -18,6 +18,6 @@ export class SplashscreenComponent implements OnInit {
   }
 
   onImport(): void {
-    alert('OSM Account importing is not available at this time.');
+    alert('ODIN Account importing is not available at this time.');
   }
 }

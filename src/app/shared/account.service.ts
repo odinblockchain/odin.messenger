@@ -3,12 +3,7 @@ import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from 
 
 import { Buffer } from 'buffer';
 import { Obsidian } from '~/app/bundle.obsidian.js';
-// import * as Clipboard from 'nativescript-clipboard';
-// import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
-// import { confirm } from "tns-core-modules/ui/dialogs";
 import Hashids from 'hashids';
-
-// import { StorageService } from './storage.service';
 
 export class User {
   mnemonicPhrase: string;
@@ -28,10 +23,6 @@ import {
   remove,
   clear
 } from "tns-core-modules/application-settings";
-
-// import { User } from "./user.model";
-// import { BackendService } from "./backend.service";
-// import { DatabaseService } from "../database/sqlite.service";
 
 @Injectable()
 export class AccountService {

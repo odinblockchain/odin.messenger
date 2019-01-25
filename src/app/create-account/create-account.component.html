@@ -1,14 +1,14 @@
 <GridLayout class="page" *ngIf="user.saveData.registered" cols="*" rows="50, *, auto">
 
   <FlexLayout class="header-wrap" row="0">
-    <Label class="header-bar" textWrap="true" text="OSM Account Active"></Label>
+    <Label class="header-bar" textWrap="true" text="ODIN Account Active"></Label>
   </FlexLayout>
     
   <ScrollView row="1">
     <StackLayout>
       <ContentView class="card">
         <StackLayout class="card-content">
-          <Label class="body" textWrap="true" text="Your OSM Identity has been registered!"></Label>
+          <Label class="body" textWrap="true" text="Your ODIN Identity has been registered!"></Label>
           <Label class="body" textWrap="true">
             <FormattedString>
               <Span text="Your public identity is "></Span>
@@ -23,7 +23,7 @@
       <ContentView class="card">
         <StackLayout class="card-content">
           <Label class="body" textWrap="true" text="All messages are end-to-end encrypted and stored in a secure location. Upon receipt of a message, the original package will be purged."></Label>
-          <Label class="body last" textWrap="true" text="Please remember this is an early Alpha release of the OSM. You may experience service distruption and/or drastic changes. Thank you for helping test our secure messanger."></Label>
+          <Label class="body last" textWrap="true" text="Please remember this is an early Alpha release of the ODIN Messenger. You may experience service distruption and/or drastic changes. Thank you for helping test our secure messanger."></Label>
         </StackLayout>
       </ContentView>
 
@@ -40,7 +40,7 @@
 <GridLayout class="page" *ngIf="!user.saveData.registered" cols="*" rows="50, *, auto, auto">
 
   <FlexLayout class="header-wrap" row="0">
-    <Label class="header-bar" textWrap="true" text="Create OSM Account"></Label>
+    <Label class="header-bar" textWrap="true" text="Create ODIN Account"></Label>
   </FlexLayout>
   
   <ScrollView row="1" *ngIf="activeStep === 1">
@@ -49,7 +49,7 @@
         <StackLayout class="card-content">
           <Label class="h2" textWrap="true" text="Generate Master Seed"></Label>
           <Label class="body" textWrap="true" text="To start with your account creation you'll need to generate a &#34;Master Seed&#34;."></Label>
-          <Label class="body last" textWrap="true" text="This seed will be used to create a unique Obsidian wallet as well as a username for the messenger. You'll be able to back up and restore your account through this seed.&nbsp;"></Label>
+          <Label class="body last" textWrap="true" text="This seed will be used to create a unique ODIN wallet as well as a username for the messenger. You'll be able to back up and restore your account through this seed.&nbsp;"></Label>
         </StackLayout>
       </ContentView>
 
@@ -120,14 +120,14 @@
 
       <ContentView class="card">
         <StackLayout class="card-content">
-          <Label class="h2" textWrap="true" text="Register OSM Account"></Label>
+          <Label class="h2" textWrap="true" text="Register ODIN Account"></Label>
           <Label class="body" textWrap="true" text="Now that you have generated a unique master seed and backed up your Mnemonic Phrase you can now register with your unique username."></Label>
         </StackLayout>
       </ContentView>
 
       <ContentView class="card">
         <StackLayout class="card-content">
-          <Label class="h2" textWrap="true" text="OSM Identity"></Label>
+          <Label class="h2" textWrap="true" text="ODIN Identity"></Label>
           <Label class="body last" [text]="user.saveData.hashAccount"></Label>
         </StackLayout>
       </ContentView>

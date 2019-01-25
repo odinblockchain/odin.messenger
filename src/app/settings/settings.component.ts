@@ -37,9 +37,9 @@ export class SettingsComponent implements OnInit {
   }
 
   async onClearSession() {
-    let shouldClear = await confirm("Are you sure you wish to clear your local OSM session?")
+    let shouldClear = await confirm("Are you sure you wish to clear your local ODIN session?")
     if (shouldClear) {
-      console.log('>> Working to clear OSM session');
+      console.log('>> Working to clear ODIN session');
       await this._user.clearSession();
     }
   }
@@ -48,17 +48,17 @@ export class SettingsComponent implements OnInit {
     console.log('>> Working to publush tokens');
     try {
       if (await this._user.onPublishNewPrekeys()) {
-        alert('Successfully pushed new batch of one-time use Tokens to OSM-Server.');
+        alert('Successfully pushed new batch of one-time use Tokens to ODIN-Server.');
       } else {
-        alert('Something went wrong while publishing a new batch of one-time use Tokens to OSM-Server. Please check your configurations and try again.');
+        alert('Something went wrong while publishing a new batch of one-time use Tokens to ODIN-Server. Please check your configurations and try again.');
       }
     } catch (err) {
       console.log('Caught unexpected error while publishing tokens...');
       console.log(err.message ? err.message : err);
       if (err.message === 'Max_PreKeys') {
-        alert("You've hit the limit for the maximum amount of one-time use Public Tokens to store on the OSM-Server. Please wait some time before attempting to add again.");
+        alert("You've hit the limit for the maximum amount of one-time use Public Tokens to store on the ODIN-Server. Please wait some time before attempting to add again.");
       } else {
-        alert('Something unexpected occurred while publishing a new batch of one-time use Public Tokens to OSM-Server. Please check your configurations and try again.');
+        alert('Something unexpected occurred while publishing a new batch of one-time use Public Tokens to ODIN-Server. Please check your configurations and try again.');
       }
     }
   }

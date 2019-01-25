@@ -38,9 +38,9 @@ export class ContactAddComponent implements OnInit {
 
   async onAddContact(contact: IAddContact) {
     if (this.contact.identity === '') {
-      return alert("An OSM Identity is required to add another user.");
+      return alert("An ODIN Identity is required to add another user.");
     } else if (this.contact.identity.indexOf('@') < 0) {
-      return alert("You've entered an invalid OSM Identity, please check and try again.");
+      return alert("You've entered an invalid ODIN Identity, please check and try again.");
     }
     
     this.processing = true;

@@ -2,39 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, Page, PropertyChangeData } from "tns-core-modules/ui/page/page";
 import Seeder from '~/app/Seeder'
 import SecureRandom from '~/app/SecureRandom'
-// import { ODIN } from '../walletbundle2'
-import { Buffer } from 'buffer';
-// import { Obsidian } from 'bundle.obsidian.js';
 import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { confirm } from "tns-core-modules/ui/dialogs";
-import Hashids from 'hashids';
 import * as utilityModule from "utils/utils";
-// import { AccountService, UserModel } from "../shared";
 
 import { AccountService } from '~/app/shared/account.service';
 import { UserModel } from '~/app/shared/user.model';
 
-// import * as randomBytes from 'nativescript-randombytes';
-// import randomBytes from '../lib/randombytes-native';
-// import * as randomBytes from 'nativescript-randombytes';
-// import * as randomBytes from 'nativescript-randombytes';
-// import * as bcrypt from '../lib/bcrypt';
-
 import { isAndroid, isIOS, device, screen } from "tns-core-modules/platform";
 
 import { GestureTypes, TouchGestureEventData } from "tns-core-modules/ui/gestures";
-import {
-  getBoolean,
-  setBoolean,
-  getNumber,
-  setNumber,
-  getString,
-  setString,
-  hasKey,
-  remove,
-  clear
-} from "tns-core-modules/application-settings";
 import { StorageService } from '~/app/shared/storage.service';
 
 @Component({
@@ -190,10 +168,10 @@ export class CreateAccountComponent implements OnInit {
   }
 
   openTos() {
-    utilityModule.openUrl('https://obsidianplatform.com/wp-content/uploads/2019/01/OSM-Terms-of-Service.pdf');
+    utilityModule.openUrl('https://odinblockchain.org/messenger-terms-of-service');
   }
 
   openPrivacy() {
-    utilityModule.openUrl('https://obsidianplatform.com/wp-content/uploads/2019/01/OSM-Privacy-Policy.pdf');
+    utilityModule.openUrl('https://odinblockchain.org/messenger-privacy-policy');
   }
 }

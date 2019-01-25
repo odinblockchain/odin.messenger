@@ -1,17 +1,17 @@
 {
-  "name": "osm-client-native",
-  "version": "0.1.17",
-  "description": "Obsidian Secure Messenger developed on NativeScript",
+  "name": "odin.messenger.client",
+  "version": "0.2.0",
+  "description": "ODIN Messenger developed on NativeScript",
   "nativescript": {
-    "id": "org.obsidianplatform.osm",
+    "id": "org.odinblockchain.messenger",
     "tns-android": {
       "version": "5.1.0"
     }
   },
   "readme": "NativeScript Application",
   "author": {
-    "name": "obsidianplatform",
-    "url": "https://obsidianplatform.com"
+    "name": "odinblockchain",
+    "url": "https://odinblockchain.org"
   },
   "contributors": [
     {
@@ -20,23 +20,34 @@
     }
   ],
   "keywords": [
-    "obsidian",
+    "odin",
+    "blockchain",
     "osm",
-    "obsidianplatform"
+    "odinblockchain",
+    "messenger",
+    "secure",
+    "signal",
+    "telegram",
+    "whatsapp",
+    "private",
+    "bitcoin",
+    "wallet"
   ],
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/obsidianplatform/osm-client-native"
+    "url": "https://github.com/odinblockchain/odin.messenger"
   },
   "bugs": {
-    "url": "https://github.com/obsidianplatform/osm-client-native/issues"
+    "url": "https://github.com/odinblockchain/odin.messenger/issues"
   },
-  "homepage": "https://github.com/obsidianplatform/osm-client-native#readme",
+  "homepage": "https://github.com/odinblockchain/odin.messenger#readme",
   "scripts": {
     "lint": "tslint \"src/**/*.ts\"",
     "clean": "rm -rf node_modules platforms hooks && npm i",
-    "build.android": "tns platform add android && tns build android"
+    "build.android": "npm i && tns platform add android && tns build android",
+    "remove.android": "tns platform remove android",
+    "cleanup": "rm -rf hooks/ node_modules/ platforms/"
   },
   "dependencies": {
     "@angular/animations": "~7.0.0",

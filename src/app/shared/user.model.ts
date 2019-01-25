@@ -1,22 +1,15 @@
 import { Injectable } from "@angular/core";
 import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
-// import {Router} from "@angular/router";
 import { StorageService } from './index';
 import { OSMClientService } from './osm-client.service';
 import { RouterExtensions } from "nativescript-angular/router";
-// import { setInterval, clearInterval } from "tns-core-modules/timer";
 import { ObservableArray, ChangedData } from "tns-core-modules/data/observable-array";
 
-// import { Buffer } from 'buffer';
 import { Obsidian } from '~/app/bundle.obsidian.js';
-// import * as Clipboard from 'nativescript-clipboard';
-// import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
-// import { confirm } from "tns-core-modules/ui/dialogs";
 import Hashids from 'hashids';
 import { alert } from "ui/dialogs";
 
 import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
-// import { timestamp } from "rxjs/operators";
 
 export class UserSaveData {
   masterSeed: string;
@@ -266,7 +259,7 @@ export class UserModel extends Observable {
         if (storedPreKeys.count <= 20) {
           alert({
             title: "Low Token Count",
-            message: `The OSM-Server currently contains ${storedPreKeys.count} public single-use communication tokens. To ensure there is no distruption in receiving messages from other users, please visit the Settings page to generate more.`,
+            message: `The ODIN-Server currently contains ${storedPreKeys.count} public single-use communication tokens. To ensure there is no distruption in receiving messages from other users, please visit the Settings page to generate more.`,
             okButtonText: "Ok"
           });
         }
@@ -279,9 +272,9 @@ export class UserModel extends Observable {
       console.log('Unable to check registration status');
       console.log(err.message ? err.message : err);
       if (err.message.toLowerCase() === 'not_registered') {
-        alert('Your OSM Identity could not be found on the server. There may have been an issue while registering, or you have not completed that step yet. Please try and Create your Account again.');
+        alert('Your ODIN Identity could not be found on the server. There may have been an issue while registering, or you have not completed that step yet. Please try and Create your Account again.');
       } else {
-        alert('There was an issue communicating with the OSM-Server. Please try again later or check your network status.');
+        alert('There was an issue communicating with the ODIN-Server. Please try again later or check your network status.');
 
         this.notify({
           eventName: "NoConnection",
@@ -371,7 +364,7 @@ export class UserModel extends Observable {
       console.log(`UserModel... UNABLE to restore client`);
       console.log(err.message ? err.message : err);
       
-      alert("We were unable to restore your previous OSM Session. We'll generate a new one for you and reuse your pre-existing OSM Identity. There may be some data corruption due to this.");
+      alert("We were unable to restore your previous ODIN Session. We'll generate a new one for you and reuse your pre-existing ODIN Identity. There may be some data corruption due to this.");
 
       await this.createSignalClient();
     }
@@ -512,7 +505,7 @@ export class UserModel extends Observable {
       if (response.status && response.status === 'ok') {
         return await this.storeMessage('me', contact.name, message);
       } else {
-        console.log(`UserModel... ERROR! Bad response from OSM-Server for sending message`);
+        console.log(`UserModel... ERROR! Bad response from ODIN-Server for sending message`);
         console.log(response);
 
         alert('Unable to deliver message to recipient. Please try again later.');
@@ -774,7 +767,7 @@ export class UserModel extends Observable {
 
   async fetchMessages() {
     try {
-      console.log(`UserModel... FETCH Messages from OSM-Server`);
+      console.log(`UserModel... FETCH Messages from ODIN-Server`);
 
       let response: any = await this._osmClient.getMessages(this.saveData.registrationId, this.saveData.deviceId);
       if (response.status && response.status === 'ok') {
