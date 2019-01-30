@@ -1,15 +1,61 @@
 @import '~/app-variables';
 
-.page {
-  align-items: center;
-  flex-direction: column;
+// .page {
+//   align-items: center;
+//   flex-direction: column;
+// }
+
+// .form {
+//   margin-left: 30;
+//   margin-right: 30;
+//   flex-grow: 2;
+//   vertical-align: middle;
+// }
+
+@keyframes starExpansion {
+  0% { transform: scale(1) }
+  50% { transform: scale(1.2) }
+  100% { transform: scale(1) }
 }
 
-.form {
-  margin-left: 30;
-  margin-right: 30;
-  flex-grow: 2;
-  vertical-align: middle;
+.bg-stars {
+  opacity: 0.4;
+  animation-name: starExpansion;
+  animation-duration: 10s;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+.odin-logo {
+  background-color: red;
+}
+
+.page {
+  align-items: center;
+}
+
+.inner {
+  align-items: center;
+}
+
+.cta {
+  width: 80%;
+  overflow: visible;
+
+  .line {
+    z-index: 100;
+  }
+
+  Button {
+    margin: 0;
+    width: 100%;
+    margin-bottom: 30;
+
+    &.last {
+      margin-bottom: 0;
+    }
+  }
 }
 
 .logo {
@@ -18,15 +64,14 @@
   font-weight: bold;
 }
 
+.h1 {
+  text-align: center;
+  font-size: 30;
+}
 
-.sub-header {
-  horizontal-align: center;
+.h3 {
+  text-align: center;
   font-size: 16;
   font-weight: normal;
   margin-bottom: 40;
-  text-align: right;
-}
-
-.btn {
-  margin-top: 30;
 }

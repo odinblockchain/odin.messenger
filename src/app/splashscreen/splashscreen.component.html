@@ -1,18 +1,27 @@
-<FlexboxLayout class="page">
-  <StackLayout class="form u-w100">
-    <Image class="logo" src="~/app/images/splashscreen-logo--websafe.png" ></Image>
+<AbsoluteLayout class="page">
+  <StackLayout class="line" top="360" left="-550" height="2" width="600"></StackLayout>
+  <StackLayout class="line" top="440" left="300" height="1" width="600"></StackLayout>
+  <Image class="bg-stars" width="250" height="250" top="10" left="20" src="res://odin_constellation_white"></Image>
 
-    <Label class="header" text="ODIN Messenger"></Label>
-    <Label class="sub-header">
-      <FormattedString>
-        <Span text="Alpha Release (v0.2.x)"></Span>
-      </FormattedString>
-    </Label>
+  <FlexboxLayout class="inner" width="100%" height="100%">
+    <StackLayout class="u-w100">
+      <Image class="logo" src="~/app/images/splashscreen-logo--websafe.png" ></Image>
+  
+      <Label class="h1" text="ODIN Messenger"></Label>
+      <Label class="h3">
+        <FormattedString>
+          <Span text="Alpha Release (v0.2.x)"></Span>
+        </FormattedString>
+      </Label>
 
-    <StackLayout class="u-w80">
-      <Button text="Import Account" class="btn btn-primary" (tap)="onImport()" pageTransition="slideRight"></Button>
+      <StackLayout class="cta">
+        <Button #createAccountBtn text="Create Account" class="btn btn-primary" [nsRouterLink]="['/create']" pageTransition="slideLeft"></Button>
 
-      <Button text="Create Account" class="btn btn-primary" [nsRouterLink]="['/create']" pageTransition="slideLeft"></Button>
+        <Button text="Import Account" class="btn btn-outline fill last" (tap)="onImport()" pageTransition="slideRight"></Button>
+      </StackLayout>
     </StackLayout>
-  </StackLayout>
-</FlexboxLayout>
+  </FlexboxLayout>
+</AbsoluteLayout>
+
+
+
