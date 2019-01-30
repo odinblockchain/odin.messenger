@@ -16,7 +16,7 @@
 
   .contact--wrap {
     border-bottom-width: 2;
-    border-bottom-color: #eeeeee;
+    border-bottom-color: $hr-light-color;
     border-bottom-style: solid;
     padding-bottom: 15;
     padding-top: 15;
@@ -44,12 +44,14 @@
   }
 
   .contact--name {
-    color: #333333;
+    color: $app-text-color;
     font-size: 16;
+    margin-bottom: 5;
   }
 
   .contact--meta {
-    color: #666666;
+    color: darken($app-text-color, 10);
+    opacity: 0.6;
   }
 
   .contact--action {
@@ -64,6 +66,6 @@
   }
 
   &.-active {
-    background-color: #f1f1f1;
+    background-color: $dark-03;
   }
 }
