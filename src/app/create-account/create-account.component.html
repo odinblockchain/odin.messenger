@@ -1,4 +1,4 @@
-<GridLayout class="page" *ngIf="user.saveData.registered" cols="*" rows="50, *, auto">
+<GridLayout class="page" *ngIf="user.saveData.registered" cols="*" rows="60, *, auto">
 
   <FlexLayout class="header-wrap" row="0">
     <Label class="header-bar" textWrap="true" text="ODIN Account Active"></Label>
@@ -37,10 +37,14 @@
   </ScrollView>
 </GridLayout>
 
-<GridLayout class="page" *ngIf="!user.saveData.registered" cols="*" rows="50, *, auto, auto">
+<GridLayout class="page" *ngIf="!user.saveData.registered" cols="*" rows="60, *, auto, auto">
 
   <FlexLayout class="header-wrap" row="0">
     <Label class="header-bar" textWrap="true" text="Create ODIN Account"></Label>
+    <!-- <FlexboxLayout class="waves">
+      <Image height="10" width="100" src="res://odin_waves_white"></Image>
+      <Image marginLeft="-20" height="10" width="100" src="res://odin_waves_white"></Image>
+    </FlexboxLayout> -->
   </FlexLayout>
   
   <ScrollView row="1" *ngIf="activeStep === 1">
@@ -57,17 +61,22 @@
         <StackLayout class="card-content">
           <Label *ngIf="!mnemonicSaved" class="h2" textWrap="true" text="{{ seeder.get('seedCount') }} / {{ seeder.get('seedLimit') }}"></Label>
           
-          <StackLayout *ngIf="!seeder.get('poolBusy')" class="body">
-            <Label textWrap="true" text="Move your finger around to begin generating."></Label>>
-            <Label textWrap="true" class="fa u-font-size-xl u-text-align-center" text="&#xf0a6;"></Label>
+          <StackLayout  *ngIf="!seeder.get('poolBusy')">
+            <Label textWrap="true" class="body" text="Move your finger around to begin generating."></Label>
+            <AbsoluteLayout padding="10">
+              <Image horizontalAlignment="center" class="swipeFinger" width="50" height="60" src="res://swipe_finger_white"></Image>
+            </AbsoluteLayout>
           </StackLayout>
-  
+          
           <Label *ngIf="!mnemonicSaved && seeder.get('poolBusy')" class="seedPool" textWrap="true" text="{{ seeder.get('poolHex') }}"></Label>
-          <Label *ngIf="mnemonicSaved" class="fa u-font-size-xl u-text-align-center" textWrap="true" text="&#xf00c;"></Label>
+
+          <Label *ngIf="mnemonicSaved" textWrap="true" text="Master seed generated and stored."></Label>
         </StackLayout>
       </ContentView>
 
-      <Button *ngIf="mnemonicSaved" class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(2)"></Button>
+      <StackLayout class="actions">
+        <Button *ngIf="mnemonicSaved" class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(2)"></Button>
+      </StackLayout>
     </StackLayout>
   </ScrollView>
 
@@ -97,7 +106,7 @@
           <Label class="h2" textWrap="true" text="Verify your Mnemonic Phrase"></Label>
           <Label class="body" textWrap="true" text="Before we create your account please ensure you have backed up the correct Mnemonic Phrase."></Label>
           <Label class="body" textWrap="true" text="If you don't wish to verify you will assume the risk of losing access to your account and/or funds in the future."></Label>
-          <Label class="body last" textWrap="true" text="Accounts cannot be restored and your identity information are only stored within your device."></Label>
+          <Label class="body last" textWrap="true" text="Lost accounts or funds cannot be restored and your identity information is only locally stored within your device."></Label>
         </StackLayout>
       </ContentView>
 
@@ -132,7 +141,9 @@
         </StackLayout>
       </ContentView>
 
-      <Button class="btn btn-primary" text="Register" (tap)="onRegisterAccount()"></Button>
+      <StackLayout class="actions">
+        <Button class="btn btn-primary" text="Register" (tap)="onRegisterAccount()"></Button>
+      </StackLayout>
 
       <StackLayout class="agreements-wrap">
         <Label class="small" textWrap="true" text="By registering you agree to the following:"></Label>
