@@ -11,13 +11,27 @@ import { Observable, Page, PropertyChangeData } from "tns-core-modules/ui/page/p
 import { registerElement } from 'nativescript-angular/element-registry';
 import { setInterval, clearInterval } from "tns-core-modules/timer";
 import { interval } from "rxjs";
+import { isAndroid, isIOS, device, screen } from "tns-core-modules/platform";
 
 registerElement('Fab', () => require('nativescript-floatingactionbutton').Fab);
 
 // import { app } from 'application';
 // import * as applicationModule from "tns-core-modules/application";
 
-import {resumeEvent, suspendEvent, ApplicationEventData, on as applicationOn, run as applicationRun } from "tns-core-modules/application";
+import {
+  AndroidApplication,
+  uncaughtErrorEvent,
+  launchEvent,
+  displayedEvent,
+  exitEvent,
+  resumeEvent,
+  suspendEvent,
+  hasListeners,
+  ApplicationEventData,
+  on as applicationOn,
+  off as applicationOff,
+  run as applicationRun
+} from "tns-core-modules/application";
 
 declare var android: any;
 
@@ -111,27 +125,79 @@ export class AppComponent implements OnInit {
 
     this.adjustStatusBar();
 
-    applicationOn(suspendEvent, (args: ApplicationEventData) => {
-      console.log("[App] Suspend OSM...");
-      if (_this._pingServer) {
-        clearInterval(_this._pingServer);
-        _this._pingServer = false;
-      }
+    console.log('EVENTS', {
+      suspend: hasListeners(suspendEvent),
+      resume: hasListeners(resumeEvent)
     });
 
-    applicationOn(resumeEvent, (args: ApplicationEventData) => {
-      console.log("[App] Resume OSM...");
+    // if (!hasListeners(launchEvent)) applicationOn(launchEvent, this.onApplicationLaunch, this);
+    // if (!hasListeners(displayedEvent)) applicationOn(displayedEvent, this.onApplicationReady, this);
+    if (!hasListeners(suspendEvent)) applicationOn(suspendEvent, this.onApplicationSuspend, this);
+    if (!hasListeners(resumeEvent)) applicationOn(resumeEvent, this.onApplicationResume, this);
+    if (!hasListeners(uncaughtErrorEvent)) applicationOn(uncaughtErrorEvent, this.onApplicationError, this);
+    
+    if (isAndroid) {
+      console.log('...android');
+      
+      applicationOn(AndroidApplication.activityCreatedEvent, (args) => {
+        console.log('[App] CREATED');
+      });
 
-      if (!_this._pingServer) {
-        clearInterval(_this._pingServer);
-        _this._pingServer = setInterval(() => {
-          if (_this.userModel.osmConnected) {
-            console.log(`[App] Ping Server...`);
-            _this.userModel.fetchMessages();
-          }
-        }, (15 * 1000));
-      }
-    });
+      applicationOn(AndroidApplication.activityDestroyedEvent, (args) => {
+        console.log('[App] DESTROYED');
+      });
+
+      applicationOn(AndroidApplication.activityStartedEvent, (args) => {
+        console.log('[App] STARTED');
+      });
+
+      applicationOn(AndroidApplication.saveActivityStateEvent, (args) => {
+        console.log('[App] SAVE THIS');
+      });
+
+      applicationOn(AndroidApplication.saveActivityStateEvent, (args) => {
+        console.log('[App] SAVE THIS');
+      });
+    }
+  }
+
+  onApplicationLaunch(args: ApplicationEventData) {
+    console.log('[App] Launch ODIN...');
+  }
+
+  onApplicationError(args: ApplicationEventData) {
+    console.log('[App] Error ODIN...', args);
+  }
+
+  onApplicationReady(args: ApplicationEventData) {
+    console.log('[App] Ready ODIN...');
+  }
+
+  onApplicationExit(args: ApplicationEventData) {
+    console.log('[App] Exit ODIN...');
+  }
+
+  onApplicationResume(args: ApplicationEventData) {
+    console.log("[App] Resume ODIN...");
+
+    if (!this._pingServer) {
+      clearInterval(this._pingServer);
+      this._pingServer = setInterval(() => {
+        if (this.userModel.osmConnected) {
+          console.log(`[App] Ping Server...`);
+          this.userModel.fetchMessages();
+        }
+      }, (15 * 1000));
+    }
+  }
+
+  onApplicationSuspend(args: ApplicationEventData) {
+    console.log("[App] Suspend ODIN...");
+
+    if (this._pingServer) {
+      clearInterval(this._pingServer);
+      this._pingServer = false;
+    }
   }
 
   adjustStatusBar() {
@@ -185,6 +251,8 @@ export class AppComponent implements OnInit {
   }
 
   onNavItemTap(navItemRoute: string): void {
+    console.log('navigate to...', navItemRoute)
+    
     this.routerExtensions.navigate([navItemRoute], {
         transition: {
             name: "fade"
