@@ -1,38 +1,35 @@
 <ActionBar class="action-bar">
-    <NavigationButton class="action-bar--button" ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
-    <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
-        ios.position="left">
-    </ActionItem>
-    <Label class="action-bar--title" text="Help"></Label>
-  </ActionBar>
+  <NavigationButton class="action-bar--button" ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
+      ios.position="left">
+  </ActionItem>
+  <Label class="action-bar--title" text="Help"></Label>
+</ActionBar>
+
+<ScrollView class="page">
+  <FlexboxLayout class="view">
+
+    <ContentView class="card">
+      <StackLayout class="card-content">
+        <Label class="h2" textWrap="true" text="ODIN Messenger Help"></Label>
+        <Label class="body" textWrap="true" text="ODIN Messenger is a free end-to-end encrypted messenger based on the Obsidian Platform OSM."></Label>
+        <Label class="body" textWrap="true" text="The ODIN Messenger is an enhanced version of the OSM with plans to extend its functionality and security. It requires no association to your phone number or access to your address book keeping your identity secure."></Label>
+        <Label class="body last" textWrap="true" text="The ODIN Messenger is currently in ALPHA and as such there may be service disruption due as we provided new features and updates to improve this application and service. If you encounter any issues or have suggestions, please let us know by visiting our Reddit or Discord communities."></Label>
+      </StackLayout>
+    </ContentView>
+
+    <ContentView class="actions">
+      <StackLayout class="actions">
+        <Button class="btn btn-outline" text="Website" (tap)="onTapWebsite()"></Button>
   
-  <!-- <GridLayout class="page page-content"> -->
-
-  <ScrollView>
-    <FlexboxLayout class="view">
-
-      <ContentView class="card">
-        <StackLayout class="card-content">
-          <Label class="h2" textWrap="true" text="ODIN Messenger Help"></Label>
-          <Label class="body" textWrap="true" text="ODIN Messenger is a free, peer-to-peer and end-to-end encrypted messenger based on the Obsidian Platform OSM."></Label>
-          <Label class="body" textWrap="true" text="The ODIN Messenger is an enhanced version of the OSM with plans to extend its functionality and security. It requires no association to your phone number or access to your address book keeping your identity secure."></Label>
-          <Label class="body last" textWrap="true" text="The ODIN Messenger is currently in ALPHA and as such there may be service disruption due as we provided new features and updates to improve this application and service. If you encounter any issues or have suggestions, please let us know by visiting our Reddit or Discord communities."></Label>
-        </StackLayout>
-      </ContentView>
+        <Button class="btn btn-outline" text="Twitter" (tap)="onTapTwitter()"></Button>
   
-      <ContentView class="actions">
-        <StackLayout class="actions">
-          <Button class="btn btn-primary" text="Website" (tap)="onTapWebsite()"></Button>
-    
-          <Button class="btn btn-primary" text="Twitter" (tap)="onTapTwitter()"></Button>
-    
-          <Button class="btn btn-primary" text="Discord" (tap)="onTapDiscord()"></Button>
-    
-          <Button class="btn btn-primary" text="Reddit" (tap)="onTapReddit()"></Button>
-        </StackLayout>
-      </ContentView>
+        <Button class="btn btn-outline" text="Discord" (tap)="onTapDiscord()"></Button>
+  
+        <Button class="btn btn-outline" text="Reddit" (tap)="onTapReddit()"></Button>
+      </StackLayout>
+    </ContentView>
 
-    </FlexboxLayout>
-  </ScrollView>
-  <!-- </GridLayout> -->
+  </FlexboxLayout>
+</ScrollView>
   
