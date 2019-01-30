@@ -7,11 +7,11 @@
 </ActionBar>
 
 <ScrollView>
-  <StackLayout class="message-view" height="98%">
+  <StackLayout class="message-view" height="100%">
 
-      <Label *ngIf="contactMessages.length == 0" text="No messages yet! Say hi!" class="bold p15 u-font-size-sm placeholder" color="#374064"></Label>
+      <Label *ngIf="contactMessages.length == 0" text="No messages yet! Say hi!" class="h3 p15 placeholder"></Label>
 
-      <ListView [ngClass]="{'active': contactMessages.length > 0}" class="message-wrap" #list [items]="contactMessages">
+      <ListView [class.active]="contactMessages.length" class="message-wrap" #list [items]="contactMessages">
           <ng-template let-message="item">
               <GridLayout columns="*" rows="auto" class="msg">
                   <StackLayout [class]="filter(message.from)" orientation="horizontal" [horizontalAlignment]="align(message.from)">

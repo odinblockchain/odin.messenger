@@ -5,20 +5,23 @@ ListView {
 }
 
 .message-view {
-  margin-top: 10;
-  // background-color: red;
+  background-color: $dark-03;
+  // padding-top: 10;
 }
 
 .placeholder {
   height: 90%;
+  color: $app-text-color;
 }
 
 .message-wrap {
   height: 0;
+  background-color: $dark-03;
 
   &.active {
     height: 90%;
     padding: 5;
+    padding-top: 10;
   }
 }
 
@@ -92,13 +95,16 @@ ListView {
   }
 
   .chatbox--input {
-    // background-color: #e4e4e4;
+    background-color: #e4e4e4;
     background-color: transparent;
     height: 45;
     margin-left: 10;
     border-bottom-color: #e4e4e4;
     border-bottom-width: 0;
     border-bottom-style: solid;
+
+    color: $text-light;
+    placeholder-color: #aaaaaa;
   }
 
   .chatbox--btn {
