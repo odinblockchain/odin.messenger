@@ -1,0 +1,127 @@
+<GridLayout class="page" rows="*" columns="*">
+  
+  <ScrollView row="1" class="overview">
+    <GridLayout rows="170, *">
+
+      <WalletSelection row="0" [selectedWallet]="selectedWalletId" (walletSelected)="proxyWalletSelection($event)"></WalletSelection>
+      <!-- <ScrollView row="0" orientation="horizontal">
+        <StackLayout class="wallets" orientation="horizontal">
+
+          <AbsoluteLayout class="wallet first" [class.active]="selectedWallet == 0" (tap)="selectedWallet = 0">
+            <ContentView class="wallet--accent"></ContentView>
+
+            <ContentView class="wallet--logo">
+              <Image src="res://icon" height="200"></Image>
+            </ContentView>
+
+            <StackLayout class="wallet--meta">
+              <Label class="wallet--label" textWrap="true" text="wallet name"></Label>
+              <Label class="wallet--balance">
+                <FormattedString>
+                  <Span text="1,950,124.12345678"></Span>
+                  <Span class="wallet--balance--symbol" text=" ODIN"></Span>
+                </FormattedString>
+              </Label>
+              <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
+              <Label class="wallet--last-transaction-time" text="5 hours ago"></Label>
+            </StackLayout>
+          </AbsoluteLayout>
+
+          <AbsoluteLayout class="wallet" [class.active]="selectedWallet == 1" (tap)="selectedWallet = 1">
+            <ContentView class="wallet--accent"></ContentView>
+
+            <ContentView class="wallet--logo">
+              <Image src="res://icon" height="200"></Image>
+            </ContentView>
+
+            <StackLayout class="wallet--meta">
+              <Label class="wallet--label" textWrap="true" text="wallet#2"></Label>
+              <Label class="wallet--balance">
+                <FormattedString>
+                  <Span text="950,124.12345678"></Span>
+                  <Span class="wallet--balance--symbol" text=" ODIN"></Span>
+                </FormattedString>
+              </Label>
+              <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
+              <Label class="wallet--last-transaction-time" text="10 hours ago"></Label>
+            </StackLayout>
+          </AbsoluteLayout>
+
+        </StackLayout>
+      </ScrollView> -->
+
+      <GridLayout row="1" class="view" rows="auto, *, 10">
+
+        <ContentView row="0" class="card">
+          <StackLayout class="card-content">
+            <Label class="h2" textWrap="true" text="Fresh ODIN address"></Label>
+            <Label class="body help" textWrap="true" text="For optimal security, we will generate a new ODIN address after a previous address has been used. They are all still associated with your Identity seed and aren't lost."></Label>
+            <TextView textWrap="true" autocorrect="false" text="oHLfrptsYwHY8ptqMib4cTMVmyVj3Pvzy9" class="input input-border" hint=""></TextView>
+          </StackLayout>
+        </ContentView>
+
+        <ContentView row="1" class="addresses">
+          <StackLayout>
+            <StackLayout class="header">
+              <Label class="h2" textWrap="true" text="Used addresses"></Label>
+              <Label class="p" textWrap="true" text="These are addresses you have used in the past and may continue to use if you wish."></Label>
+            </StackLayout>
+
+            <StackLayout class="address">
+              <Label textWrap="true" class="address--hash" text="oHLfrptsYwHY8ptqMib4cTMVmyVj3Pvzy9zzzzzzzzzzzzzzzzzzzzzzzz"></Label>
+
+              <GridLayout cols="auto,*">
+                <Label col="0" class="address--meta">
+                  <FormattedString>
+                    <Span class="address--last-used-label" text="Last used"></Span>
+                    <Span class="address--last-used-time" text=" 1 month ago"></Span>
+                  </FormattedString>
+                </Label>
+                <ContentView col="1" class="address--amount">
+                  <Label text="1.29238236"></Label>
+                </ContentView>
+              </GridLayout>
+            </StackLayout>
+
+            <StackLayout class="address">
+              <Label textWrap="true" class="address--hash" text="oHLfrptsYwHY8ptqMib4cTMVmyVj3Pvzy9zzzzzzzzzzzzzzzzzzzzzzzz"></Label>
+
+              <GridLayout cols="auto,*">
+                <Label col="0" class="address--meta">
+                  <FormattedString>
+                    <Span class="address--last-used-label" text="Last used"></Span>
+                    <Span class="address--last-used-time" text=" 1 month ago"></Span>
+                  </FormattedString>
+                </Label>
+                <ContentView col="1" class="address--amount">
+                  <Label text="1.29238236"></Label>
+                </ContentView>
+              </GridLayout>
+            </StackLayout>
+
+            <StackLayout class="address">
+              <Label textWrap="true" class="address--hash" text="oHLfrptsYwHY8ptqMib4cTMVmyVj3Pvzy9zzzzzzzzzzzzzzzzzzzzzzzz"></Label>
+
+              <GridLayout cols="auto,*">
+                <Label col="0" class="address--meta">
+                  <FormattedString>
+                    <Span class="address--last-used-label" text="Last used"></Span>
+                    <Span class="address--last-used-time" text=" 1 month ago"></Span>
+                  </FormattedString>
+                </Label>
+                <ContentView col="1" class="address--amount">
+                  <Label text="1.29238236"></Label>
+                </ContentView>
+              </GridLayout>
+            </StackLayout>
+
+          </StackLayout>
+        </ContentView>
+
+      </GridLayout>
+      
+    </GridLayout>
+  </ScrollView>
+    
+  </GridLayout>
+  

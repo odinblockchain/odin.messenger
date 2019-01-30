@@ -1,0 +1,67 @@
+@import '~/app-variables';
+
+/**
+  Wallet
+*/
+$wallet--width: 300;
+$wallet--border-radius: 4;
+
+.wallet {
+  min-width: $wallet--width;
+  max-width: $wallet--width;
+  width: $wallet--width;
+  margin: 15 20;
+  border-radius: $wallet--border-radius;
+  opacity: 0.5;
+  transition: opacity 275ms linear;
+
+  &.active {
+    border-width: 1;
+    border-color: #eeeeee;
+    opacity: 1;
+  }
+
+  &.empty {
+    background-color: $dark-03;
+  }
+}
+
+.wallet--meta {
+  left: 15;
+  top: 30;
+  width: calc($wallet--width - 10);
+}
+
+.wallet--accent {
+  width: $wallet--width;
+  height: 5;
+  border-radius: $wallet--border-radius $wallet--border-radius 0 0;
+}
+
+.wallet--label {
+  font-size: 14;
+  margin-bottom: 5;
+}
+
+.wallet--balance {
+  font-size: 20;
+  margin-bottom: 15;
+}
+
+.wallet--balance--symbol {
+  font-size: 14;
+}
+
+.wallet--last-transaction-label {
+  font-size: 12;
+}
+
+.wallet--last-transaction-time {
+  font-size: 14;
+}
+
+.wallet--logo {
+  opacity: 0.2;
+  left: 170;
+  top: 10;
+}

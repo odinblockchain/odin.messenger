@@ -1,0 +1,51 @@
+@import '~/app-variables';
+
+/**
+  Addresses
+*/
+.addresses {
+  width: 90%;
+
+  .header {
+    margin-left: 10;
+    margin-bottom: 30;
+  }
+
+  .h2 {
+    font-size: 20;
+  }
+}
+
+.address {
+  // background-color: rgba(255,255,255,0.3);
+  // padding: 10;
+  padding: 0 0 20;
+  margin: 0 10 20;
+  border-color: $hr-light-color;
+  border-bottom-width: 1;
+  // box-sizing: border-box;
+}
+
+.address--hash {
+  font-size: 14;
+  margin-bottom: 10;
+}
+
+.address--meta {
+  font-size: 12;
+  margin-right: 10;
+}
+
+.address--amount {
+  font-size: 14;
+  font-weight: bold;
+  // text-align: right;
+  // border-width: 1;
+  // border-color: #000000;
+  // margin-left: 10;
+  // margin-right: 33;
+
+  Label {
+    text-align: right;
+  }
+}

@@ -1,0 +1,67 @@
+@import '~/app-variables';
+
+TabView {
+  tab-text-color: #7edabb;
+  selected-tab-text-color: rgb(255, 255, 255);
+  tab-background-color: #39af8a;
+  android-selected-tab-highlight-color: #185a9d;
+  android-tabs-position: 'bottom';
+}
+
+TabViewItem {
+  opacity: 0.4;
+}
+
+.tabviewitem {
+  opacity: 0.4;
+}
+
+TabView > .selected {
+  background-color: red !important;
+}
+
+.tab--item {
+  border: 1px solid blue;
+
+  Label {
+    font-size: 12;
+  }
+}
+
+.tab-view {
+  // background: #38779b;
+  background-color: $dark-02;
+  border-top-width: 1;
+  border-top-color: $dark-03;
+}
+
+.tab-view .tab--item {
+  color: #a3a3a3;
+  border: 2 solid red;
+  padding: 10 0 5;
+
+  .tab--item--icon {
+    margin-bottom: 3;
+  }
+
+  .tab--item--label {
+    color: #ffffff;
+    font-size: 14;
+    text-align: center;
+  }
+
+  .tab--item--icon,
+  .tab--item--label {
+    opacity: 0.6;
+    transition: opacity 250ms linear;
+  }
+}
+
+.tab-view .tab--item.active {
+  // background-color: rgba(255,255,255,0.1);
+
+  .tab--item--icon,
+  .tab--item--label {
+    opacity: 1;
+  }
+}

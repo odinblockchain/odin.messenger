@@ -1,0 +1,43 @@
+<ScrollView orientation="horizontal">
+  <StackLayout class="wallets" orientation="horizontal">
+
+    <AbsoluteLayout class="wallet" backgroundColor="#41C0D1" [class.active]="selectedWallet == 0" (tap)="onSelectWallet(0)">
+      <ContentView class="wallet--accent" backgroundColor="#F9F7F3"></ContentView>
+
+      <ContentView class="wallet--logo">
+        <Image src="res://icon" height="200"></Image>
+      </ContentView>
+
+      <StackLayout class="wallet--meta">
+        <Label class="wallet--label" textWrap="true" text="wallet name"></Label>
+        <Label class="wallet--balance">
+          <FormattedString>
+            <Span text="1,950,124.12345678"></Span>
+            <Span class="wallet--balance--symbol" text=" ODIN"></Span>
+          </FormattedString>
+        </Label>
+        <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
+        <Label class="wallet--last-transaction-time" text="5 hours ago"></Label>
+      </StackLayout>
+    </AbsoluteLayout>
+
+    <AbsoluteLayout class="wallet empty" [class.active]="selectedWallet == 1" (tap)="onSelectWallet(1)">
+      <ContentView class="wallet--logo">
+        <Image src="res://icon" height="200"></Image>
+      </ContentView>
+
+      <StackLayout class="wallet--meta">
+        <Label class="wallet--label" textWrap="true" text="wallet#2"></Label>
+        <Label class="wallet--balance">
+          <FormattedString>
+            <Span text="950,124.12345678"></Span>
+            <Span class="wallet--balance--symbol" text=" ODIN"></Span>
+          </FormattedString>
+        </Label>
+        <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
+        <Label class="wallet--last-transaction-time" text="10 hours ago"></Label>
+      </StackLayout>
+    </AbsoluteLayout>
+
+  </StackLayout>
+</ScrollView>

@@ -1,0 +1,95 @@
+@import '~/app-variables';
+
+/**
+  Wallet Summary
+**/
+.summary {
+  text-align: center;
+
+  .label {
+    font-size: 14;
+  }
+
+  .balance {
+    font-size: 24;
+  }
+
+  .blockheight {
+    font-size: 14;
+  }
+}
+
+
+/**
+  Transactions
+*/
+.transactions {
+  .header {
+    font-size: 20;
+    margin-left: 20;
+    margin-bottom: 15;
+    margin-top: 0;
+  }
+}
+
+.transaction {
+  padding: 0 0 10;
+  margin: 0 20 10;
+  border-color: $dark-04;
+  border-bottom-width: 1;
+
+  &.last {
+    border-bottom-width: 0;
+  }
+}
+
+.transaction--icon {
+  border-radius: 100%;
+  vertical-align: top;
+  height: 40;
+  width: 40;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 255, 0.425);
+  margin-top: 5;
+  
+  border-width: 1;
+  border-color: $dark-04;
+  margin-right: 5;
+
+  &.pending {
+    background-color: $odin-orange;
+  }
+
+  &.received {
+    background-color: $odin-blue;
+  }
+
+  &.sent {
+    background-color: $odin-red;
+  }
+
+  .icon {
+    width: 50%;
+  }
+}
+
+.transaction--label {
+  font-size: 14;
+  margin-bottom: 5;
+}
+
+.transaction--meta {
+  font-size: 12;
+  margin-left: 5;
+  margin-right: 10;
+}
+
+.transaction--amount {
+  font-size: 16;
+  font-weight: bold;
+
+  Label {
+    text-align: right;
+  }
+}

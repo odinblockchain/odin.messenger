@@ -1,0 +1,141 @@
+<GridLayout class="page" rows="80,*" columns="*">
+
+  <!-- <FlexLayout row="0" class="summary" flexWrap="wrap"> -->
+  <ContentView row="0" class="summary">
+    <StackLayout orientation="vertical" verticalAlignment="center">
+      <Label flexGrow="1" class="label" text="Balance"></Label>
+      <Label flexGrow="1" class="balance" text="50,124.3568 ODIN"></Label>
+      <Label flexGrow="1" class="blockheight" text="Block: 380000"></Label>
+    </StackLayout>
+  </ContentView>
+  <!-- </FlexLayout> -->
+  
+  <ScrollView row="1" class="overview">
+    <GridLayout rows="170, *">
+
+      <WalletSelection row="0" [selectedWallet]="selectedWalletId" (walletSelected)="proxyWalletSelection($event)"></WalletSelection>
+      <!-- <ScrollView row="0" orientation="horizontal">
+        <StackLayout class="wallets" orientation="horizontal">
+
+          <AbsoluteLayout class="wallet" backgroundColor="#41C0D1">
+            <ContentView class="wallet--accent" backgroundColor="#F9F7F3"></ContentView>
+
+            <ContentView class="wallet--logo">
+              <Image src="res://icon" height="200"></Image>
+            </ContentView>
+
+            <StackLayout class="wallet--meta">
+              <Label class="wallet--label" textWrap="true" text="wallet name"></Label>
+              <Label class="wallet--balance">
+                <FormattedString>
+                  <Span text="1,950,124.12345678"></Span>
+                  <Span class="wallet--balance--symbol" text=" ODIN"></Span>
+                </FormattedString>
+              </Label>
+              <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
+              <Label class="wallet--last-transaction-time" text="5 hours ago"></Label>
+            </StackLayout>
+          </AbsoluteLayout>
+
+          <AbsoluteLayout class="wallet">
+            <ContentView class="wallet--logo">
+              <Image src="res://icon" height="200"></Image>
+            </ContentView>
+
+            <StackLayout class="wallet--meta">
+              <Label class="wallet--label" textWrap="true" text="wallet#2"></Label>
+              <Label class="wallet--balance">
+                <FormattedString>
+                  <Span text="950,124.12345678"></Span>
+                  <Span class="wallet--balance--symbol" text=" ODIN"></Span>
+                </FormattedString>
+              </Label>
+              <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
+              <Label class="wallet--last-transaction-time" text="10 hours ago"></Label>
+            </StackLayout>
+          </AbsoluteLayout>
+
+        </StackLayout>
+      </ScrollView> -->
+
+      <GridLayout row="1" class="sub-scroll" rows="*">
+        <ContentView row="0" class="transactions">
+          <StackLayout>
+            <Label class="header" text="Transactions"></Label>
+            
+            <ContentView class="transaction">
+              <GridLayout rows="50" columns="45,auto,*">
+                <FlexboxLayout col="0" class="transaction--icon pending">
+                  <Image class="icon" src="res://more_white"></Image>
+                </FlexboxLayout>
+
+                <ContentView col="1" class="transaction--meta">
+                  <StackLayout verticalAlignment="center">
+                    <Label class="transaction--label" text="something tx 1"></Label>
+                    <Label>
+                      <FormattedString>
+                        <Span class="transaction--timestamp" text="15 min ago"></Span>
+                        <Span class="transaction--conf" text=" | 1 conf"></Span>
+                      </FormattedString>
+                    </Label>
+                  </StackLayout>
+                </ContentView>
+
+                <ContentView col="2" class="transaction--amount">
+                  <Label verticalAlignment="center" textWrap="true" text="1.29238236"></Label>
+                </ContentView>
+              </GridLayout>
+            </ContentView>
+
+            <ContentView class="transaction">
+              <GridLayout rows="50" columns="45,auto,*">
+                <FlexboxLayout col="0" class="transaction--icon received">
+                  <Image class="icon" src="res://incoming_white"></Image>
+                </FlexboxLayout>
+
+                <StackLayout col="1" class="transaction--meta">
+                  <Label class="transaction--label" text="something tx 1"></Label>
+                  <Label>
+                    <FormattedString>
+                      <Span class="transaction--timestamp" text="15 min ago"></Span>
+                      <Span class="transaction--conf" text=" | 1 conf"></Span>
+                    </FormattedString>
+                  </Label>
+                </StackLayout>
+
+                <ContentView col="2" class="transaction--amount">
+                  <Label textWrap="true" text="222,222,222.29238236"></Label>
+                </ContentView>
+              </GridLayout>
+            </ContentView>
+
+            <ContentView class="transaction last">
+              <GridLayout rows="50" columns="45,auto,*">
+                <FlexboxLayout col="0" class="transaction--icon sent">
+                  <Image class="icon" src="res://outgoing_white"></Image>
+                </FlexboxLayout>
+
+                <StackLayout col="1" class="transaction--meta">
+                  <Label class="transaction--label" text="something tx 1"></Label>
+                  <Label>
+                    <FormattedString>
+                      <Span class="transaction--timestamp" text="15 min ago"></Span>
+                      <Span class="transaction--conf" text=" | 1 conf"></Span>
+                    </FormattedString>
+                  </Label>
+                </StackLayout>
+
+                <ContentView col="2" class="transaction--amount">
+                  <Label textWrap="true" text="222,222,222.29238236"></Label>
+                </ContentView>
+              </GridLayout>
+            </ContentView>
+
+          </StackLayout>
+        </ContentView>
+      </GridLayout>
+      
+    </GridLayout>
+  </ScrollView>
+  
+</GridLayout>
