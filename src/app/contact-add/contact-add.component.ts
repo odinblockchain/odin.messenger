@@ -61,7 +61,8 @@ export class ContactAddComponent implements OnInit {
           identity: ''
         };
   
-        return alert(`Successfully added ${this.contact.identity} to your local contacts!`);
+        alert(`Successfully added ${this.contact.identity} to your local contacts!`);
+        this._router.navigate(['/messages']);
       } else {
         this.processing = false;
         return alert(`An error occurred while adding this contact locally, please try again.`);

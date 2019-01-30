@@ -1,22 +1,11 @@
-.home-panel{
-  font-size: 16;
-  margin: 15;
-}
-
 .page {
-  padding: 20;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.description-label{
-  margin-bottom: 15;
-}
-
-.btn {
-  font-size: 18;
-}
-
-.lbl {
-  margin-bottom: 20;
+.red {
+  background-color: red;
 }
 
 .label {
@@ -25,10 +14,6 @@
 
 .input {
   margin-bottom: 45;
-}
-
-.hr-light {
-  margin: 10;
 }
 
 .disabled {
