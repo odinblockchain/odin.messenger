@@ -39138,8 +39138,9 @@ module.exports = {
 ODIN = require('odinjs-lib');
 let bip39 = require('bip39');
 ODIN.bip39 = bip39;
-console.log(ODIN);
-
-module.exports = ODIN;
 
 },{"bip39":35,"odinjs-lib":100}]},{},[164]);
+
+module.exports = {
+  ODIN: ODIN
+}

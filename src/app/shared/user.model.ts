@@ -5,7 +5,9 @@ import { OSMClientService } from './osm-client.service';
 import { RouterExtensions } from "nativescript-angular/router";
 import { ObservableArray, ChangedData } from "tns-core-modules/data/observable-array";
 
-import { Obsidian } from '~/app/bundle.obsidian.js';
+import { Obsidian } from '~/app/bundle.obsidian';
+import { ODIN } from '~/app/bundle.odin';
+
 import Hashids from 'hashids';
 import { alert } from "ui/dialogs";
 
@@ -149,7 +151,7 @@ export class UserModel extends Observable {
   ) {
     super();
 
-    this.COIN             = 'ODN';
+    this.COIN             = 'ODIN';
     this._store           = new StorageService();
     this._signalClient    = null;
     this.osmConnected     = false;
@@ -639,14 +641,15 @@ export class UserModel extends Observable {
     this.saveData.masterSeed = masterSeed;
     this.saveData.registered = false;
 
-    let mnemonic = Obsidian.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
+    let mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
+    // let mnemonic = 'horror hunt analyst monster transfer cool link venture warrior royal color gasp';
     this.saveData.mnemonicPhrase = mnemonic;
 
-    let seed  = Obsidian.bip39.mnemonicToSeed(mnemonic);
-    let sroot = Obsidian.bip32.fromSeed(seed);
+    let seed  = ODIN.bip39.mnemonicToSeed(mnemonic);
+    let sroot = ODIN.bip32.fromSeed(seed);
       
     let masterRoot    = sroot.derivePath("m/0'/0'/1337'/0");
-    let masterAccount = Obsidian.payments.p2pkh({ pubkey: masterRoot.publicKey });
+    let masterAccount = ODIN.payments.p2pkh({ pubkey: masterRoot.publicKey });
     let masterNumeric = Number(masterAccount.address.replace(/[^\d]/ig, ''));
 
     // set custom alphabet to reflect base58 charset... removes 0, O, I, l

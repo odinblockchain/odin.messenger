@@ -102,7 +102,7 @@ export class AccountService {
     });
 
     this.userModel.set('seedHex', '');
-    this.userModel.set('coin', 'ODN');
+    this.userModel.set('coin', 'ODIN');
     this.userModel.set('hashAddress', '');
     this.userModel.set('hashAccount', '');
     this.userModel.set('masterSeed', '');
