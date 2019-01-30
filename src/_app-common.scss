@@ -1,8 +1,24 @@
 // Place any CSS rules you want to apply on both iOS and Android here.
 // This is where the vast majority of your CSS code goes.
 // Font icon class
+
+
+
+/**
+  Primary
+**/
+.app-view {
+  background-color: $app-background;
+  color: $app-text-color;
+  font-family: "Montserrat-Light";
+}
+
+.line {
+  background-color: $accent;
+}
+
 .fa {
-    font-family: "FontAwesome";
+  font-family: "FontAwesome";
 }
 
 .far {
@@ -58,40 +74,159 @@
 }
 
 .page {
-  font-family: "Montserrat-Regular";
-  color: $text-color;
+  Label,
+  .p {
+    color: $app-text-color;
+    font-size: 16;
+  }
+
+  .p {
+    font-family: "Montserrat-Light";
+    margin-bottom: 10;
+  }
+
+  .link {
+    color: $link-color;
+    text-decoration: underline;
+  }
+
+  .hr-light {
+    background-color: $hr-light-color;
+  }
+
+  .input {
+    color: $text-light;
+    placeholder-color: #aaaaaa;
+    border-width: 0 0 1 0;
+    border-bottom-color: $warning;
+  }
+
+  /**
+    Typeography
+  */
+  .h1,
+  .h2 {
+    font-family: "Montserrat-Regular";
+    color: $app-text-color;
+  }
+
+  .h3,
+  .h4,
+  .h5,
+  .h6 {
+    font-family: "Montserrat-Light";
+    color: $app-text-color;
+  }
 }
 
-.link {
-  color: #253140;
-  text-decoration: underline;
-}
-
+/**
+  Form
+**/
 .form {
   font-family: "Montserrat-Regular";
   color: $text-color;
 }
 
-.view {
-  background-color: $background;
-  font-size: 18;
-  margin-top: 10;
-}
 
-.header,
-.h1,
-.h2 {
+/**
+  Buttons
+*/
+.btn {
+  height: 50;
   font-family: "Montserrat-SemiBold";
-  color: $text-color;
+  // font-family: "Montserrat-Regular";
+  letter-spacing: 0.05;
+  border-radius: 4;
+  background-color: $accent; 
+
+  &.btn-primary {
+    color: dynamic-text-color($accent);
+
+    &:active {
+      background-color: darken($accent, 10%);
+    }
+  }
+
+  &.btn-outline {
+    background-color: transparent;
+    color: $accent;
+
+    &.fill {
+      background-color: $background;
+    }
+
+    &:active {
+      background-color: $accent;
+      color: #ffffff;
+    }
+  }
 }
 
-.sub-header  {
-  font-family: "Montserrat-Regular";
-  color: $text-color;
+/**
+  UI - Card
+*/
+.card {
+  background-color: #303030;
+  width: 90%;
+  // padding: 7;
+  box-sizing: border-box;
+  border-radius: 4;
+  // border: 5 solid #eeeeee;
+  // margin: 5;
+  border-bottom-width: 1;
+  border-color: #212121;
+  border-style: solid;
+  margin: 10 0;
+  // padding-left: 20;
+  font-size: 18;
+
+  &.card--dashed {
+    border-image: url(~/app/images/hearts-border-image.png);
+    border-width: 5;
+    // border-color: #000;
+    // border-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1 1' width='100' height='100' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%0A    %3Cg transform='translate%280,.21%29 rotate%2845, .5 .5%29'%3E%0A %3Crect width='70%25' height='70%25'%0A fill='crimson'%3E%3C/rect%3E%0A %3Crect width='60%25' height='60%25'%0A fill='orangered'%0A x='5%25' y='5%25'%3E%3C/rect%3E %0A %3Crect width='50%25' height='50%25'%0A fill='gold'%0A x='10%25' y='10%25'%3E%3C/rect%3E %0A %3Crect width='40%25' height='40%25'%0A fill='darkturquoise'%0A x='15%25' y='15%25'%3E%3C/rect%3E %0A %3Crect width='30%25' height='30%25'%0A fill='teal'%0A x='20%25' y='20%25'%3E%3C/rect%3E%0A %3Crect width='21%25' height='21%25'%0A fill='white'%0A x='24.5%25' y='24.5%25'%3E%3C/rect%3E%0A %3C/g%3E%0A%3C/svg%3E") 43% fill;
+    // border-image-repeat: round;
+  }
+
+  &.card--input {
+    border-color: $warning;
+    border-bottom-width: 2;
+
+    .fa {
+      color: $warning;
+    }
+
+    .input {
+      placeholder-color: #aaaaaa;
+      border-width: 0 0 1 0;
+      border-bottom-color: $warning;
+    }
+  }
+
+  .h2 {
+    font-size: 24;
+    margin-bottom: 10;
+  }
+
+  .card-content {
+    padding: 20;
+  }
+
+  .body {
+    padding-bottom: 5;
+    font-size: 16;
+
+    &.last {
+      padding-bottom: 10;
+    }
+  }
 }
 
+/**
+  RadSideDrawer
+*/
 RadSideDrawer {
-  background-color: $background;
+  background-color: $ab-background;
 }
 
 .no-connection {
@@ -103,26 +238,11 @@ RadSideDrawer {
   font-size: 16;
 }
 
-// Common page class
-.page-content {
-  background-color: $background;
-    .page-placeholder {
-      // color: $page-icon-color;
-      // font-size: $page-content-placeholder-font-size;
-      vertical-align: center;
-      horizontal-align: center;
-    }
-
-    .page-icon {
-      font-size: 72;
-      vertical-align: top;
-      horizontal-align: center;
-      // color: $page-icon-color;
-      margin-top: 20%;
-    }
-}
 
 //Action bar
+/**
+  Action Bar
+*/
 .action-bar {
   background-color: $ab-background;
   color: $ab-color;
@@ -140,101 +260,113 @@ RadSideDrawer {
   }
 }
 
+/**
+  Side Drawer
+*/
+
+// .sidedrawer-avatar {
+//   border-radius: 50%;
+//   width: 50;
+//   height: 50;
+//   border-width: 4;
+//   border-color: $app-drawer-avatar-border-color
+// }
+
+
 .sidedrawer {
-  background-color: #282c30;
-}
+  background-color: $app-drawer-background;
+  font-family: "Montserrat-Light";
 
-.sidedrawer-header {
-  background-color: #282c30;
-  height: 190;
-}
+  .sidedrawer-header {
+    background-color: $app-drawer-header-background;
+    height: 150;
 
-.sidedrawer-avatar {
-  border-radius: 50%;
-  width: 100;
-  height: 100;
-  border-width: 4;
-  border-color: #48b1ec;
-}
+    .client-name {
+      border-radius: 100%;
+      vertical-align: top;
+      height: 75;
+      width: 75;
+      align-items: center;
+      justify-content: center;
+      background-color: $app-drawer-avatar-background;
+  
+      .innerLabel {
+        font-family: "Montserrat-Light";
+        color: dynamic-text-color($app-drawer-avatar-background);
+        font-size: 24;
+      }
+    }
 
-.sidedrawer-header-text {
-  color: white;
-  font-size: 24;
-  font-weight: bold;
-  margin-top: 10;
-  text-align: center;
-}
-
-.sidedrawer-header-footnote {
-  color: white;
-  text-align: center;
-  font-size: 16;
-}
-
-.sidedrawer-icon {
-  font-size: 22;
-  border-radius: 50%;
-  border-width: 3;
-  border-color: #393b3f;
-  width: 40;
-  height: 40;
-  background-color: #393b3f;
-  vertical-align: center;
-  color: white;
-  text-align: center;
-}
-
-.sidedrawer-list-item {
-  color: white;
-  padding-left: 30;
-  fontSize: 22;
-  fontWeight: bold;
-  height: 80;
-}
-
-.sidedrawer-item {
-  vertical-align: center;
-}
-
-.sidedrawer-list-item-active {
-  background-color: #a6a450;
-}
-
-.version {
-  justify-content: center;
-  align-items: center;
-
-  .version--text {
-    color: #cccccc;
-    font-size: 12;
-    letter-spacing: 0.5;
-  }
-}
-
-.btn {
-  height: 50;
-  font-family: "Montserrat-SemiBold";
-  // font-family: "Montserrat-Regular";
-  letter-spacing: 0.05;
-  border-radius: 4;
-  background-color: $accent; 
-
-  &.btn-primary {
-    &:active {
-      background-color: darken($accent, 10%);
+    .sidedrawer-header-text {
+      color: dynamic-text-color($app-drawer-background);
+      font-size: 24;
+      font-weight: bold;
+      margin-top: 10;
+      text-align: center;
     }
   }
 
-  &.btn-outline {
-    background-color: transparent;
-    color: $accent;
+  .sidedrawer-header-text {
+    font-size: 20;
+    letter-spacing: 0.05;
+  }
 
-    &:active {
-      background-color: $accent;
-      color: #ffffff;
+  .sidedrawer-content {
+    .hr-light {
+      border-color: $app-drawer-line-color;
+      background-color: $app-drawer-line-color;
+    }
+  }
+  
+  .sidedrawer-list-item {
+    font-family: "Montserrat-Light";
+    font-size: 18;
+    color: white;
+    padding-left: 30;
+    fontSize: 22;
+    fontWeight: bold;
+    height: 80;
+
+    .sidedrawer-icon {
+      font-size: 22;
+      border-radius: 50%;
+      border-width: 3;
+      border-color: #393b3f;
+      width: 40;
+      height: 40;
+      background-color: #393b3f;
+      vertical-align: center;
+      color: white;
+      text-align: center;
+    }
+
+    .sidedrawer-item {
+      font-family: "Montserrat-Light";
+      font-size: 18;
+      vertical-align: center;
+    }
+  }
+
+  .sidedrawer-list-item-active {
+    background-color: #a6a450;
+  }
+  
+  .version {
+    justify-content: center;
+    align-items: center;
+  
+    .version--text {
+      color: #cccccc;
+      font-size: 12;
+      letter-spacing: 0.5;
     }
   }
 }
+
+
+
+
+
 
 .header {
   horizontal-align: center;
@@ -257,106 +389,6 @@ RadSideDrawer {
   vertical-align: bottom;
   color: #ffffff;
 }
-
-
-.sidedrawer {
-  font-family: "Montserrat-Light";
-
-  .client-name {
-    border-radius: 100%;
-    vertical-align: top;
-    height: 100;
-    width: 100;
-    align-items: center;
-    justify-content: center;
-    background-color: $accent;
-
-    .innerLabel {
-      color: #ffffff;
-      font-size: 24;
-    }
-  }
-
-  .sidedrawer-header-text {
-    font-size: 20;
-    letter-spacing: 0.05;
-  }
-
-  .sidedrawer-list-item {
-    font-family: "Montserrat-Light";
-    font-size: 18;
-
-    
-      // verticalAlignment="top" height="30" width="30" alignItems="center" justifyContent="center" backgroundColor="blue"
-    
-  }
-
-  .sidedrawer-item {
-    font-family: "Montserrat-Light";
-    font-size: 18;
-  }
-}
- // Drawer navigation custom styles
-// $sidedrawer-header-image-size: 60;
-// $sidedrawer-header-image-offset-top: 20;
-// $sidedrawer-header-image-offset-bottom: 5;
-// $sidedrawer-list-item-offset-left: 15;
-// $sidedrawer-list-icon-offset: 10;
-// $sidedrawer-list-icon-size: 20;
-
-// .sidedrawer {
-//     &.sidedrawer-left {
-//         background-color: $ab-background;
-
-//         .sidedrawer-header-image {
-//             color: $background-dark;
-//             height: $sidedrawer-header-image-size;
-//             width: $sidedrawer-header-image-size;
-//             font-size: $sidedrawer-header-image-size;
-//             padding: 0;
-//             margin-bottom: $sidedrawer-header-image-offset-bottom;
-//             margin-top: $sidedrawer-header-image-offset-top;
-//         }
-
-//         .footnote {
-//             color: rgba($ab-color, 0.5);
-//         }
-//     }
-
-//     .sidedrawer-header {
-//         background-color: $ab-background;
-
-//         .sidedrawer-header-brand {
-//             color: $ab-color;
-//         }
-//     }
-
-//     .sidedrawer-content {
-//         background-color: $side-drawer-background;
-
-//         $sidedrawer-list-item-offset-left: 15;
-//         $sidedrawer-list-icon-offset: 10;
-//         $sidedrawer-list-icon-size: 20;
-
-//         .sidedrawer-list-item {
-//             padding-left: $sidedrawer-list-item-offset-left;
-//             Label {
-//                 vertical-align: center;
-//                 color: $blue-dark;
-//             }
-//             .fa {
-//                 width: $sidedrawer-list-icon-size;
-//                 margin-right: $sidedrawer-list-icon-offset;
-//             }
-//             &.selected {
-//                 background-color: $item-active-background;
-//                 Label {
-//                     color: $item-active-color;
-//                 }
-//             }
-//         }
-//     }
-// }
 
 .flex {
   display: flex;

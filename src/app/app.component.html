@@ -8,7 +8,7 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
   <GridLayout tkDrawerContent rows="auto, *, 50" class="sidedrawer sidedrawer-left">
     <StackLayout row="0" class="sidedrawer-header">
       <FlexboxLayout class="client-name">
-        <Label class="innerLabel bold" text="{{ userAccount.hashAccount[0] }}"></Label>
+        <Label class="innerLabel" text="{{ userAccount.hashAccount[0] }}"></Label>
       </FlexboxLayout>
       <!-- <Label class="innerLabel bold" text="ME"></Label> -->
       <Label class="sidedrawer-header-text var" [text]="userAccount.hashAccount"></Label>
@@ -55,13 +55,14 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
     </FlexboxLayout>
   </GridLayout>
 
-  <StackLayout tkMainContent>
+  <StackLayout tkMainContent class="app-view">
     <Label *ngIf="userAccount.osmConnected" class="no-connection">
       <FormattedString>
         <Span class="fa" text="&#xf12a;   "></Span>
         <Span text="NOT CONNECTED"></Span>
       </FormattedString>
     </Label>
-    <page-router-outlet class="page page-content"></page-router-outlet>
+
+    <page-router-outlet class="app-view"></page-router-outlet>
   </StackLayout>
 </RadSideDrawer>
