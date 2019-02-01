@@ -7,6 +7,7 @@ import { EventData } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import { Page } from "ui/page";
+import { WalletModel } from '~/app/shared/wallet.model';
 
 @Component({
 	moduleId: module.id,
@@ -18,12 +19,15 @@ export class WalletComponent implements OnInit {
   @ViewChild("tabView") tabView: ElementRef;
   public tabSelectedIndex: number;
   public selectedWalletId: number;
+  public walletData: any;
 
 	constructor(
-    private page: Page
+    private page: Page,
+    private _wallet: WalletModel
   ) {
-    this.tabSelectedIndex = 2;
+    this.tabSelectedIndex = 1;
     this.selectedWalletId = 0;
+    this.walletData = this._wallet.walletData;
   }
 
   ngOnInit() { }

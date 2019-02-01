@@ -35,6 +35,32 @@ TabView > .selected {
   border-top-color: $dark-03;
 }
 
+.tabView {
+  background-color: $dark-02;
+}
+
+.tabItemView {
+  opacity: 1;
+  transition: opacity 300ms linear;
+
+  &.loading {
+    opacity: 0.4;
+  }
+}
+
+.walletNoticeBar {
+  background-color: $dark-02;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10;
+  color: $text-light;
+
+  &.warning {
+    background-color: $odin-red;
+  }
+}
+
 .tab-view .tab--item {
   color: #a3a3a3;
   border: 2 solid red;

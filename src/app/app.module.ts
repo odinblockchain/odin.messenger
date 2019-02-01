@@ -9,8 +9,10 @@ import { AccountService } from './shared/account.service';
 import { StorageService } from './shared/storage.service';
 import { PreferencesService } from './shared/preferences.service';
 import { UserModel } from './shared/user.model';
+import { WalletModel } from './shared/wallet.model';
 import { OSMClientService } from './shared/osm-client.service';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
+import { WalletClientService } from "./shared/wallet-client.service";
 
 @NgModule({
   bootstrap: [
@@ -21,7 +23,9 @@ import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
     StorageService,
     PreferencesService,
     OSMClientService,
+    WalletClientService,
     UserModel,
+    WalletModel,
     SnackBar
   ],
   imports: [

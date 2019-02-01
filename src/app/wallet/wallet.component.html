@@ -12,23 +12,30 @@
   <Label class="page-placeholder" text="Wallet Module Coming Soon!"></Label>
 </GridLayout> -->
 
-<GridLayout rows="*,auto">
-  <TabView row="0" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)">
-      <ContentView *tabItem>
+
+
+<GridLayout rows="auto,*,auto">
+  <FlexboxLayout *ngIf="!walletData.loaded || walletData.warning" class="walletNoticeBar" row="0" [class.warning]="walletData.loaded && walletData.warning">
+    <ActivityIndicator class="activity-indicator" [busy]="!walletData.loaded"></ActivityIndicator>
+    <Label *ngIf="walletData.loaded && walletData.warning" textWrap="true" [text]="walletData.warningText"></Label>
+  </FlexboxLayout>
+
+  <TabView class="tabView" row="1" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)">
+      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
         <Send [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Send>
       </ContentView>
 
-      <ContentView *tabItem>
+      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
         <Overview [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Overview>
         <!-- <Button height="50" width="200" text="{{ lightBar ? 'dark' : 'light' }}" (tap)="switchView()"></Button> -->
       </ContentView>
 
-      <ContentView *tabItem>
+      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
         <Receive [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Receive>
       </ContentView>
   </TabView>
 
-  <GridLayout row="1" columns="*,*,*" class="tab-view">
+  <GridLayout row="2" columns="*,*,*" class="tab-view">
       <!-- <Label col="0" class="mdi text-center" [class.active]="tabSelectedIndex === 0"
           [text]="'mdi-view-dashboard'" (tap)="tabSelectedIndex = 0"></Label> -->
       <StackLayout col="0" class="tab--item" [class.active]="tabSelectedIndex === 0" (tap)="tabSelectedIndex = 0">
