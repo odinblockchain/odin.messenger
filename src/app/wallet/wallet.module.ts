@@ -8,6 +8,8 @@ import { SendComponent } from './send/send.component';
 import { OverviewComponent } from './overview/overview.component';
 import { ReceiveComponent } from "./receive/receive.component";
 import { WalletSelectionComponent } from "./wallet-selection/wallet-selection.component";
+import { SatoshiValueConverter } from "~/app/utils/satoshiValueConverter";
+import { TransactionConfirmations } from "~/app/utils/transactionConfirmations";
 
 @NgModule({
   imports: [
@@ -16,6 +18,8 @@ import { WalletSelectionComponent } from "./wallet-selection/wallet-selection.co
     WalletRoutingModule
   ],
   declarations: [
+    SatoshiValueConverter,
+    TransactionConfirmations,
     WalletComponent,
     SendComponent,
     OverviewComponent,

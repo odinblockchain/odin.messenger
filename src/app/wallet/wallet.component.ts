@@ -20,17 +20,31 @@ export class WalletComponent implements OnInit {
   public tabSelectedIndex: number;
   public selectedWalletId: number;
   public walletData: any;
+  public wallets: any[];
+  public activeWallet: any;
+  public activeChain: any;
 
 	constructor(
     private page: Page,
     private _wallet: WalletModel
   ) {
+    let self = this;
     this.tabSelectedIndex = 1;
     this.selectedWalletId = 0;
     this.walletData = this._wallet.walletData;
+    this.wallets = this._wallet.wallets;
+    this.activeWallet = false;
+    this.activeChain = {};
+
+    this._wallet.on("WalletReady", function(eventData) {
+      console.log(`[WalletModel Event]1 --- ${eventData.eventName}`);
+      self.activeWallet = self._wallet.wallets[self.selectedWalletId];
+      self.activeChain  = self._wallet.chainStats;
+    });
   }
 
-  ngOnInit() { }
+  ngOnInit() { 
+  }
 
   public onWalletSelected(walletSelectedId: number) {
     this.selectedWalletId = walletSelectedId;

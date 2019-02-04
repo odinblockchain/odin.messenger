@@ -59,6 +59,10 @@ TabView > .selected {
   &.warning {
     background-color: $odin-red;
   }
+
+  &.notice {
+    background-color: $odin-blue;
+  }
 }
 
 .tab-view .tab--item {

@@ -6,6 +6,10 @@
 $wallet--width: 300;
 $wallet--border-radius: 4;
 
+.wallets {
+  background-color: $dark-02;
+}
+
 .wallet {
   min-width: $wallet--width;
   max-width: $wallet--width;
@@ -29,7 +33,7 @@ $wallet--border-radius: 4;
 .wallet--meta {
   left: 15;
   top: 30;
-  width: calc($wallet--width - 10);
+  width: $wallet--width;
 }
 
 .wallet--accent {

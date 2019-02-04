@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { WalletModel } from '~/app/shared/wallet.model';
 
 @Component({
 	moduleId: module.id,
@@ -11,10 +12,24 @@ export class WalletSelectionComponent implements OnInit {
   @Input() selectedWallet: number;
   @Output() walletSelected: EventEmitter<any> = new EventEmitter();
 
-	constructor() {}
+  public wallets: any[];
+
+	constructor(
+    private _wallet: WalletModel
+  ) {
+    let self = this;
+    this.wallets = [];
+
+    this._wallet.on("WalletReady", function(eventData) {
+      console.log(`[WalletModel Event]2 --- ${eventData.eventName}`);
+      self.wallets = self._wallet.wallets;
+    });
+  }
 
 	ngOnInit() {
-    console.log('selected wallet?', this.selectedWallet);
+    let self = this;
+    
+    
   }
 
   onSelectWallet(walletNumber: number) {

@@ -7,17 +7,11 @@
   <Label class="action-bar--title" text="Wallet"></Label>
 </ActionBar>
 
-<!-- <GridLayout class="page page-content">
-  <Label class="page-icon fas" text="&#xf204;"></Label>
-  <Label class="page-placeholder" text="Wallet Module Coming Soon!"></Label>
-</GridLayout> -->
-
-
-
 <GridLayout rows="auto,*,auto">
-  <FlexboxLayout *ngIf="!walletData.loaded || walletData.warning" class="walletNoticeBar" row="0" [class.warning]="walletData.loaded && walletData.warning">
-    <ActivityIndicator class="activity-indicator" [busy]="!walletData.loaded"></ActivityIndicator>
-    <Label *ngIf="walletData.loaded && walletData.warning" textWrap="true" [text]="walletData.warningText"></Label>
+  <FlexboxLayout class="walletNoticeBar" row="0" [class.warning]="walletData.warning" [class.notice]="walletData.notice">
+    <ActivityIndicator *ngIf="!walletData.loaded" class="activity-indicator" [busy]="!walletData.loaded"></ActivityIndicator>
+    <Label *ngIf="walletData.warning" textWrap="true" [text]="walletData.warningText"></Label>
+    <Label *ngIf="walletData.notice" textWrap="true" [text]="walletData.noticeText"></Label>
   </FlexboxLayout>
 
   <TabView class="tabView" row="1" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)">
@@ -26,7 +20,7 @@
       </ContentView>
 
       <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Overview [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Overview>
+        <Overview [chainState]="activeChain" [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Overview>
         <!-- <Button height="50" width="200" text="{{ lightBar ? 'dark' : 'light' }}" (tap)="switchView()"></Button> -->
       </ContentView>
 
@@ -36,8 +30,6 @@
   </TabView>
 
   <GridLayout row="2" columns="*,*,*" class="tab-view">
-      <!-- <Label col="0" class="mdi text-center" [class.active]="tabSelectedIndex === 0"
-          [text]="'mdi-view-dashboard'" (tap)="tabSelectedIndex = 0"></Label> -->
       <StackLayout col="0" class="tab--item" [class.active]="tabSelectedIndex === 0" (tap)="tabSelectedIndex = 0">
         <Image class="tab--item--icon" src="res://send_white" height="24"></Image>
         <Label class="tab--item--label" text="Send"></Label>

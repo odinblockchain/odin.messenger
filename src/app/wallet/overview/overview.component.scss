@@ -1,5 +1,32 @@
 @import '~/app-variables';
 
+@keyframes placeHolderShimmer{
+  0% {
+    // background-position: -468px 0;
+    background-color: #ffffff;
+  }
+
+  100% {
+    // background-position: 468px 0;
+    background-color: #4face0;
+  }
+}
+
+.linear-background {
+  animation-name: placeHolderShimmer;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+
+  // background: #f6f7f8;
+  // background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  // background-size: 1000px 104px;
+
+  position: relative;
+  overflow: hidden;
+}
+
 /**
   Wallet Summary
 **/
