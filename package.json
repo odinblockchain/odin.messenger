@@ -64,7 +64,7 @@
     "nativescript-angular": "~7.0.0",
     "nativescript-appversion": "^1.4.1",
     "nativescript-clipboard": "^1.1.7",
-    "nativescript-electrumx-client": "^0.1.16",
+    "nativescript-electrumx-client": "0.1.18",
     "nativescript-floatingactionbutton": "^5.0.0",
     "nativescript-libsignal-protocol": "^0.2.0",
     "nativescript-randombytes": "^1.0.0",
