@@ -6,14 +6,8 @@ import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { confirm } from "tns-core-modules/ui/dialogs";
 import * as utilityModule from "utils/utils";
-
-import { AccountService } from '~/app/shared/account.service';
 import { UserModel } from '~/app/shared/user.model';
-
-import { isAndroid, isIOS, device, screen } from "tns-core-modules/platform";
-
 import { GestureTypes, TouchGestureEventData } from "tns-core-modules/ui/gestures";
-import { StorageService } from '~/app/shared/storage.service';
 
 @Component({
 	moduleId: module.id,
@@ -39,8 +33,6 @@ export class CreateAccountComponent implements OnInit {
 
 	constructor(
     private page: Page,
-    private accountService: AccountService,
-    private storage: StorageService,
     private userModel: UserModel) {
     this.page.actionBarHidden = true;
   }
