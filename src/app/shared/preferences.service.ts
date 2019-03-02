@@ -29,7 +29,8 @@ export class PreferencesService {
 
   private defaultPreferences(): any {
     return {
-      api_url: 'https://osm-testnet.obsidianplatform.com'
+      api_url: 'https://osm-testnet.obsidianplatform.com',
+      explorer_url: 'https://inspect.odinblockchain.org/api'
     };
   }
 }

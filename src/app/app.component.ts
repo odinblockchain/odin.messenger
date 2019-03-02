@@ -46,6 +46,7 @@ export class AppComponent implements OnInit {
   private _pingServer: any;
   public userAccount: any;
   public connected: boolean;
+  public isWalletView: boolean;
 
   constructor(
     private router: Router,
@@ -59,6 +60,7 @@ export class AppComponent implements OnInit {
     this._activatedUrl = "/splashscreen";
     this._sideDrawerTransition = new SlideInOnTopTransition();
     this.userAccount = this.userModel.saveData;
+    this.isWalletView = false;
 
     this.userModel.addEventListener(Observable.propertyChangeEvent, (args: PropertyChangeData) => {
       console.log('onAccountModelUpdate', {
@@ -95,12 +97,12 @@ export class AppComponent implements OnInit {
 
       if (!_this._pingServer) {
         clearInterval(this._pingServer);
-        _this._pingServer = setInterval(() => {
-          if (_this.userModel.osmConnected) {
-            console.log(`[App] Ping Server...`);
-            _this.userModel.fetchMessages();
-          }
-        }, (15 * 1000));
+        // _this._pingServer = setInterval(() => {
+        //   if (_this.userModel.osmConnected) {
+        //     console.log(`[App] Ping Server...`);
+        //     _this.userModel.fetchMessages();
+        //   }
+        // }, (15 * 1000));
       }
     });
 
@@ -181,13 +183,13 @@ export class AppComponent implements OnInit {
     console.log("[App] Resume ODIN...");
 
     if (!this._pingServer) {
-      clearInterval(this._pingServer);
-      this._pingServer = setInterval(() => {
-        if (this.userModel.osmConnected) {
-          console.log(`[App] Ping Server...`);
-          this.userModel.fetchMessages();
-        }
-      }, (15 * 1000));
+      // clearInterval(this._pingServer);
+      // this._pingServer = setInterval(() => {
+      //   if (this.userModel.osmConnected) {
+      //     console.log(`[App] Ping Server...`);
+      //     this.userModel.fetchMessages();
+      //   }
+      // }, (15 * 1000));
     }
   }
 
@@ -251,15 +253,18 @@ export class AppComponent implements OnInit {
   }
 
   onNavItemTap(navItemRoute: string): void {
-    console.log('navigate to...', navItemRoute)
-    
+    console.log(`[App] NavigateTo [${navItemRoute}]`);
+
+    if (navItemRoute === '/wallet') this.isWalletView = true;
+
     this.routerExtensions.navigate([navItemRoute], {
-        transition: {
-            name: "fade"
-        }
+      transition: {
+        name: (this.isWalletView) ? 'flip' : 'fade'
+      }
     });
 
     const sideDrawer = <RadSideDrawer>app.getRootView();
     sideDrawer.closeDrawer();
+    this.isWalletView = false;
   }
 }

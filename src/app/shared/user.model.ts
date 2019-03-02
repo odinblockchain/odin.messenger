@@ -133,7 +133,6 @@ export interface IStoredMessage {
 
 @Injectable()
 export class UserModel extends Observable {
-  private _store: StorageService;
   private _signalClient: LibsignalProtocol.Client;
 
   public saveData: UserSaveData;
@@ -147,12 +146,12 @@ export class UserModel extends Observable {
 
   constructor(
     private _router: RouterExtensions,
-    private _osmClient: OSMClientService
+    private _osmClient: OSMClientService,
+    private _store: StorageService
   ) {
     super();
 
     this.COIN             = 'ODIN';
-    this._store           = new StorageService();
     this._signalClient    = null;
     this.osmConnected     = false;
     this.friends          = [];
@@ -642,7 +641,7 @@ export class UserModel extends Observable {
     this.saveData.registered = false;
 
     let mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
-    // let mnemonic = 'horror hunt analyst monster transfer cool link venture warrior royal color gasp';
+    // let mnemonic = 'cool cool cool cool cool cool cool cool cool cool cool cool';
     this.saveData.mnemonicPhrase = mnemonic;
 
     let seed  = ODIN.bip39.mnemonicToSeed(mnemonic);
@@ -693,8 +692,27 @@ export class UserModel extends Observable {
       };
       this.notify(eventData);
     } catch (err) {
-      console.log('Unable to registration account');
-      console.log(err.message ? err.message : err);
+      if (err.message && err.message === 'Max_PreKeys') {
+        this.saveData.registered = true;
+        this.remotePreKeyBundles = 100;
+        this.osmConnected = true;
+        console.log('--- Account Creation Successful ---');
+
+        this._store.setString('saveData', JSON.stringify(this.saveData));
+
+        let eventData = {
+          eventName: "IdentityRegistered",
+          object: this
+        };
+        this.notify(eventData);
+      } else {
+        console.log('Unable to registration account');
+        console.log('Error', {
+          message: err.message ? err.message : err
+        });
+
+        alert('Your account coult not be registered at this time. Please try again later.');
+      }
     }
   }
 
@@ -884,7 +902,6 @@ export class UserModel extends Observable {
   }
 
   private async clearSaveData() {
-    this._store               = new StorageService();
     this._signalClient        = null;
     this.remotePreKeyBundles  = 0;
     this.localPreKeyBundles   = 0;
