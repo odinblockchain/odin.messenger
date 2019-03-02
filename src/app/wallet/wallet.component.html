@@ -20,7 +20,7 @@
       </ContentView>
 
       <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Overview [chainState]="activeChain" [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Overview>
+        <Overview [blockheight]="blockheight" [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Overview>
         <!-- <Button height="50" width="200" text="{{ lightBar ? 'dark' : 'light' }}" (tap)="switchView()"></Button> -->
       </ContentView>
 

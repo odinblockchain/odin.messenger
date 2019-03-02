@@ -17,7 +17,7 @@
           </FormattedString>
         </Label>
         <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
-        <Label class="wallet--last-transaction-time" text="--- --- ---"></Label>
+        <Label class="wallet--last-transaction-time" [text]="wallet.lastTransaction | relativeTime"></Label>
       </StackLayout>
     </AbsoluteLayout>
 

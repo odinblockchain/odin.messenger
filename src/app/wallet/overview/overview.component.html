@@ -13,7 +13,7 @@
       <Label flexGrow="1" class="blockheight">
         <FormattedString>
           <Span text="Block: "></Span>
-          <Span [text]="chainState?.blockheight"></Span>
+          <Span [text]="blockheight"></Span>
         </FormattedString>
       </Label>
     </StackLayout>
@@ -50,9 +50,10 @@
                     <Label *ngIf="transaction.pending" class="transaction--label" text="Pending Transaction"></Label>
                     <Label>
                       <FormattedString>
-                        <Span class="transaction--label" [text]="transaction.timestamp"></Span>
+                        <Span class="transaction--label" [text]="transaction.timestamp | relativeTime"></Span>
                         <Span class="transaction--label" text=" | "></Span>
-                        <Span class="transaction--label" [text]="transaction.blockheight | transactionConfirmations"></Span>
+                        <Span class="transaction--label" [text]="blockheight - transaction.blockheight"></Span>
+                        <Span class="transaction--label" text=" conf."></Span>
                       </FormattedString>
                     </Label>
                   </StackLayout>

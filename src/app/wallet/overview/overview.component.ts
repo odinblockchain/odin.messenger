@@ -1,4 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { WalletModel } from '~/app/shared/wallet.model';
+import { EventData } from 'tns-core-modules/ui/page/page';
 
 @Component({
 	moduleId: module.id,
@@ -10,10 +12,13 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class OverviewComponent implements OnInit {
   @Input() selectedWalletId: number;
   @Input() currentWallet: any;
-  @Input() chainState: any;
+  @Input() blockheight: number;
   @Output() walletSelected: EventEmitter<any> = new EventEmitter();
 
-	constructor() { }
+	constructor(
+    private _wallet: WalletModel,
+    private _change: ChangeDetectorRef
+  ) { }
 
   ngOnInit() { }
 

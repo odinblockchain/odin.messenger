@@ -20,16 +20,19 @@ export class WalletSelectionComponent implements OnInit {
     let self = this;
     this.wallets = [];
 
+    if (this._wallet.wallets.length) {
+      console.log(`[Wallet Selection] Wallet ready...`);
+      self.wallets = self._wallet.wallets;
+    }
+
     this._wallet.on("WalletReady", function(eventData) {
-      console.log(`[WalletModel Event]2 --- ${eventData.eventName}`);
+      console.log(`[Wallet Selection] Wallet ready...`);
       self.wallets = self._wallet.wallets;
     });
   }
 
 	ngOnInit() {
     let self = this;
-    
-    
   }
 
   onSelectWallet(walletNumber: number) {
