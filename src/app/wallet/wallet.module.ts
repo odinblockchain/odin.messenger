@@ -10,6 +10,7 @@ import { ReceiveComponent } from "./receive/receive.component";
 import { WalletSelectionComponent } from "./wallet-selection/wallet-selection.component";
 import { SatoshiValueConverter } from "~/app/utils/satoshiValueConverter";
 import { TransactionConfirmations } from "~/app/utils/transactionConfirmations";
+import { RelativeTime } from "../utils/relativeTime";
 
 @NgModule({
   imports: [
@@ -20,6 +21,7 @@ import { TransactionConfirmations } from "~/app/utils/transactionConfirmations";
   declarations: [
     SatoshiValueConverter,
     TransactionConfirmations,
+    RelativeTime,
     WalletComponent,
     SendComponent,
     OverviewComponent,

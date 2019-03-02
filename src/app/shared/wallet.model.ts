@@ -206,12 +206,15 @@ export class WalletModel extends Observable {
       electrumx_host: 'electrumx.odinblockchain.org',
       electrumx_port: 50001,
       explorer_url: 'https://inspect.odinblockchain.org/api',
+      chain_stats_url: 'https://inspect.odinblockchain.org/api/stats',
       icon: 'res://coin_odin'
     };
     
     this.walletData = {
+      busy: false,
       loaded: false,
       enabled: false,
+      subscribed: false,
       serverVersion: '',
       warning: false,
       warningText: '',
@@ -219,7 +222,20 @@ export class WalletModel extends Observable {
       noticeText: ''
     };
 
+    this.chainStats = {
+      blockheight: 0
+    };
+
     this.wallets = [];
+
+    this.onHandleData = this.onHandleData.bind(this);
+    this.onHandleFinished = this.onHandleFinished.bind(this);
+    this.onHandleBlockchainHeaders = this.onHandleBlockchainHeaders.bind(this);
+    this.onHandleError = this.onHandleError.bind(this);
+    this.establishConnection = this.establishConnection.bind(this);
+    this.reconnect = this.reconnect.bind(this);
+    this.keepAlive = this.keepAlive.bind(this);
+    
     this.initialize();
   }
 
@@ -228,15 +244,15 @@ export class WalletModel extends Observable {
 
     // await this._store.setString(WalletKey, 'fefe');
     
-    this._walletClient.fetchBlockchainStats()
-    .then((statsResponse) => {
-      console.log('get stats', statsResponse);
-      this.chainStats = statsResponse.stats
-    })
-    .catch((err) => {
-      console.log('Chain Stats Error');
-      console.log(err);
-    });
+    // this._walletClient.fetchBlockchainStats()
+    // .then((statsResponse) => {
+    //   console.log('get stats', statsResponse);
+    //   this.chainStats = statsResponse.stats
+    // })
+    // .catch((err) => {
+    //   console.log('Chain Stats Error');
+    //   console.log(err);
+    // });
 
     if (this._store.hasKey(WalletKey)) {
       console.log(`[WalletModel]... Restore Wallet`);
@@ -247,17 +263,18 @@ export class WalletModel extends Observable {
 
         let self = this;
         setTimeout(() => {
-          console.log('total wallets?', this.wallets.length);
+          console.log('total wallets?', self.wallets.length);
 
-          this.notify({
+          self.notify({
             eventName: "WalletReady",
             object: this
           });
 
-          this.walletData.loaded      = true;
-          this.walletData.notice      = false;
-          this.walletData.noticeText  = '';
+          self.walletData.loaded      = true;
+          self.walletData.notice      = false;
+          self.walletData.noticeText  = '';
         }, 3000);
+        
       } catch (err) {
         console.log('ERROR restoring wallet');
         console.log(err.message ? err.message : err);
@@ -265,7 +282,6 @@ export class WalletModel extends Observable {
         await this.createDefaultWallet(this.defaultWalletDetails);
 
         console.log('...done creating');
-        this.walletData.loaded = true;
         
         this.notify({
           eventName: "WalletReady",
@@ -277,7 +293,6 @@ export class WalletModel extends Observable {
       await this.createDefaultWallet(this.defaultWalletDetails);
 
       console.log('...done creating');
-      this.walletData.loaded = true;
       
       this.notify({
         eventName: "WalletReady",
@@ -322,23 +337,29 @@ export class WalletModel extends Observable {
 
       while (wallets.length > 0) {
         const wallet = wallets.shift();
-        console.log('--- --- --- ---');
-        console.log('GOT Account');
-
-        console.log('index', wallet.accountIndex);
-        console.log('coin', wallet.coin);
-        console.log('balance', wallet.balance);
-        console.log('transactions', wallet.transactions.slice(0, 2));
-        console.log('unspent', wallet.unspent.slice(0, 2));
-        console.log('external', wallet.external.slice(0, 3));
-        console.log('internal', wallet.internal.slice(0, 3));
-
-        console.log('TOTAL external accounts', wallet.external.length);
-        console.log('TOTAL internal accounts', wallet.internal.length);
+        console.log('--- --- [Load Wallet]--- ---');
+        console.log(`
+          INDEX[${wallet.accountIndex}]
+          BAL[${JSON.stringify(wallet.balance)}]
+          TXS[${wallet.transactions.length}]
+          INT[${wallet.internal.length}]
+          EXT[${wallet.external.length}]
+          UNSPENT[${wallet.unspent.length}]
+        \n`);
 
         this.wallets.push(wallet);
       }
 
+      if (this.wallets[0].coin) {
+        console.log('ATTEMPTING TO CONNECT...');
+
+        if (await this.establishConnection(this.wallets[0].coin)) {
+
+        } else {
+          console.log('CANNOT ESTABLISH CONNECTION');
+        }
+      }
+      
       return true;
     } catch (err) {
       console.log('Restore error');
@@ -351,7 +372,6 @@ export class WalletModel extends Observable {
 
   public async createDefaultWallet(coin: any) {
     if (await this.establishConnection(coin)) {
-      console.log('[Wallet] RESTORE COMPLETE?');
 
       this.walletData.loaded      = false;
       this.walletData.notice      = true;
@@ -359,19 +379,15 @@ export class WalletModel extends Observable {
 
       let walletAccount = await this.createWallet(coin, this);
       if (walletAccount) {
-        console.log('--- --- --- ---');
-        console.log('GOT Account');
-
-        console.log('index', walletAccount.accountIndex);
-        console.log('coin', walletAccount.coin);
-        console.log('balance', walletAccount.balance);
-        console.log('transactions', walletAccount.transactions.slice(0, 2));
-        console.log('unspent', walletAccount.unspent.slice(0, 2));
-        console.log('external', walletAccount.external.slice(0, 3));
-        console.log('internal', walletAccount.internal.slice(0, 3));
-
-        console.log('TOTAL external accounts', walletAccount.external.length);
-        console.log('TOTAL internal accounts', walletAccount.internal.length);
+        console.log('--- --- [Create Wallet]--- ---');
+        console.log(`
+          INDEX[${walletAccount.accountIndex}]
+          BAL[${JSON.stringify(walletAccount.balance)}]
+          TXS[${walletAccount.transactions.length}]
+          INT[${walletAccount.internal.length}]
+          EXT[${walletAccount.external.length}]
+          UNSPENT[${walletAccount.unspent.length}]
+        \n`);
 
         this.walletData.notice     = false;
         this.walletData.noticeText = '';
@@ -380,63 +396,124 @@ export class WalletModel extends Observable {
         await this._store.setString(WalletKey, JSON.stringify(this.wallets));
         console.log('SAVED');
       }
-
       
     } else {
       console.log('nope');
     }
   }
 
-  public async establishConnection(coin: any): Promise<any> {
-    console.log(`connect to ${coin.electrumx_host}:${coin.electrumx_port}`);
-    
-    try {
-      this._electrumxClient = new ElectrumxClient(coin.electrumx_host, coin.electrumx_port);
-      this.createSubscriptions();
-      this._validateSessionTimer = setTimeout(this.validateSession, 1000 * 10, this);
+  public reconnect(coin: any): Promise<any> {
+    this.walletData.notice      = true;
+    this.walletData.noticeText  = 'Synchronizing wallet. Please wait.';
 
-      await this._electrumxClient.connect();
-      console.log('...connected');
-    } catch (err) {
-      console.log('CONNECTION ERROR');
-      console.log(err);
+    return new Promise((resolve, reject) => {
+      this.establishConnection(coin)
+      .then(() => {
+        this.walletData.loaded      = true;
+        this.walletData.notice      = false;
+        this.walletData.noticeText  = '';
 
-      this.walletData.loaded      = true;
-      this.walletData.warning     = true;
-      this.walletData.warningText = 'CONNECTION FAILURE';
-
-      return false;
-    }
-
-    try {
-      console.log('check version');
-
-      let electrumxVersion          = await this._electrumxClient.server_version(UserAgent, '1.4');
-      this.walletData.loaded        = true;
-      this.walletData.enabled       = true;
-      this.walletData.serverVersion = Array.isArray(electrumxVersion) ? electrumxVersion[0] : 'Unknown Version';
-      
-      console.log('got version', electrumxVersion);
-      clearTimeout(this._validateSessionTimer);
-
-      return true;
-    } catch (err) {
-      this.walletData.loaded  = true;
-      this.walletData.warning = true;
-
-      if (err && err.message.includes('unsupported client')) {
-        this.walletData.warningText = 'Wallet outdated! Please update your application to continue!';
-
-        alert('You are currently using an unsupported version of this wallet. Please update your ODIN Messenger as soon as possible to continue.')
-      } else {
-        this.walletData.warningText = 'Unable to establish a secure connection with an available wallet relay node. Please try again later.';
-
-        console.log('Connection error');
+        return resolve(true);
+      })
+      .catch((err) => {
+        console.log('RE-CONNECT ERROR');
         console.log(err);
-      }
+  
+        this.walletData.loaded      = true;
+        this.walletData.warning     = true;
+        this.walletData.warningText = 'Error Reconnecting.';
+        return resolve(false);
+      });
+    });
+  }
 
-      return false;
-    }
+  public keepAlive(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.walletData.enabled && !this.walletData.busy) {
+
+        this.walletData.loaded  = false;
+        this.walletData.busy    = true;
+
+        console.log(`[Wallet] keepAlive... Connection enabled...`);
+  
+        this._validateSessionTimer = setTimeout(this.validateSession, 1000 * 10, this);
+        this._electrumxClient.server_ping()
+        .then(() => {
+          this.walletData.loaded        = true;
+          this.walletData.enabled       = true;
+          this.walletData.busy          = false;
+
+          clearTimeout(this._validateSessionTimer);
+          return resolve(true);
+        })
+        .catch((err) => {
+          console.log(`[Wallet] keepAlive BAD`);
+          console.log(err);
+          return resolve(false);
+        });
+      } else {
+        resolve(false);
+      }
+    }); 
+  }
+
+  public establishConnection(coin: any): Promise<any> {
+    console.log(`connect to ${coin.electrumx_host}:${coin.electrumx_port}`);
+    this.walletData.busy    = true;
+    this.walletData.loaded  = false;
+    this.walletData.enabled = false;
+    
+    return new Promise((resolve, reject) => {
+      this._electrumxClient = new ElectrumxClient(coin.electrumx_host, coin.electrumx_port);
+
+      this.createSubscriptions()
+      .then(() => {
+        console.log('[Wallet] Subscriptions setup!');
+
+        this._validateSessionTimer = setTimeout(this.validateSession, 1000 * 10, this);
+        return this._electrumxClient.connect();
+      })
+      .then(() => {
+        console.log('[Wallet] Connected!');
+        return this._electrumxClient.blockchainHeaders_subscribe();
+      })
+      .then(() => {
+        this.walletData.subscribed = true;
+        console.log('[Wallet] Subscribed!');
+        return this._electrumxClient.server_version(UserAgent, '1.4');
+      })
+      .then((electrumxVersion: any) => {
+        this.walletData.loaded        = true;
+        this.walletData.enabled       = true;
+        this.walletData.busy          = false;
+        this.walletData.serverVersion = Array.isArray(electrumxVersion) ? electrumxVersion[0] : 'Unknown Version';
+
+        console.log('[Wallet] Version', electrumxVersion);
+        clearTimeout(this._validateSessionTimer);
+        return resolve(true);
+      })
+      .catch((err: any) => {
+        console.log('CONNECTION ERROR');
+        console.log(err);
+  
+        this.walletData.loaded      = true;
+        this.walletData.warning     = true;
+
+        if (err && err.message.includes('unsupported client')) {
+          this.walletData.warningText = 'Wallet outdated! Please update your application to continue!';
+  
+          alert('You are currently using an unsupported version of this wallet. Please update your ODIN Messenger as soon as possible to continue.')
+        } else {
+          this.walletData.warningText = 'Unable to establish a secure connection with an available wallet relay node. Please try again later.';
+  
+          console.log('Connection error');
+          console.log(err);
+        }
+  
+        this.walletData.busy = false;
+        return resolve(false);
+      });
+    });
   }
 
   /**
@@ -453,6 +530,19 @@ export class WalletModel extends Observable {
       thisRef.walletData.warning      = true;
       thisRef.walletData.warningText  = 'Unable to establish a connection to a Wallet Relay Node. Please try again later';
     }
+  }
+
+  public async cancelSubscriptions() {
+    await this._electrumxClient.subscribe.off('data', this.onHandleData);
+    await this._electrumxClient.subscribe.off('finished', this.onHandleFinished);
+    await this._electrumxClient.subscribe.off('blockchain.headers.subscribe', this.onHandleBlockchainHeaders);
+    clearTimeout(this._validateSessionTimer);
+    // await this._electrumxClient.close();
+    this.walletData.subscribed  = false;
+    this.walletData.loaded      = false;
+    this.walletData.busy        = false;
+
+    return true;
   }
 
   // private async restoreWallet(coin: any, thisRef: any): Promise<any> {
@@ -680,6 +770,21 @@ export class WalletModel extends Observable {
   }
 
   /**
+   * 
+   * @param transactions List of Transactions to find the earliest timestamp
+   */
+  private async oldestTransaction(transactions: ITransaction[]): Promise<number> {
+    console.log('OLDEST?', transactions);
+    if (!transactions.length) return -1;
+    let bestTimestamp = -1;
+    for (let tx of transactions) {
+      if (Number(tx.timestamp) > bestTimestamp) bestTimestamp = Number(tx.timestamp);
+    }
+    
+    return bestTimestamp;
+  }
+
+  /**
    * Discovers external and internal addresses associated to an `accountIndex`. Returns a full account
    * summary.
    * 
@@ -718,6 +823,7 @@ export class WalletModel extends Observable {
     account.unspent       = account.unspent.concat(pulledExternal.unspent, pulledInternal.unspent);
 
     await this.transactionDiscovery(account.transactions);
+    account.lastTransaction = await this.oldestTransaction(account.transactions);
     return account;
   }
 
@@ -738,42 +844,89 @@ export class WalletModel extends Observable {
   /**
    * Create handlers for certain ElectrumX event streams
    */
-  private createSubscriptions() {
-    // this._electrumxClient.subscribe.on('data', (rawData: string) => {
-    //   console.log('ON DATA', rawData);
-    // });
+  private async createSubscriptions() {
+    let self = this;
 
-    this._electrumxClient.subscribe.on('finished', (tcpActionId: number) => {
-      console.log('ON FINISHED', tcpActionId);
-    });
-
-    /**
-     * Subscribe to any errors streamed from this plugin.
-     * There are two primary error types to watch out for:
-     *
-     * err.name === "UnexpectedResponseError"
-     * This error comes from an unexpected response from ElectrumX as
-     * ElectrumX should always return a JSON.parse-able string response.
-     *
-     * err.name === "TCPClientError"
-     * This error comes from the base class TcpClient when a connection
-     * fails.
-     */
-    this._electrumxClient.subscribe.on('error', async (err) => {
-      console.log('ON ERROR', {
-        name: err.name ? err.name : '??',
-        msg: err.message ? err.message : '??'
-      }, err);
-
-      if (err.name === 'TCPClientError!') {
-        this.walletData.loaded      = true;
-        this.walletData.warning     = true;
-        this.walletData.warningText = 'Failed to establish a connection to a Wallet Relay Node. Please try again later';
-      }
-    });
-    
+    await this._electrumxClient.subscribe.on('data', this.onHandleData);
+    await this._electrumxClient.subscribe.on('finished', this.onHandleFinished);
+    await this._electrumxClient.subscribe.on('blockchain.headers.subscribe', this.onHandleBlockchainHeaders);
+    await this._electrumxClient.subscribe.on('error', this.onHandleError);
+    return true;
     // this._electrumxClient.subscribe.on('blockchain.scripthash.subscribe', (...args) => {
     //   console.log('GOT BLOCK', args);
     // });
+  }
+
+  private onHandleData(rawData: any) {
+    let data = null;
+
+    try {
+      console.log('[Wallet] onElectrumxData');
+      data = JSON.parse(rawData);
+      console.dir(data);
+    } catch (err) {
+      console.log('[Wallet] onElectrumxData... RAW', rawData);
+    }
+
+    if (!data ||
+        !data.hasOwnProperty('result') ||
+        (data.result === null)) {
+      return true;
+    }
+
+    if (data.result.hasOwnProperty('height') && data.result.hasOwnProperty('hex')) {
+      this.chainStats.blockheight = data.result.height;
+      
+      this.notify({
+        eventName: "NewBlockFound",
+        object: this
+      });
+    }
+  }
+
+  private onHandleFinished(tcpActionId: number) { }
+
+  private onHandleBlockchainHeaders(headers: any) {
+    if (!Array.isArray(headers)) {
+      console.log('[Wallet] Unable to process headers...');
+      console.log(headers);
+      return;
+    }
+
+    const header = headers.shift();
+    if (header && header.hasOwnProperty('height')) {
+      console.log(`[Wallet] New Blockheight [${header.height}]`);
+      this.chainStats.blockheight = header.height;
+
+      this.notify({
+        eventName: "NewBlockFound",
+        object: this
+      });
+    }
+  }
+
+  /**
+   * Subscribe to any errors streamed from this plugin.
+   * There are two primary error types to watch out for:
+   *
+   * err.name === "UnexpectedResponseError"
+   * This error comes from an unexpected response from ElectrumX as
+   * ElectrumX should always return a JSON.parse-able string response.
+   *
+   * err.name === "TCPClientError"
+   * This error comes from the base class TcpClient when a connection
+   * fails.
+   */
+  private onHandleError(err: any) {
+    console.log('ON ERROR', {
+      name: err.name ? err.name : '??',
+      msg: err.message ? err.message : '??'
+    }, err);
+
+    if (err.name === 'TCPClientError!') {
+      this.walletData.loaded      = true;
+      this.walletData.warning     = true;
+      this.walletData.warningText = 'Failed to establish a connection to a Wallet Relay Node. Please try again later';
+    }
   }
 }
