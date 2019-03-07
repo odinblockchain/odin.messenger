@@ -48,7 +48,7 @@
                     <Label *ngIf="transaction.received" class="transaction--label" text="Received ODIN"></Label>
                     <Label *ngIf="transaction.sent" class="transaction--label" text="Sent ODIN"></Label>
                     <Label *ngIf="transaction.pending" class="transaction--label" text="Pending Transaction"></Label>
-                    <Label>
+                    <Label *ngIf="!transaction.pending">
                       <FormattedString>
                         <Span class="transaction--label" [text]="transaction.timestamp | relativeTime"></Span>
                         <Span class="transaction--label" text=" | "></Span>
