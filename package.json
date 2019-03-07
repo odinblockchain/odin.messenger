@@ -1,6 +1,6 @@
 {
   "name": "odin.messenger.client",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ODIN Messenger developed on NativeScript",
   "nativescript": {
     "id": "org.odinblockchain.messenger",
@@ -9,10 +9,7 @@
     }
   },
   "readme": "NativeScript Application",
-  "author": {
-    "name": "odinblockchain",
-    "url": "https://odinblockchain.org"
-  },
+  "author": "ODINBLOCKCHAIN",
   "contributors": [
     {
       "name": "Pixxlated",
@@ -61,10 +58,11 @@
     "@angular/router": "~7.0.0",
     "buffer": "^5.2.1",
     "hashids": "^1.2.2",
+    "moment": "^2.24.0",
     "nativescript-angular": "~7.0.0",
     "nativescript-appversion": "^1.4.1",
     "nativescript-clipboard": "^1.1.7",
-    "nativescript-electrumx-client": "0.1.18",
+    "nativescript-electrumx-client": "0.1.20",
     "nativescript-floatingactionbutton": "^5.0.0",
     "nativescript-libsignal-protocol": "^0.2.0",
     "nativescript-randombytes": "^1.0.0",
