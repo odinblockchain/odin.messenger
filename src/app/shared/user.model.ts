@@ -219,17 +219,17 @@ export class UserModel extends Observable {
       this.saveData.deviceId, identityKeyPair, signedPreKey,
       preKeys);
 
-    let foo = JSON.parse(JSON.stringify(this._signalClient));
+    let _user = JSON.parse(JSON.stringify(this._signalClient));
 
     console.log(`UserModel... Sanity Check`);
     console.log({
       account:      this._signalClient.username,
       regId:        this._signalClient.registrationId,
       devId:        this._signalClient.deviceId,
-      idpair:       foo.identityKeyPair,
-      signedPreKey: foo.signedPreKey,
-      preKeys:      foo.preKeys ? foo.preKeys.length : 0,
-      preKey0:      foo.preKeys ? foo.preKeys[0] : ''
+      idpair:       _user.identityKeyPair,
+      signedPreKey: _user.signedPreKey,
+      preKeys:      _user.preKeys ? _user.preKeys.length : 0,
+      preKey0:      _user.preKeys ? _user.preKeys[0] : ''
     });
 
     await this._store.setString('signalClient', JSON.stringify(this._signalClient));
@@ -645,7 +645,7 @@ export class UserModel extends Observable {
     this.saveData.mnemonicPhrase = mnemonic;
 
     let seed  = ODIN.bip39.mnemonicToSeed(mnemonic);
-    let sroot = ODIN.bip32.fromSeed(seed);
+    let sroot = ODIN.bip32.fromSeed(seed, ODIN.networks.bitcoin);
       
     let masterRoot    = sroot.derivePath("m/0'/0'/1337'/0");
     let masterAccount = ODIN.payments.p2pkh({ pubkey: masterRoot.publicKey });
