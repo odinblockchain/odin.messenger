@@ -9,14 +9,14 @@
 
 <GridLayout rows="auto,*,auto">
   <FlexboxLayout class="walletNoticeBar" row="0" [class.warning]="walletData.warning" [class.notice]="walletData.notice">
-    <ActivityIndicator *ngIf="!walletData.loaded" class="activity-indicator" [busy]="!walletData.loaded"></ActivityIndicator>
+    <ActivityIndicator *ngIf="!walletData.loaded || !activeWallet" class="activity-indicator" [busy]="!walletData.loaded || !activeWallet"></ActivityIndicator>
     <Label *ngIf="walletData.warning" textWrap="true" [text]="walletData.warningText"></Label>
     <Label *ngIf="walletData.notice" textWrap="true" [text]="walletData.noticeText"></Label>
   </FlexboxLayout>
 
   <TabView class="tabView" row="1" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)">
       <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Send [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Send>
+        <Send [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Send>
       </ContentView>
 
       <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
@@ -25,7 +25,7 @@
       </ContentView>
 
       <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Receive [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Receive>
+        <Receive [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Receive>
       </ContentView>
   </TabView>
 

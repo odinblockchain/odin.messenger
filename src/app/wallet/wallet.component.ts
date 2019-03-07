@@ -44,7 +44,6 @@ export class WalletComponent implements OnInit, AfterViewInit {
 
     if (this._wallet.wallets.length) {
       console.log(`[Wallet Module] Wallets Found...`);
-      this.activeWallet = this._wallet.wallets[this.selectedWalletId];
       this.blockheight  = this._wallet.chainStats.blockheight;
     } else {
       console.log(`[Wallet Module] Wallets Loading...`);
@@ -78,6 +77,11 @@ export class WalletComponent implements OnInit, AfterViewInit {
       console.log(`[Wallet Module] Block -- ${event.object['chainStats'].blockheight}`);
       this.blockheight = event.object['chainStats'].blockheight;
       this._change.detectChanges();
+    });
+
+    this._wallet.on('TransactionSent', (event: EventData) => {
+      console.log(`[Wallet Module] TransactionSent --`);
+      this.onRefreshWallet();
     });
   }
 
@@ -119,6 +123,17 @@ export class WalletComponent implements OnInit, AfterViewInit {
 
   ngOnDestroy() {
     console.log('ON DESTROY');
+  }
+
+  public onRefreshWallet() {
+    console.log('onRefreshWallet', typeof this._wallet.refreshWalletDetails);
+    this._wallet.refreshWalletDetails()
+    .then(() => {
+      console.log('[Wallet] Completed refresh');
+      console.log('all wallets', this._wallet.wallets.map(wallet => wallet.balance.confirmed));
+
+      this.activeWallet = this._wallet.wallets[this.selectedWalletId];
+    });
   }
 
   public onWalletSelected(walletSelectedId: number) {
