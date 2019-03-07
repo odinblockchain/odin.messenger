@@ -56,61 +56,30 @@
           <StackLayout class="card-content">
             <Label class="h2" textWrap="true" text="Fresh ODIN address"></Label>
             <Label class="body help" textWrap="true" text="For optimal security, we will generate a new ODIN address after a previous address has been used. They are all still associated with your Identity seed and aren't lost."></Label>
-            <TextView textWrap="true" autocorrect="false" text="oHLfrptsYwHY8ptqMib4cTMVmyVj3Pvzy9" class="input input-border" hint=""></TextView>
+            <TextView textWrap="true" autocorrect="false" [text]="unusedAddress?.address" class="input input-border" hint=""></TextView>
           </StackLayout>
         </ContentView>
 
         <ContentView row="1" class="addresses">
           <StackLayout>
+
             <StackLayout class="header">
               <Label class="h2" textWrap="true" text="Used addresses"></Label>
               <Label class="p" textWrap="true" text="These are addresses you have used in the past and may continue to use if you wish."></Label>
             </StackLayout>
 
-            <StackLayout class="address">
-              <Label textWrap="true" class="address--hash" text="oHLfrptsYwHY8ptqMib4cTMVmyVj3Pvzy9zzzzzzzzzzzzzzzzzzzzzzzz"></Label>
+            <StackLayout class="address" *ngFor="let address of usedExternalAddresses; index as i;">
+              <Label textWrap="true" class="address--hash" [text]="address.address"></Label>
 
               <GridLayout cols="auto,*">
                 <Label col="0" class="address--meta">
                   <FormattedString>
                     <Span class="address--last-used-label" text="Last used"></Span>
-                    <Span class="address--last-used-time" text=" 1 month ago"></Span>
+                    <Span class="address--last-used-time" text=" — "></Span>
                   </FormattedString>
                 </Label>
                 <ContentView col="1" class="address--amount">
-                  <Label text="1.29238236"></Label>
-                </ContentView>
-              </GridLayout>
-            </StackLayout>
-
-            <StackLayout class="address">
-              <Label textWrap="true" class="address--hash" text="oHLfrptsYwHY8ptqMib4cTMVmyVj3Pvzy9zzzzzzzzzzzzzzzzzzzzzzzz"></Label>
-
-              <GridLayout cols="auto,*">
-                <Label col="0" class="address--meta">
-                  <FormattedString>
-                    <Span class="address--last-used-label" text="Last used"></Span>
-                    <Span class="address--last-used-time" text=" 1 month ago"></Span>
-                  </FormattedString>
-                </Label>
-                <ContentView col="1" class="address--amount">
-                  <Label text="1.29238236"></Label>
-                </ContentView>
-              </GridLayout>
-            </StackLayout>
-
-            <StackLayout class="address">
-              <Label textWrap="true" class="address--hash" text="oHLfrptsYwHY8ptqMib4cTMVmyVj3Pvzy9zzzzzzzzzzzzzzzzzzzzzzzz"></Label>
-
-              <GridLayout cols="auto,*">
-                <Label col="0" class="address--meta">
-                  <FormattedString>
-                    <Span class="address--last-used-label" text="Last used"></Span>
-                    <Span class="address--last-used-time" text=" 1 month ago"></Span>
-                  </FormattedString>
-                </Label>
-                <ContentView col="1" class="address--amount">
-                  <Label text="1.29238236"></Label>
+                  <Label [text]="address.balance.confirmed | satoshiValueConverter"></Label>
                 </ContentView>
               </GridLayout>
             </StackLayout>
