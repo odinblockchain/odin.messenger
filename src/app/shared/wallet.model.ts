@@ -1,16 +1,15 @@
 import { Injectable } from "@angular/core";
-import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
-import { StorageService } from './index';
-import { RouterExtensions } from "nativescript-angular/router";
-
-import { alert } from "ui/dialogs";
-
-import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
-import { WalletClientService } from "./wallet-client.service";
-import { ElectrumxClient } from 'nativescript-electrumx-client';
-import { setTimeout, clearTimeout } from "tns-core-modules/timer";
-import { ODIN } from '~/app/bundle.odin';
 import { Buffer } from 'buffer';
+import { RouterExtensions } from "nativescript-angular/router";
+import { ElectrumxClient } from 'nativescript-electrumx-client';
+import { Observable } from "tns-core-modules/data/observable";
+import { clearTimeout, setTimeout } from "tns-core-modules/timer";
+import { alert } from "ui/dialogs";
+import { ODIN } from '~/app/bundle.odin';
+import { StorageService } from './index';
+import { WalletClientService } from "./wallet-client.service";
+
+
 
 const WalletKey = 'app_wallets';
 const UserAgent = 'ODINX 0.2.6';
@@ -147,6 +146,7 @@ export interface IElectrumxAddress {
 export interface IAddress {
   addressIndex: number;
   address: string;
+  hash: string;
   balance: IBalance;
   transactions: string[];
 }
@@ -203,6 +203,7 @@ export class WalletModel extends Observable {
     this.defaultWalletDetails = {
       name: 'ODIN',
       coin: 'ODIN',
+      symbol: 'Ø',
       electrumx_host: 'electrumx.odinblockchain.org',
       electrumx_port: 50001,
       explorer_url: 'https://inspect.odinblockchain.org/api',
@@ -259,11 +260,11 @@ export class WalletModel extends Observable {
       
       try {
         await this.restoreSavedWallets();
-        console.log('...done restoring');
+        console.log('...done restoring', Date.now());
 
         let self = this;
         setTimeout(() => {
-          console.log('total wallets?', self.wallets.length);
+          console.log('...emit WalletReady', Date.now());
 
           self.notify({
             eventName: "WalletReady",
@@ -283,10 +284,19 @@ export class WalletModel extends Observable {
 
         console.log('...done creating');
         
-        this.notify({
-          eventName: "WalletReady",
-          object: this
-        });
+        let self = this;
+        setTimeout(() => {
+          console.log('...emit WalletReady', Date.now());
+
+          self.notify({
+            eventName: "WalletReady",
+            object: this
+          });
+
+          self.walletData.loaded      = true;
+          self.walletData.notice      = false;
+          self.walletData.noticeText  = '';
+        }, 3000);
       }
       
     } else {
@@ -294,10 +304,19 @@ export class WalletModel extends Observable {
 
       console.log('...done creating');
       
-      this.notify({
-        eventName: "WalletReady",
-        object: this
-      });
+      let self = this;
+      setTimeout(() => {
+        console.log('...emit WalletReady', Date.now());
+
+        self.notify({
+          eventName: "WalletReady",
+          object: this
+        });
+
+        self.walletData.loaded      = true;
+        self.walletData.notice      = false;
+        self.walletData.noticeText  = '';
+      }, 3000);
     }
 
     // this.restoreWallet(coin, this)
@@ -354,7 +373,7 @@ export class WalletModel extends Observable {
         console.log('ATTEMPTING TO CONNECT...');
 
         if (await this.establishConnection(this.wallets[0].coin)) {
-
+          // await this.refreshWalletDetails();
         } else {
           console.log('CANNOT ESTABLISH CONNECTION');
         }
@@ -413,6 +432,11 @@ export class WalletModel extends Observable {
         this.walletData.notice      = false;
         this.walletData.noticeText  = '';
 
+        this.notify({
+          eventName: "WalletReady",
+          object: this
+        });
+
         return resolve(true);
       })
       .catch((err) => {
@@ -452,6 +476,128 @@ export class WalletModel extends Observable {
           return resolve(false);
         });
       } else {
+        resolve(false);
+      }
+    }); 
+  }
+
+  private async refreshWallet(wallet): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      console.log('refresh Wallet');
+      console.log(`
+        INDEX[${wallet.accountIndex}]
+        BAL[${JSON.stringify(wallet.balance)}]
+        TXS[${wallet.transactions.length}]
+        INT[${wallet.internal.length}]
+        EXT[${wallet.external.length}]
+        UNSPENT[${wallet.unspent.length}]
+      \n`);
+
+      console.log('---> INTERNAL ACCOUNTS\n' + JSON.stringify(wallet.internal.slice(0, 2), null, 2));
+      console.log('---> EXTERNAL ACCOUNTS\n' + JSON.stringify(wallet.external.slice(0, 2), null, 2));
+
+      let saveData  = JSON.parse(this._store.getString('saveData'));
+      if (wallet.coin.name === 'ODIN') {
+        console.log('...refreshing ODIN');
+        let seed      = ODIN.bip39.mnemonicToSeed(saveData.mnemonicPhrase);
+        let sroot     = ODIN.bip32.fromSeed(seed);
+        let account   = await this.accountDiscovery(sroot, 0);
+        account.coin  = wallet.coin;
+        
+        console.log(`
+          DONE....
+
+          INDEX[${account.accountIndex}]
+          BAL[${JSON.stringify(account.balance)}]
+          TXS[${account.transactions.length}]
+          INT[${account.internal.length}]
+          EXT[${account.external.length}]
+          UNSPENT[${account.unspent.length}]
+        \n`);
+        resolve(account);
+      } else {
+        reject(new Error(`Unable to handle wallet refresh for wallet.coin ${JSON.stringify(wallet.coin)}`));
+      }
+      
+      // let account = {
+      //   accountIndex: accountIndex,
+      //   balance: {
+      //     confirmed: 0,
+      //     unconfirmed: 0
+      //   },
+      //   lastTransaction: -1,
+      //   transactions: [],
+      //   unspent: [],
+      //   external: [],
+      //   internal: []
+      // };
+  
+      // let refreshedExternalAddresses = wallet.external.map(address => this.updateAddress(address));
+      // Promise.all(refreshedExternalAddresses)
+      // .then((externalAddresses) => {
+      //   let refreshedInternalAddresses = wallet.internal.map(address => this.updateAddress(address));
+      //   Promise.all(refreshedInternalAddresses)
+      //   .then((internalAddresses) => {
+
+      //     let sumExternalConfirmed = externalAddresses.reduce(this.sumAddressConfirmedBalance, 0);
+      //     let sumExternalUnconfirmed = externalAddresses.reduce(this.sumAddressUnconfirmedBalance, 0);
+
+      //   }).catch(reject);
+      //   console.log(`[Wallet] Refreshed Wallet#${wallet.accountIndex}`, externalAddresses);
+
+      //   wallet.external = externalAddresses;
+
+      //   resolve(true);
+      // }).catch(reject);
+
+
+      // let refreshedExternalAddresses = wallet.external.map(address => this.updateAddress(address));
+      // Promise.all(refreshedExternalAddresses)
+      // .then((externalAddresses) => {
+      //   console.log(`[Wallet] Refreshed Wallet#${wallet.accountIndex}`, externalAddresses);
+
+      //   wallet.external = externalAddresses;
+
+      //   resolve(true);
+      // }).catch(reject);
+    });
+  }
+
+  public refreshWalletDetails(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.walletData.enabled && !this.walletData.busy) {
+
+        this.walletData.loaded  = false;
+        this.walletData.busy    = true;
+
+        console.log(`[Wallet] refreshWalletDetails... Connection enabled...`);
+        
+        let refreshedWallets = this.wallets.map(wallet => this.refreshWallet(wallet));
+        Promise.all(refreshedWallets)
+        .then(async (wallets) => {
+
+          wallets.forEach(wallet => {
+            console.log(`[Wallet] Refreshed Wallet #${wallet.accountIndex}`);
+          });
+
+          this.wallets = wallets;
+          await this._store.setString(WalletKey, JSON.stringify(this.wallets));
+          console.log('SAVED', this.wallets[0]);
+
+          this.walletData.loaded  = true;
+          this.walletData.busy    = false;
+          resolve(true);
+        })
+        .catch((err) => {
+          console.log(`[Wallet] Error Refreshing Wallets`);
+          console.log(err.message ? err.message : err);
+
+          this.walletData.loaded  = true;
+          this.walletData.busy    = false;
+          resolve(false);
+        });
+      } else {
+        console.log('busy?', this.walletData);
         resolve(false);
       }
     }); 
@@ -567,6 +713,103 @@ export class WalletModel extends Observable {
   //   });
   // }
 
+  public async sendTransaction(wallet, recipient, amount, coinControl, fee): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      console.log(`[Wallet Module] Sending [${amount}] to [${recipient}]`);
+
+      try {
+        ODIN.address.toOutputScript(recipient);
+      } catch (e) {
+        return reject(new Error('invalid_recipient'));
+      }
+
+      let feeSumSats = Number(fee) * 1e8;
+      let inputSumSats = coinControl.reduce((sum, tx) => sum += Number(tx['value']), 0);
+      let outputSumSats = Math.ceil(Number(amount) * 1e8);
+
+      console.dir('wallet', wallet);
+      console.log('control', coinControl);
+      console.log('input', inputSumSats);
+      console.log('output', outputSumSats);
+      console.log('networks', ODIN.networks);
+      console.log('networks.bitcoin', ODIN.networks.bitcoin);
+
+      if (inputSumSats <= (outputSumSats + feeSumSats)) {
+        return reject(new Error('low_balance'));
+      }
+
+      let saveData = JSON.parse(this._store.getString('saveData'));
+      if (wallet.coin.name === 'ODIN') {
+        coinControl = coinControl.map(tx => {
+          let address = wallet.external.find(addr => addr['address'] === tx['address']);
+          tx['address_index'] = address.addressIndex;
+          return tx;
+        });
+
+        console.log('~~ coin control ~~');
+        console.dir(coinControl);
+        
+        let seed = ODIN.bip39.mnemonicToSeed(saveData.mnemonicPhrase);
+        let sroot = ODIN.bip32.fromSeed(seed, ODIN.networks.bitcoin);
+
+        // const Address       = ODIN.payments.p2pkh({ pubkey: AddressPath.publicKey });
+
+        // const script        = ODIN.address.toOutputScript(Address.address);
+        // const hash          = ODIN.crypto.sha256(script);
+        // const reversedHash  = new Buffer(hash.reverse()).toString('hex');
+
+        let transaction = new ODIN.TransactionBuilder();
+        transaction.setVersion(1);
+
+        // add inputs
+        for (let input of coinControl) {
+          transaction.addInput(input['tx_hash'], Number(input['tx_pos']));
+        }
+
+        // add outputs
+        transaction.addOutput(recipient, outputSumSats);
+
+        // add change (if any)
+        if (inputSumSats > Math.ceil(outputSumSats + feeSumSats)) {
+          let changeSumSats = inputSumSats - Math.ceil(outputSumSats + feeSumSats);
+          transaction.addOutput(wallet.external[0].address, changeSumSats);
+        }
+
+        // sign inputs
+        coinControl.forEach((unspentTx, index) => {
+          const path = `m/44'/2100'/${wallet.accountIndex}'/0/${unspentTx['address_index']}`;
+          const AddressPath = sroot.derivePath(path);
+          const AddressWIF = AddressPath.toWIF();
+          const KeyPair = ODIN.ECPair.fromWIF(AddressWIF);
+          transaction.sign(index, KeyPair);
+        });
+
+        // create signed transaction hex
+        let signedTx = transaction.build().toHex();
+
+        console.log('~~~ COMPLETE ~~~~', signedTx.length);
+        console.dir(signedTx.substr(0, 1024));
+        console.dir(signedTx.substr(1024, signedTx.length));
+
+        let sent = await this._electrumxClient.blockchainTransaction_broadcast(signedTx);
+
+        if (sent && sent.length >= 64) {
+          this.notify({
+            eventName: "TransactionSent",
+            object: this
+          });
+
+          return resolve(sent);
+        } else {
+          console.log('[Wallet] Sent?', sent);
+          return reject(new Error('transaction_failed'));
+        }
+      } else {
+        return reject(new Error('unknown_coin_type'));
+      }
+    });
+  }
+
   private async loadWallet(): Promise<any> {
     console.log(`[Wallet] LOAD WALLET`);
 
@@ -605,9 +848,25 @@ export class WalletModel extends Observable {
     return {
       index:          addressIndex,
       address:        Address.address,
+      hash:           reversedHash,
       balance:        balance,
       transactions:   txHistory.map(tx => { tx['address'] = Address.address; return tx; }),
       unspent:        unspent.map(tx => { tx['address'] = Address.address; return tx; }),
+    };
+  }
+
+  private async updateAddress(address: any) {
+    console.log(`[Wallet] Update Address ---\nAddress:\t${address.address}\nHash:\t${address.hash}\n\n`);
+
+    let balance   = await this._electrumxClient.blockchainScripthash_getBalance(address.hash);
+    let txHistory = await this._electrumxClient.blockchainScripthash_getHistory(address.hash);
+    let unspent   = await this._electrumxClient.blockchainScripthash_listunspent(address.hash);
+
+    return {
+      ...address,
+      balance,
+      transactions:   txHistory.map(tx => { tx['address'] = address.address; return tx; }),
+      unspent:        unspent.map(tx => { tx['address'] = address.address; return tx; }),
     };
   }
 
@@ -636,6 +895,7 @@ export class WalletModel extends Observable {
       let externalAddress: IAddress = {
         addressIndex: addressIndex,
         address: addressPull.address,
+        hash: addressPull.hash,
         balance: {
           confirmed: addressPull.balance.confirmed,
           unconfirmed: addressPull.balance.unconfirmed
@@ -683,6 +943,7 @@ export class WalletModel extends Observable {
           let internalAddress: IAddress = {
             addressIndex: account.addressIndex,
             address: account.address,
+            hash: account.hash,
             balance: {
               confirmed: account.balance.confirmed,
               unconfirmed: account.balance.unconfirmed
@@ -724,9 +985,16 @@ export class WalletModel extends Observable {
           tx['timestamp']   = txData.tx.timestamp;
           tx['received']    = (received ? received : false);
           tx['sent']        = (sent ? sent : false);
+          tx['pending']     = false;
           tx['value']       = (received ? received.amount : sent.amount);
         } catch (err) {
           console.log(`[Wallet] Unable to handle transaction ${tx.tx_hash}`);
+          tx['blockheight'] = -1;
+          tx['timestamp'] = -1;
+          tx['received'] = false;
+          tx['sent'] = false;
+          tx['pending'] = true;
+          tx['value'] = '';
         }
       }
 
@@ -823,6 +1091,16 @@ export class WalletModel extends Observable {
     account.unspent       = account.unspent.concat(pulledExternal.unspent, pulledInternal.unspent);
 
     await this.transactionDiscovery(account.transactions);
+
+    let pendingTxs    = account.transactions.filter(tx => (tx['pending'] === true));
+    let confirmedTxs  = account.transactions.filter(tx => (tx['pending'] === false)).sort((tx1, tx2) => {
+      if (tx1['timestamp'] > tx2['timestamp']) return -1;
+      else if (tx1['timestamp'] < tx2['timestamp']) return 1;
+      return 0;
+    });
+
+    account.transactions = pendingTxs.concat(confirmedTxs);
+
     account.lastTransaction = await this.oldestTransaction(account.transactions);
     return account;
   }
