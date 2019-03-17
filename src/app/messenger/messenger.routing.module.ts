@@ -2,10 +2,12 @@ import { NgModule } from "@angular/core";
 import { Routes } from "@angular/router";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
 
-import { MessagesComponent } from './messages.component';
+import { MessengerComponent } from './messenger.component';
+import { MessageComponent } from "./message/message.component";
 
 const routes: Routes = [
-  { path: "", component: MessagesComponent }
+  { path: "", component: MessengerComponent },
+  { path: "message/:contactId", component: MessageComponent }
 ];
 
 @NgModule({
@@ -16,4 +18,4 @@ const routes: Routes = [
     NativeScriptRouterModule
   ]
 })
-export class MessagesRoutingModule { }
+export class MessengerRoutingModule { }

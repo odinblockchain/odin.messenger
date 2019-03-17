@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     if (this._user.saveData.registered) {
       console.log('>> Session exists, redirect to messages home');
-      this._router.navigate(['/messages'], { clearHistory: true });
+      this._router.navigate(['/messenger'], { clearHistory: true });
     } else {
       console.log('>> No session exists, redirect to splashscreen');
       this._router.navigate(['/splashscreen'], { clearHistory: true });

@@ -26,11 +26,11 @@ declare var android: any;
 
 @Component({
 	moduleId: module.id,
-	selector: 'message-view',
-	templateUrl: './message-view.component.html',
-	styleUrls: ['./message-view.component.css']
+	selector: 'message',
+	templateUrl: './message.component.html',
+	styleUrls: ['./message.component.css']
 })
-export class MessageViewComponent implements OnInit {
+export class MessageComponent implements OnInit {
   public contactIdentity: string;
   public contactIdentityShort: string;
   public contactMessages: ObservableArray<any>; //any[];
@@ -59,7 +59,7 @@ export class MessageViewComponent implements OnInit {
         this.contactIdentityShort = this.contactIdentity[0].toUpperCase();
       } else {
         alert("Something went wrong while loading the requested messages.");
-        this._router.navigate(['/messages']);
+        this._router.navigate(['/messenger']);
       }
     });
 

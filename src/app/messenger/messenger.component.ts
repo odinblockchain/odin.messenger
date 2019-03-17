@@ -12,12 +12,12 @@ import { UserModel, ISignalAddress } from '~/app/shared/user.model';
 
 @Component({
 	moduleId: module.id,
-	selector: 'messages',
-	templateUrl: './messages.component.html',
-	styleUrls: ['./messages.component.css']
+	selector: 'messenger',
+	templateUrl: './messenger.component.html',
+	styleUrls: ['./messenger.component.css']
 })
 
-export class MessagesComponent implements OnInit {
+export class MessengerComponent implements OnInit {
   public friends: ISignalAddress[];
 
 	constructor(
@@ -47,7 +47,7 @@ export class MessagesComponent implements OnInit {
   }
 
   onViewMessages(contactIdentity: string) {
-    this._router.navigate(['/message', contactIdentity], {
+    this._router.navigate(['/messenger/message', contactIdentity], {
       queryParams: {
         name: 'foobar',
         id: 123
