@@ -62,7 +62,7 @@ export class ContactAddComponent implements OnInit {
         };
   
         alert(`Successfully added ${this.contact.identity} to your local contacts!`);
-        this._router.navigate(['/messages']);
+        this._router.navigate(['/messenger']);
       } else {
         this.processing = false;
         return alert(`An error occurred while adding this contact locally, please try again.`);
