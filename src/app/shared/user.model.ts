@@ -5,7 +5,6 @@ import { OSMClientService } from './osm-client.service';
 import { RouterExtensions } from "nativescript-angular/router";
 import { ObservableArray, ChangedData } from "tns-core-modules/data/observable-array";
 
-import { Obsidian } from '~/app/bundle.obsidian';
 import { ODIN } from '~/app/bundle.odin';
 
 import Hashids from 'hashids';
@@ -178,17 +177,17 @@ export class UserModel extends Observable {
   async initialize() {
     console.log(`UserModel... INITIALIZE`);
 
-    if (this._store.hasKey('saveData')) {
-      console.log(`UserModel... Restore SaveData`);
-      await this.loadOSMIdentity();
+    // if (this._store.hasKey('saveData')) {
+    //   console.log(`UserModel... Restore SaveData`);
+    //   await this.loadOSMIdentity();
 
-      if (this._store.hasKey('signalClient')) {
-        console.log(`UserModel... Restore SignalClient`);
-        await this.loadSignalClient();
-      }
-    } else {
-      await this.clearSession();
-    }
+    //   if (this._store.hasKey('signalClient')) {
+    //     console.log(`UserModel... Restore SignalClient`);
+    //     await this.loadSignalClient();
+    //   }
+    // } else {
+    //   await this.clearSession();
+    // }
   }
 
   /**
