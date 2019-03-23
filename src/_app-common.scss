@@ -203,6 +203,11 @@
     }
   }
 
+  &.card--accent {
+    border-color: $warning;
+    border-bottom-width: 2;
+  }
+
   .h2 {
     font-size: 24;
     margin-bottom: 10;
