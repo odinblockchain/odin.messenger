@@ -1,3 +1,11 @@
 <FlexboxLayout class="page">
-  <ActivityIndicator class="activity-indicator" rowSpan="3" busy="true"></ActivityIndicator>
+  <!-- <ContentView class="loading">
+    <ActivityIndicator class="activity-indicator" rowSpan="3" [busy]="!loaded"></ActivityIndicator>
+  </ContentView> -->
+  
+  <ContentView class="card card--accent">
+    <StackLayout class="card-content">
+      <Label class="u-text-align-center" [text]="currentActivity" textWrap="true"></Label>
+    </StackLayout>
+  </ContentView>
 </FlexboxLayout>

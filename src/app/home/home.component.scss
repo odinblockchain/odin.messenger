@@ -5,9 +5,14 @@
 
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 
   .activity-indicator {
     width: 50;
     height: 50;
+  }
+
+  .loading {
+    margin-bottom: 30;
   }
 }

@@ -56,10 +56,17 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
   </GridLayout>
 
   <StackLayout tkMainContent class="app-view">
-    <Label *ngIf="userAccount.osmConnected" class="no-connection">
+    <Label class="no-connection" *ngIf="initAttempts >= 4">
       <FormattedString>
         <Span class="fa" text="&#xf12a;   "></Span>
-        <Span text="NOT CONNECTED"></Span>
+        <Span text="UNABLE TO BOOT"></Span>
+      </FormattedString>
+    </Label>
+
+    <Label class="no-connection" *ngIf="userAccount.osmConnected">
+      <FormattedString>
+        <Span class="fa" text="&#xf12a;   "></Span>
+        <Span text="NO INTERNET"></Span>
       </FormattedString>
     </Label>
 
