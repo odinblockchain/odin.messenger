@@ -1,13 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Observable, Page, PropertyChangeData } from "tns-core-modules/ui/page/page";
-import Seeder from '~/app/Seeder'
-import SecureRandom from '~/app/SecureRandom'
+import Seeder from '~/app/lib/Seeder'
+import SecureRandom from '~/app/lib/SecureRandom'
 import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { confirm } from "tns-core-modules/ui/dialogs";
 import * as utilityModule from "utils/utils";
 import { UserModel } from '~/app/shared/user.model';
 import { GestureTypes, TouchGestureEventData } from "tns-core-modules/ui/gestures";
+import { IdentityService } from '../shared/services/identity.service';
+import { AccountService } from '../shared/services';
+import { Identity } from '../shared/models/identity/identity.model';
+import { Account } from '../shared/models/identity';
+import { Client } from '../shared/models/messenger/client.model';
+import { ClientService } from '../shared/services/client.service';
 
 @Component({
 	moduleId: module.id,
@@ -15,8 +21,9 @@ import { GestureTypes, TouchGestureEventData } from "tns-core-modules/ui/gesture
 	templateUrl: './create-account.component.html',
 	styleUrls: ['./create-account.component.css']
 })
-
 export class CreateAccountComponent implements OnInit {
+  @ViewChild('scrollViewGenerate') scrollViewGenerate: ElementRef;
+
   public seeder : Seeder;
   public secureRandom = new SecureRandom();
 
@@ -28,32 +35,37 @@ export class CreateAccountComponent implements OnInit {
   public verifyBackupPhrase: string;
 
   public mnemonicSaved: boolean;
-  
-  public user;
+  public identity: Identity;
+
+  // public user;
 
 	constructor(
     private page: Page,
-    private userModel: UserModel) {
+    // private userModel: UserModel,
+    private Identity: IdentityService,
+    private Account: AccountService,
+    private Client: ClientService) {
     this.page.actionBarHidden = true;
+    this.useSeed = this.useSeed.bind(this);
   }
 
 	ngOnInit(): void {
-    // clear();
-
     this._sb = new SnackBar();
     this.verifyBackupPhrase = '';
     this.mnemonicSaved = false;
     this.hasVerifiedBackup = false;
     this.activeStep = 1;
+    this.identity = this.Identity.identity;
 
-    this.user = this.userModel;
-    this.user.addEventListener(Observable.propertyChangeEvent, this.onAccountUpdate);
+    // this.user = this.userModel;
+    // this.user.addEventListener(Observable.propertyChangeEvent, this.onAccountUpdate);
 
     this.seeder = new Seeder();
 
     console.log('CHECK USERMODEL FOR SAVEDATA');
 
-    if (this.user.saveData.mnemonicPhrase != '') {
+    // if (this.user.saveData.mnemonicPhrase != '') {
+    if (this.Identity.identity.mnemonicPhrase != '') {
       console.log('>> USING SAVEDATA');
       this.seeder.poolFilled = true;
       this.seeder.complete();
@@ -66,8 +78,40 @@ export class CreateAccountComponent implements OnInit {
     }
   }
 
-  useSeed = async function(seedHex?: string) {
-    await this.user.onSaveMasterSeed(seedHex);
+  /**
+   * Use the provided `seedHex` that was generated with random entropy provided by the user
+   * to initialize the app in stages:
+   * 
+   * > Create primary identity (appStorage) for app (identities can have multiple accounts)
+   * > Create primary account (db) based on `mnemonicPhrase` and starting `bip44_index`
+   * > Create signal client (db) based on account details
+   * > Update primary account to link signal client
+   * 
+   * Move to Step #2 (Display mnemonic phrase)
+   * 
+   * @param seedHex 
+   */
+  private async useSeed(seedHex?: string) {
+    // await this.user.onSaveMasterSeed(seedHex);
+    this.Identity.saveMasterseed(seedHex)
+    .then((id: Identity) => {
+      console.log('>>> IDENTITY', id);
+      return this.Account.createAccountFromMnemonic(id.mnemonicPhrase, 0);
+    })
+    .then((account: Account) => {
+      console.log('>>> ACCOUNT', account);
+
+      return this.Client.createClient(new Client({
+        account_username: account.username,
+        identity_key_pair: '',
+        signed_pre_key: '',
+        pre_keys: []
+      }));
+    })
+    .then((client: Client) => {
+      console.log('>>> CLIENT', client);
+    })
+    .catch(console.log);
     this.mnemonicSaved = true;
   }
 
@@ -91,7 +135,7 @@ export class CreateAccountComponent implements OnInit {
   }
 
   onRegisterAccount() {
-    this.user.onRegisterUser();
+    this.Identity.onRegisterUser();
   }
 
   onAccountUpdate(args: PropertyChangeData) {
@@ -113,13 +157,14 @@ export class CreateAccountComponent implements OnInit {
   }
 
   onTouch(args: TouchGestureEventData) {
-    if (!this.seeder.poolFilled)
+    if (!this.seeder.poolFilled) {
       this.seeder.seed(args.getX(), args.getY())
+    }
   }
 
   onVerifyBackup = async function() {
     console.log('ON RETURN PRESS');
-    if (this.verifyBackupPhrase.toLowerCase() === this.user.saveData.mnemonicPhrase.toLowerCase()) {
+    if (this.verifyBackupPhrase.toLowerCase() === this.Identity.mnemonicPhrase.toLowerCase()) {
       this.hasVerifiedBackup = true;
       this._sb.simple('You have verified your mnemonic phrase!', '#ffffff', '#333333', 3, false);
       return true;

@@ -1,4 +1,4 @@
-<GridLayout class="page" *ngIf="user.saveData.registered" cols="*" rows="60, *, auto">
+<GridLayout class="page" *ngIf="identity.registered" cols="*" rows="60, *, auto">
 
   <FlexLayout class="header-wrap" row="0">
     <Label class="header-bar" textWrap="true" text="ODIN Account Active"></Label>
@@ -12,7 +12,7 @@
           <Label class="body" textWrap="true">
             <FormattedString>
               <Span text="Your public identity is "></Span>
-              <Span class="bold" [text]="user.saveData.hashAccount"></Span>
+              <Span class="bold" text="user.saveData.hashAccount"></Span>
               <Span text="."></Span>
             </FormattedString>
           </Label>
@@ -29,7 +29,7 @@
 
       <ContentView class="actions">
         <StackLayout>
-          <Button class="btn btn-outline" text="Copy Identiy to Clipboard" (tap)="onCopyText(user.saveData.hashAccount)"></Button>
+          <Button class="btn btn-outline" text="Copy Identiy to Clipboard" (tap)="onCopyText()"></Button>
           <Button class="btn btn-primary" text="Go to Messages" [nsRouterLink]="['/messenger']" clearHistory="true"></Button>
         </StackLayout>
       </ContentView>
@@ -37,7 +37,7 @@
   </ScrollView>
 </GridLayout>
 
-<GridLayout class="page" *ngIf="!user.saveData.registered" cols="*" rows="60, *, auto, auto">
+<GridLayout class="page" *ngIf="!identity.registered" cols="*" rows="60, *, auto, auto">
 
   <FlexLayout class="header-wrap" row="0">
     <Label class="header-bar" textWrap="true" text="Create ODIN Account"></Label>
@@ -47,9 +47,10 @@
     </FlexboxLayout> -->
   </FlexLayout>
   
-  <ScrollView row="1" *ngIf="activeStep === 1">
+  <ScrollView row="1" *ngIf="activeStep === 1" #scrollViewGenerate>
     <StackLayout>
-      <ContentView class="card">
+
+      <ContentView class="card" *ngIf="!seeder.get('poolBusy')">
         <StackLayout class="card-content">
           <Label class="h2" textWrap="true" text="Generate Master Seed"></Label>
           <Label class="body" textWrap="true" text="To start with your account creation you'll need to generate a &#34;Master Seed&#34;."></Label>
@@ -61,7 +62,7 @@
         <StackLayout class="card-content">
           <Label *ngIf="!mnemonicSaved" class="h2" textWrap="true" text="{{ seeder.get('seedCount') }} / {{ seeder.get('seedLimit') }}"></Label>
           
-          <StackLayout  *ngIf="!seeder.get('poolBusy')">
+          <StackLayout *ngIf="!seeder.get('poolBusy')">
             <Label textWrap="true" class="body" text="Move your finger around to begin generating."></Label>
             <AbsoluteLayout padding="10">
               <Image horizontalAlignment="center" class="swipeFinger" width="50" height="60" src="res://swipe_finger_white"></Image>
@@ -92,7 +93,7 @@
       </ContentView>
 
       <StackLayout class="actions">
-        <Button class="btn btn-outline" text="Copy to Clipboard" (tap)="onCopyText(user.saveData.mnemonicPhrase)"></Button>
+        <Button class="btn btn-outline" text="Copy to Clipboard" (tap)="onCopyText()"></Button>
         <Button class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(3)"></Button>
       </StackLayout>
     </StackLayout>
@@ -137,7 +138,7 @@
       <ContentView class="card">
         <StackLayout class="card-content">
           <Label class="h2" textWrap="true" text="ODIN Identity"></Label>
-          <Label class="body last" [text]="user.saveData.hashAccount"></Label>
+          <Label class="body last" text="user.saveData.hashAccount"></Label>
         </StackLayout>
       </ContentView>
 
