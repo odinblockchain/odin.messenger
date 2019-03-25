@@ -1,38 +1,45 @@
 import SecureRandom from './SecureRandom';
 import { Observable, EventData } from "data/observable";
-// import * from 'nativescript-nodeify';
-// import * as createHash from 'create-hash';
-// import * as cryptoBrowserify from 'crypto-browserify';
 import * as shajs from 'sha.js'
 
 export default class Seeder extends Observable {
-  public seedCount = 0;
-  public lastInputTime = new Date().getTime();
-  public lastMoveX = 0;
-  public lastMoveY = 0;
-  public seedPoints = [];
-  public secureRandom = new SecureRandom();
-  public seedLimit;
+  public seedCount: number;
+  public lastInputTime: number;
+  public lastMoveX: number;
+  public lastMoveY: number;
+  public seedPoints: any[];
+  public secureRandom: SecureRandom;
+  public seedLimit: number;
   public poolHex;
-  public poolFilled : boolean = false;
-  public poolBusy : boolean = false;
+  public poolFilled: boolean;
+  public poolBusy: boolean;
 
-  constructor() {
-
+  constructor(maxSeedLimit?: number) {
     super();
 
-    // console.log(sha256);
-    
-    this.seedLimit = (function(_this) {
-      let num = _this.randomBytes(12)[11];
-      return 10 + Math.floor(num);
-    })(this);
+    this.poolFilled     = false;
+    this.poolBusy       = false;
+    this.seedCount      = 0;
+    this.lastInputTime  = new Date().getTime();
+    this.lastMoveX      = 0;
+    this.lastMoveY      = 0;
+    this.seedPoints     = [];
+    this.secureRandom   = new SecureRandom();
+    this.seedLimit      = (maxSeedLimit)
+                            ? Math.max(this.RNGLimit(), maxSeedLimit)
+                            : this.RNGLimit();
+
+    if (maxSeedLimit) this.seedLimit = Math.max(this.seedLimit, maxSeedLimit);
 
     console.log(`\t Seeder created... Limit:${this.seedLimit}`);
     this.set('poolHex', '0x00');
     this.set('seedCount', this.seedCount);
     this.set('seedLimit', this.seedLimit);
     this.set('poolBusy', false);
+  }
+
+  private RNGLimit(): number {
+    return 10 + Math.floor(this.randomBytes(12)[11]);
   }
 
   public complete = function() {
@@ -47,8 +54,7 @@ export default class Seeder extends Observable {
   }
 
   // Generate an array of any length of random bytes
-  public randomBytes = function(n) {
-
+  public randomBytes = function(n: number) {
     let bytes;
     for (bytes = []; n > 0; n--) {
       bytes.push(Math.floor(Math.random() * 256));
@@ -59,8 +65,7 @@ export default class Seeder extends Observable {
 
   // Convert a byte array to a hex string
   public bytesToHex = function(bytes) {
-
-    let hex, i;
+    let hex: any[], i: number;
 
     for (hex = [], i = 0; i < bytes.length; i++) {
       hex.push((bytes[i] >>> 4).toString(16));
@@ -70,13 +75,11 @@ export default class Seeder extends Observable {
   }
 
   public sha256Seed = function() {
-
     // return this.poolHex;
     return shajs('sha256').update(this.poolHex).digest('hex')
   }
 
   public getBytes = function() {
-    
     return this.secureRandom.getByte()
   }
 
@@ -89,7 +92,7 @@ export default class Seeder extends Observable {
     if (this.seedCount === this.seedLimit) return;
     if ((timestamp - this.lastInputTime) < 60) return;
     if (Math.abs(this.lastMoveX - moveX) < 5 && this.lastMoveX != 0) return;
-    if (Math.abs(this.lastMoveY - moveY) < 5 && this.lastMoveY != 0) return
+    if (Math.abs(this.lastMoveY - moveY) < 5 && this.lastMoveY != 0) return;
 
     this.secureRandom.seedTime();
     this.secureRandom.seedInt16((moveX * moveY));
@@ -100,23 +103,22 @@ export default class Seeder extends Observable {
     this.showPool();
     this.set('seedCount', this.seedCount);
 
-    if (this.seedCount === this.seedLimit) {
+    if (this.seedCount >= this.seedLimit && !this.poolFilled) {
+      this.poolFilled = true;
+
       let eventData: EventData = {
         eventName: 'complete',
         object: this
       }
 
-      this.notify(eventData)
-      this.poolFilled = true
+      this.notify(eventData);
     }
   }
 
   public showPool = function() {
-
     if (this.secureRandom.poolCopyOnInit != null) {
       this.poolHex = this.bytesToHex(this.secureRandom.poolCopyOnInit);
-    }
-    else {
+    } else {
       this.poolHex = this.bytesToHex(this.secureRandom.pool);
     }
 
