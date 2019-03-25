@@ -3,6 +3,8 @@ import { Page } from "ui/page";
 import { RouterExtensions } from "nativescript-angular/router";
 import { UserModel } from "~/app/shared/user.model";
 import { StorageService } from "../shared";
+import { AccountService } from "../shared/services";
+import { Account } from "../shared/models/identity";
 
 @Component({
     selector: "Splashscreen",
@@ -18,7 +20,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private _page: Page,
     private _router: RouterExtensions,
     private _user: UserModel,
-    private _storage: StorageService) {
+    private _storage: StorageService,
+    private Account: AccountService) {
     this._page.actionBarHidden = true;
   }
 
@@ -29,10 +32,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.storageEventListener = this._storage.eventStream.subscribe(data => {
       this.currentActivity = data;
-      console.log('[Home]', data);
 
       if (data === 'StorageService::Ready') {
-        if (this._user.saveData.registered) {
+        const registeredAccount = this.Account.accounts.find((a: Account) => a.registered);
+      
+        if (registeredAccount) {
           console.log('[Home] >> Session exists, redirect to messages home');
           this._router.navigate(['/messenger'], { clearHistory: true });
         } else {

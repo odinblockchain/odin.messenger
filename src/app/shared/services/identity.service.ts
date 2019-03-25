@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { StorageService } from '../storage.service';
 import { Identity } from '../models/identity/identity.model';
 import { ODIN } from '~/app/bundle.odin';
-import Hashids from 'hashids';
-import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
+import { identity } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,26 +13,81 @@ export class IdentityService extends StorageService {
   constructor() {
     super('IdentityService');
 
-    this.clearStorage();
     this.init = this.init.bind(this);
+    this.loadIdentity = this.loadIdentity.bind(this);
+    this.storeIdentity = this.storeIdentity.bind(this);
+    this.fetchIdentity = this.fetchIdentity.bind(this);
   }
 
+  /**
+   * Initializes the `IdentityService` singleton by loading
+   * the application identity stored within ApplicationSettings.
+   */
   public async init() {
     return new Promise((resolve, reject) => {
-      try {
-        this.identity = new Identity(JSON.parse(this.getString('identity')));
-        this.log('loaded identity');
-        this.dir(this.identity);
-      } catch(err) {
+      this.loadIdentity()
+      .then(resolve)
+      .catch(err => {
+        this.log('Unable to init service');
         console.log(err);
-        this.log('No identity found or error loading');
-        this.identity = new Identity();
-      }
-
-      resolve(this.identity);
+        reject(err);
+      });
     });
   }
 
+  /**
+   * Loads the identity returned from `fetchIdentity()`. Attaches `storeIdentity() => store()`
+   * and `fetchIdentity() => fetch()` to the `Identity` reference.
+   */
+  private async loadIdentity() {
+    return new Promise(async (resolve, reject) => {
+      this.identity = new Identity(this.fetchIdentity());
+      this.log('View Identity');
+      this.dir(this.identity.serialize());
+
+      this.identity.store = this.storeIdentity;
+      this.identity.fetch = this.fetchIdentity;
+
+      // this.registered.next(this.identity.registered);
+      return resolve(this.identity);
+    });
+  }
+
+  /**
+   * Attempts to stringify a passed `identity` reference and store it within ApplicationSettings
+   * as a string.
+   * 
+   * @param identity 
+   */
+  storeIdentity(identity: Identity) {
+    try {
+      this.setString('identity', JSON.stringify(identity));
+      this.log('saved identity');
+    } catch (err) {
+      this.log('error saving identity');
+      console.log(err);
+    }
+  }
+
+  /**
+   * Attempts to parse a stored `identity` string from ApplicationSettings
+   */
+  fetchIdentity() {
+    try {
+      return JSON.parse(this.getString('identity'));
+    } catch (err) {
+      this.log('Unable to load identity...');
+      console.log(err);
+      return {};
+    }
+  }
+
+  /**
+   * Uses a provided `masterSeed` to generate the `mnemonicPhrase` and create the localized
+   * identity.
+   * 
+   * @param masterSeed The full masterseed which is used to generate the mnemonic phrase
+   */
   async saveMasterseed(masterSeed: any) {
     this.log('save masterseed');
 
@@ -43,85 +97,13 @@ export class IdentityService extends StorageService {
         return resolve(this.identity);
       }
   
+      const mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
+      // const mnemonic = 'cool cool cool cool cool cool cool cool cool cool cool cool';
+
       this.identity.masterSeed = masterSeed;
-      this.identity.registered = false;
-  
-      let mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
-      // let mnemonic = 'cool cool cool cool cool cool cool cool cool cool cool cool';
       this.identity.mnemonicPhrase = mnemonic;
-  
-      // let seed  = ODIN.bip39.mnemonicToSeed(mnemonic);
-      // let sroot = ODIN.bip32.fromSeed(seed, ODIN.networks.bitcoin);
-        
-      // let masterRoot    = sroot.derivePath("m/0'/0'/1337'/0");
-      // let masterAccount = ODIN.payments.p2pkh({ pubkey: masterRoot.publicKey });
-      // let masterNumeric = Number(masterAccount.address.replace(/[^\d]/ig, ''));
-  
-      // set custom alphabet to reflect base58 charset... removes 0, O, I, l
-      // let hashids = new Hashids('', 8, '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz');
-      // this.identity.hashAddress = hashids.encode(masterNumeric);
-      // this.saveData.hashAccount = this.saveData.hashAddress + '@' + this.COIN;
-  
-      this.identity.registrationId = Number(LibsignalProtocol.KeyHelper.generateRegistrationId());
-      this.identity.deviceId = Number(LibsignalProtocol.KeyHelper.generateRegistrationId());
-  
-      this.setString('identity', JSON.stringify(this.identity));
-  
-      this.log(`STORED SAVE DATA... ${this.hasKey('identity')}`);
-      this.log(this.getString('identity'));
-      this.dir(JSON.parse(this.getString('identity')));
-  
-      // await this.createSignalClient();
+      this.identity.save();
       return resolve(this.identity);
     });
-  }
-
-  async onRegisterUser() {
-    this.log('onregister not implemented');
-    // if (this.saveData.hashAccount === '') return false;
-    // if (this.saveData.registered) return true;
-    // if (!this._signalClient || this._signalClient === null) await this.loadSignalClient();
-
-    // console.log('client', this._signalClient);
-
-    // try {
-    //   let registeredKeys = await this._osmClient.registerClient(this._signalClient.exportRegistrationObj());
-    //   if (registeredKeys.count) {
-    //     this.saveData.registered = true;
-    //     this.remotePreKeyBundles = 100;
-    //     this.osmConnected = true;
-    //     console.log('--- Account Creation Successful ---');
-    //   }
-
-    //   this._store.setString('saveData', JSON.stringify(this.saveData));
-
-    //   let eventData = {
-    //     eventName: "IdentityRegistered",
-    //     object: this
-    //   };
-    //   this.notify(eventData);
-    // } catch (err) {
-    //   if (err.message && err.message === 'Max_PreKeys') {
-    //     this.saveData.registered = true;
-    //     this.remotePreKeyBundles = 100;
-    //     this.osmConnected = true;
-    //     console.log('--- Account Creation Successful ---');
-
-    //     this._store.setString('saveData', JSON.stringify(this.saveData));
-
-    //     let eventData = {
-    //       eventName: "IdentityRegistered",
-    //       object: this
-    //     };
-    //     this.notify(eventData);
-    //   } else {
-    //     console.log('Unable to registration account');
-    //     console.log('Error', {
-    //       message: err.message ? err.message : err
-    //     });
-
-    //     alert('Your account coult not be registered at this time. Please try again later.');
-    //   }
-    // }
   }
 }

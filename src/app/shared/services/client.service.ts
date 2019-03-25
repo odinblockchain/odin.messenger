@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { StorageService } from '../storage.service';
 import { Client } from '../models/messenger/client.model';
 import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
+import { SignalClient } from '../models/signal';
 
 @Injectable({
   providedIn: 'root'
@@ -31,10 +32,7 @@ export class ClientService extends StorageService {
   }
 
   private async loadClients() {
-    if (!this.dbReady()) {
-      return new Error('db_not_open');
-    }
-
+    if (!this.dbReady()) return new Error('db_not_open');
     return new Promise(async (resolve, reject) => {
       try {
         const clients: Client[] = await this.odb.all('SELECT * FROM clients');
@@ -84,9 +82,7 @@ export class ClientService extends StorageService {
    * @param client The client to create
    */
   public async createClient(client: Client): Promise<any> {
-    if (!this.dbReady()) {
-      return false;
-    }
+    if (!this.dbReady()) return false;
 
     return new Promise((resolve, reject) => {
       if (this.findClient(client.account_username)) {
@@ -109,21 +105,11 @@ export class ClientService extends StorageService {
         client.db = this.odb;
 
         client.loadSignalClient()
-        .then(signal => {
-          this.log(`Signal loaded for [${client.account_username}]`);
-          this.log(`Client [${client.account_username}] #${client.id} added`);
-
-          client.save()
-          .then(async saved => {
-            this.log(`saved? ${saved}`);
-
-            const foo = await this.fetchClient(client.account_username);
-            console.log('FOO?');
-            console.dir(foo);
-
-            this.clients.push(client);
-            return resolve(client);
-          }).catch(reject);
+        .then((signal: SignalClient) => client.save())
+        .then((saved: boolean) => {
+          this.log(`Client loaded for [${client.account_username}] ID:${client.id}`);
+          this.clients.push(client);
+          return resolve(client);
         }).catch(reject);
       })
       .catch(reject);
@@ -134,11 +120,12 @@ export class ClientService extends StorageService {
     return this.clients.find((c: Client) => c.account_username === username);
   }
 
-  public fetchClient(username: string) {
-    if (!this.dbReady()) {
-      return false;
-    }
+  public findClientById(id: number) {
+    return this.clients.find((c: Client) => c.id === id);
+  }
 
+  public fetchClient(username: string) {
+    if (!this.dbReady()) return false;
     return this.odb.get('SELECT * FROM clients WHERE account_username=?', username);
   }
 }

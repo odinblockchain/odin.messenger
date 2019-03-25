@@ -1,4 +1,4 @@
-<GridLayout class="page" *ngIf="identity.registered" cols="*" rows="60, *, auto">
+<GridLayout class="page" *ngIf="primaryAccount && primaryAccount.registered" cols="*" rows="60, *, auto">
 
   <FlexLayout class="header-wrap" row="0">
     <Label class="header-bar" textWrap="true" text="ODIN Account Active"></Label>
@@ -12,7 +12,7 @@
           <Label class="body" textWrap="true">
             <FormattedString>
               <Span text="Your public identity is "></Span>
-              <Span class="bold" text="user.saveData.hashAccount"></Span>
+              <Span class="bold" [text]="primaryAccount.username"></Span>
               <Span text="."></Span>
             </FormattedString>
           </Label>
@@ -29,7 +29,7 @@
 
       <ContentView class="actions">
         <StackLayout>
-          <Button class="btn btn-outline" text="Copy Identiy to Clipboard" (tap)="onCopyText()"></Button>
+          <Button class="btn btn-outline" text="Copy Identiy to Clipboard" (tap)="onCopyText(primaryAccount.username)"></Button>
           <Button class="btn btn-primary" text="Go to Messages" [nsRouterLink]="['/messenger']" clearHistory="true"></Button>
         </StackLayout>
       </ContentView>
@@ -37,7 +37,7 @@
   </ScrollView>
 </GridLayout>
 
-<GridLayout class="page" *ngIf="!identity.registered" cols="*" rows="60, *, auto, auto">
+<GridLayout class="page" *ngIf="!primaryAccount || !primaryAccount.registered" cols="*" rows="60, *, auto, auto">
 
   <FlexLayout class="header-wrap" row="0">
     <Label class="header-bar" textWrap="true" text="Create ODIN Account"></Label>
@@ -58,7 +58,7 @@
         </StackLayout>
       </ContentView>
 
-      <ContentView class="card card--input" (touch)="onTouch($event)">
+      <ContentView class="card card--input" (touch)="onTouchEntropy($event)">
         <StackLayout class="card-content">
           <Label *ngIf="!mnemonicSaved" class="h2" textWrap="true" text="{{ seeder.get('seedCount') }} / {{ seeder.get('seedLimit') }}"></Label>
           
@@ -72,6 +72,7 @@
           <Label *ngIf="!mnemonicSaved && seeder.get('poolBusy')" class="seedPool" textWrap="true" text="{{ seeder.get('poolHex') }}"></Label>
 
           <Label *ngIf="mnemonicSaved" textWrap="true" text="Master seed generated and stored."></Label>
+          <Label *ngIf="mnemonicSaved" textWrap="true" [text]="identity.mnemonicPhrase"></Label>
         </StackLayout>
       </ContentView>
 
@@ -93,7 +94,7 @@
       </ContentView>
 
       <StackLayout class="actions">
-        <Button class="btn btn-outline" text="Copy to Clipboard" (tap)="onCopyText()"></Button>
+        <Button class="btn btn-outline" text="Copy to Clipboard" (tap)="onCopyText(identity.mnemonicPhrase)"></Button>
         <Button class="btn btn-primary" text="Continue" (tap)="onAdvanceStep(3)"></Button>
       </StackLayout>
     </StackLayout>
@@ -113,7 +114,7 @@
 
       <ContentView class="card card--input">
         <StackLayout class="card-content">
-          <TextView height="80" textWrap="true" [(ngModel)]="verifyBackupPhrase" returnKeyType="next" (returnPress)="onAdvanceStep(4)" class="input input-border" hint="Please enter your mnemonic phrase..."></TextView>
+          <TextView height="80" textWrap="true" [(ngModel)]="verifyBackupPhrase" returnKeyType="done" (returnPress)="onAdvanceStep(4)" class="input input-border" hint="Please enter your mnemonic phrase..."></TextView>
         </StackLayout>
       </ContentView>
 
@@ -138,7 +139,7 @@
       <ContentView class="card">
         <StackLayout class="card-content">
           <Label class="h2" textWrap="true" text="ODIN Identity"></Label>
-          <Label class="body last" text="user.saveData.hashAccount"></Label>
+          <Label class="body last" [text]="primaryAccount.username"></Label>
         </StackLayout>
       </ContentView>
 

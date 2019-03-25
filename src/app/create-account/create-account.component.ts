@@ -24,9 +24,8 @@ import { ClientService } from '../shared/services/client.service';
 export class CreateAccountComponent implements OnInit {
   @ViewChild('scrollViewGenerate') scrollViewGenerate: ElementRef;
 
-  public seeder : Seeder;
-  public secureRandom = new SecureRandom();
-
+  public seeder: Seeder;
+  public secureRandom: SecureRandom;
   public activeStep: number;
 
   private _sb: any;
@@ -35,42 +34,53 @@ export class CreateAccountComponent implements OnInit {
   public verifyBackupPhrase: string;
 
   public mnemonicSaved: boolean;
+
   public identity: Identity;
+  public primaryAccount: Account;
+  public primaryClient: Client;
 
   // public user;
 
 	constructor(
     private page: Page,
     // private userModel: UserModel,
-    private Identity: IdentityService,
-    private Account: AccountService,
-    private Client: ClientService) {
-    this.page.actionBarHidden = true;
-    this.useSeed = this.useSeed.bind(this);
-  }
-
-	ngOnInit(): void {
+    private IdentityServ: IdentityService,
+    private AccountServ: AccountService,
+    private ClientServ: ClientService
+  ) {
     this._sb = new SnackBar();
     this.verifyBackupPhrase = '';
     this.mnemonicSaved = false;
     this.hasVerifiedBackup = false;
     this.activeStep = 1;
-    this.identity = this.Identity.identity;
+    this.page.actionBarHidden = true;
 
-    // this.user = this.userModel;
-    // this.user.addEventListener(Observable.propertyChangeEvent, this.onAccountUpdate);
+    this.identity       = this.IdentityServ.identity;
+    this.primaryAccount = new Account();
+    this.primaryClient  = new Client();
 
-    this.seeder = new Seeder();
+    this.useSeed = this.useSeed.bind(this);
+    this.onAdvanceStep = this.onAdvanceStep.bind(this);
+  }
 
-    console.log('CHECK USERMODEL FOR SAVEDATA');
+	ngOnInit(): void {
+    console.log(this.primaryAccount.registered);
+    console.log('CHECK USERMODEL FOR SAVEDATA', this.identity);
 
     // if (this.user.saveData.mnemonicPhrase != '') {
-    if (this.Identity.identity.mnemonicPhrase != '') {
-      console.log('>> USING SAVEDATA');
-      this.seeder.poolFilled = true;
-      this.seeder.complete();
-      this.activeStep = 2;
+    if (this.identity.mnemonicPhrase != '') {
+      this.primaryAccount = this.AccountServ.accounts[0];
+      this.primaryClient  = this.ClientServ.findClientById(this.primaryAccount.client_id);
+      console.log('PRIMARY', this.primaryAccount.serialize());
+      console.log('CLIENT', this.primaryClient.serialize());
+
+      this.onAdvanceStep(2);
     } else {
+      this.secureRandom   = new SecureRandom();
+      this.seeder         = new Seeder();
+
+      console.log('>> USING SEEDER');
+      this.seeder.poolFilled = false;
       this.seeder.on('complete', (eventData) => {
         console.log('>> Master seed generation complete');
         this.useSeed(this.seeder.sha256Seed());
@@ -93,34 +103,51 @@ export class CreateAccountComponent implements OnInit {
    */
   private async useSeed(seedHex?: string) {
     // await this.user.onSaveMasterSeed(seedHex);
-    this.Identity.saveMasterseed(seedHex)
-    .then((id: Identity) => {
-      console.log('>>> IDENTITY', id);
-      return this.Account.createAccountFromMnemonic(id.mnemonicPhrase, 0);
-    })
+    this.IdentityServ.saveMasterseed(seedHex)
+    .then((id: Identity) => this.AccountServ.createAccountFromMnemonic(id.mnemonicPhrase, 0))
     .then((account: Account) => {
-      console.log('>>> ACCOUNT', account);
-
-      return this.Client.createClient(new Client({
-        account_username: account.username,
-        identity_key_pair: '',
-        signed_pre_key: '',
-        pre_keys: []
-      }));
+      this.primaryAccount = account;
+      return this.ClientServ.createClient(new Client({ account_username: account.username }))
     })
     .then((client: Client) => {
-      console.log('>>> CLIENT', client);
+      this.primaryClient = client;
+      this.primaryAccount.client_id = client.id;
+      return this.primaryAccount.save();
+    })
+    .then(() => {
+      this.mnemonicSaved = true;
     })
     .catch(console.log);
-    this.mnemonicSaved = true;
+  }
+
+  private onVerifyBackup = async function(): Promise<boolean> {
+    const phraseInput = this.verifyBackupPhrase && this.verifyBackupPhrase.length
+                          ? this.verifyBackupPhrase.toLowerCase()
+                          : '';
+
+    console.log('ON RETURN PRESS', phraseInput, this.identity.mnemonicPhrase);
+
+    if (phraseInput === this.identity.mnemonicPhrase.toLowerCase()) {
+      this.hasVerifiedBackup = true;
+      this._sb.simple('You have verified your mnemonic phrase!', '#ffffff', '#333333', 3, false);
+      return true;
+    } else {
+      this.hasVerifiedBackup = false;
+      this._sb.simple('The mnemonic phrase entered was incorrect! Please check spelling and word placement.', '#ffffff', '#333333', 3, false);
+      return false;
+    }
   }
 
   /**
    * View Actions
    */
 
-  onAdvanceStep = async function(stepNumber: number) {
+  public onAdvanceStep = async function(stepNumber: number): Promise<void> {
     console.log(`advance::${stepNumber}`);
+    if (stepNumber === 2) {
+      delete this.seeder;
+      delete this.secureRandom;
+    }
 
     if (stepNumber === 4) {
       console.log('entered phrase:', this.verifyBackupPhrase);
@@ -134,48 +161,19 @@ export class CreateAccountComponent implements OnInit {
     }
   }
 
-  onRegisterAccount() {
-    this.Identity.onRegisterUser();
-  }
-
-  onAccountUpdate(args: PropertyChangeData) {
-    console.dir(this);
-    // args is of type PropertyChangeData
-    if (args.eventName === 'propertyChange') {
-      if (args.propertyName === 'mnemonicPhrase') {
-        console.log('SET STEP2');
-        // this.activeStep = 2;
-      }
-    }
-
-    console.log('onAccountModelUpdate', {
-      eventName: args.eventName,
-      propertyName: args.propertyName,
-      newValue: args.value,
-      oldValue: args.oldValue
-    });
-  }
-
-  onTouch(args: TouchGestureEventData) {
+  public onTouchEntropy(args: TouchGestureEventData) {
     if (!this.seeder.poolFilled) {
       this.seeder.seed(args.getX(), args.getY())
     }
   }
 
-  onVerifyBackup = async function() {
-    console.log('ON RETURN PRESS');
-    if (this.verifyBackupPhrase.toLowerCase() === this.Identity.mnemonicPhrase.toLowerCase()) {
-      this.hasVerifiedBackup = true;
-      this._sb.simple('You have verified your mnemonic phrase!', '#ffffff', '#333333', 3, false);
-      return true;
-    } else {
-      this.hasVerifiedBackup = false;
-      this._sb.simple('The mnemonic phrase entered was incorrect! Please check spelling and word placement.', '#ffffff', '#333333', 3, false);
-      return false;
-    }
+  public onRegisterAccount() {
+    this.AccountServ.registerAccount(this.primaryAccount, this.primaryClient)
+    .then()
+    .catch(console.log);
   }
 
-  onSkipVerifyMnemonic() {
+  public onSkipVerifyMnemonic() {
     confirm({
       title: "Skip Backup Verification?",
       message: "While we are unable to restore your account whether you verify or not, this ensures you have the correct mnemonic phrase backed up. Are you sure you wish to skip?",
@@ -191,7 +189,7 @@ export class CreateAccountComponent implements OnInit {
     });
   }
 
-  onCopyText(text: string) {
+  public onCopyText(text: string) {
     let sb = this._sb;
     Clipboard.setText(text)
     .then(async function() {
@@ -204,11 +202,11 @@ export class CreateAccountComponent implements OnInit {
     });
   }
 
-  openTos() {
+  public openTos() {
     utilityModule.openUrl('https://odinblockchain.org/messenger-terms-of-service');
   }
 
-  openPrivacy() {
+  public openPrivacy() {
     utilityModule.openUrl('https://odinblockchain.org/messenger-privacy-policy');
   }
 }
