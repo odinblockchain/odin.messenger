@@ -9,8 +9,8 @@ import * as utils from "tns-core-modules/utils/utils";
 const SqlLite = require('nativescript-sqlite');
 const DatabaseName = 'odin.db';
 
-const AccountsSQL = `CREATE TABLE IF NOT EXISTS accounts (bip44_index INTEGER NOT NULL, client_id INTEGER, username TEXT NOT NULL PRIMARY KEY, FOREIGN KEY (client_id) REFERENCES clients (id))`;
-const ClientsSQL =  `CREATE TABLE IF NOT EXISTS clients (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, account_username STRING NOT NULL, device_id INTEGER, registration_id INTEGER, identity_key_pair STRING, signed_pre_key STRING, pre_keys STRING, FOREIGN KEY (account_username) REFERENCES accounts (username) ON DELETE CASCADE)`;
+const AccountsSQL = `CREATE TABLE IF NOT EXISTS accounts (bip44_index INTEGER NOT NULL, client_id INTEGER, username TEXT NOT NULL PRIMARY KEY, registered BOOLEAN DEFAULT(0), FOREIGN KEY (client_id) REFERENCES clients (id))`;
+const ClientsSQL =  `CREATE TABLE IF NOT EXISTS clients (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, account_username STRING NOT NULL, device_id INTEGER, registration_id INTEGER, identity_key_pair STRING, signed_pre_key STRING, pre_keys STRING, remote_key_total INTEGER DEFAULT(0), FOREIGN KEY (account_username) REFERENCES accounts (username) ON DELETE CASCADE)`;
 const ContactsSQL = `CREATE TABLE IF NOT EXISTS contacts (account_bip44 INTEGER NOT NULL, username TEXT PRIMARY KEY NOT NULL, name TEXT, address TEXT, unread BOOLEAN DEFAULT (0), FOREIGN KEY (account_bip44) REFERENCES accounts (bip44_index) ON DELETE CASCADE)`;
 const MessagesSQL = `CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, account_bip44 INTEGER NOT NULL, contact_username TEXT NOT NULL, owner_username TEXT NOT NULL, message TEXT DEFAULT "", timestamp INTEGER, favorite BOOLEAN DEFAULT (0), unread BOOLEAN DEFAULT (0), FOREIGN KEY (contact_username) REFERENCES contacts (username) ON DELETE CASCADE, FOREIGN KEY (account_bip44) REFERENCES accounts (bip44_index) ON DELETE CASCADE)`;
 const CoinsSQL = `CREATE TABLE IF NOT EXISTS coins (name TEXT PRIMARY KEY NOT NULL, label TEXT DEFAULT "", symbol TEXT NOT NULL, icon_path TEXT DEFAULT "", explorer_host TEXT DEFAULT "", electrumx_host TEXT DEFAULT "", electrumx_port INTEGER DEFAULT (50001))`;
@@ -74,7 +74,6 @@ export class StorageService {
     const subId = (this.serviceId === 'StorageService') ? '::Storage' : '';
     console.log(`[${this.serviceId}${subId}] Inspect ---`);
     console.dir(entry);
-    console.log('———————');
   }
 
   /**
@@ -182,7 +181,10 @@ export class StorageService {
         return reject('database_not_loaded');
       }
 
-      if (forcePurge) await this.removeTables();
+      if (forcePurge) {
+        await this.removeTables();
+        await this.clearStorage();
+      }
 
       this.emit('TableLoadBegin');
       this.log('[loadTables] Start');
