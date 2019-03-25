@@ -64,14 +64,12 @@ export class AppComponent implements OnInit, AfterViewInit {
     private _Contact: ContactService,
     private _Coin: CoinService,
     private _Wallet: WalletService,
-    private _Address: AddressService) {
-      this.connected = true;
-      this.initAttempts = 0;
-  }
+    private _Address: AddressService
+  ) {
+    this.connected    = true;
+    this.initAttempts = 0;
 
-  ngAfterViewInit(): void {
-    console.log('[App] AfterViewInit');
-    this.buildServices();
+    this.postInit = this.postInit.bind(this);
   }
 
   ngOnInit(): void {
@@ -92,6 +90,11 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     this.createEventListeners();
     this.createPlatformListeners();
+  }
+
+  ngAfterViewInit(): void {
+    console.log('[App] AfterViewInit');
+    this.buildServices();
   }
 
   /**
@@ -118,6 +121,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     .then(this._Coin.init)
     .then(this._Wallet.init)
     .then(this._Address.init)
+    .then(this._Identity.setActiveAccount)
+    .then(this.postInit)
     .catch((err) => {
       console.log('[App] Init error error');
       console.log(err);
@@ -125,6 +130,17 @@ export class AppComponent implements OnInit, AfterViewInit {
       console.log('[App] Init retrying...');
       this.buildServices();
     });
+  }
+
+  /**
+   * Methods to execute after services are initialized
+   */
+  private postInit() {
+    // set local useraccount to the activeAccount of Identity
+    this.userAccount = this._Identity.activeAccount;
+    this.userAccount.client = this._Client.findClientById(this.userAccount.client_id);
+    console.log('set client');
+    console.dir(this._Identity.activeAccount);
   }
 
   private createEventListeners() {

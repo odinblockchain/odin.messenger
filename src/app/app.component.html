@@ -8,10 +8,10 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
   <GridLayout tkDrawerContent rows="auto, *, 50" class="sidedrawer sidedrawer-left">
     <StackLayout row="0" class="sidedrawer-header">
       <FlexboxLayout class="client-name">
-        <Label class="innerLabel" text="{{ userAccount.hashAccount[0] }}"></Label>
+        <Label class="innerLabel" text="{{ userAccount.username[0] }}"></Label>
       </FlexboxLayout>
       <!-- <Label class="innerLabel bold" text="ME"></Label> -->
-      <Label class="sidedrawer-header-text var" [text]="userAccount.hashAccount"></Label>
+      <Label class="sidedrawer-header-text var" [text]="userAccount.username"></Label>
     </StackLayout>
 
     <ScrollView row="1">
