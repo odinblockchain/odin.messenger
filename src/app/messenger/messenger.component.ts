@@ -9,6 +9,10 @@ import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { GridLayout } from "ui/layouts/grid-layout";
 import { RouterExtensions } from "nativescript-angular/router";
 import { UserModel, ISignalAddress } from '~/app/shared/user.model';
+import { SignalAddress } from '../shared/models/signal';
+import { AccountService } from '../shared/services';
+import { IdentityService } from '../shared/services/identity.service';
+import { Contact } from '../shared/models/messenger';
 
 @Component({
 	moduleId: module.id,
@@ -18,23 +22,28 @@ import { UserModel, ISignalAddress } from '~/app/shared/user.model';
 })
 
 export class MessengerComponent implements OnInit {
-  public friends: ISignalAddress[];
+  // public friends: SignalAddress[];
+  public friends: Contact[];
 
 	constructor(
     private _page: Page,
     private _router: RouterExtensions,
-    private _user: UserModel) {
-    // this._page.actionBarHidden = true;
-    let _this = this;
-    this._user.on("ContactsRestored", function(eventData) {
-      console.log(`[UserModel Event] --- ${eventData.eventName}`);
-      _this.friends = eventData.object.get('friends');
-    });
+    private _user: UserModel,
+    private Account: AccountService,
+    private Identity: IdentityService
+  ) {
+    this.friends = [];
   }
 
   ngOnInit() {
-    this.friends = this._user.friends;
-    console.log('friends?', this._user.friends);
+    console.log('view >> /messenger');
+    this.Identity.activeAccount.loadContacts()
+    .then((contacts: Contact[]) => {
+      console.log('loaded contacts', contacts.map(c => c.username).join(','));
+      // console.dir(contacts);
+      this.friends = contacts;
+    })
+    .catch(console.log);
   }
   
   onAddContact() {
@@ -47,15 +56,15 @@ export class MessengerComponent implements OnInit {
   }
 
   onViewMessages(contactIdentity: string) {
-    this._router.navigate(['/messenger/message', contactIdentity], {
-      queryParams: {
-        name: 'foobar',
-        id: 123
-      },
-      transition: {
-        name: 'slideLeft'
-      }
-    });
+    // this._router.navigate(['/messenger/message', contactIdentity], {
+    //   queryParams: {
+    //     name: 'foobar',
+    //     id: 123
+    //   },
+    //   transition: {
+    //     name: 'slideLeft'
+    //   }
+    // });
   }
 
   /**
