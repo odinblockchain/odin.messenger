@@ -5,9 +5,11 @@ import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { OSMClientService } from "~/app/shared/osm-client.service";
 import { UserModel } from "~/app/shared/user.model";
+import { IdentityService } from '../shared/services/identity.service';
+import { Account } from '../shared/models/identity';
 
 export interface IAddContact {
-  identity: string;
+  username: string;
   displayName?: string;
 }
 
@@ -20,48 +22,51 @@ export interface IAddContact {
 export class ContactAddComponent implements OnInit {
   public contact: IAddContact;
   public processing: boolean;
+  private activeAccount: Account;
 
 	constructor(
     private _router: RouterExtensions,
     private _sb: SnackBar,
     private _osmClient: OSMClientService,
-    private _user: UserModel
+    private _user: UserModel,
+    private Identity: IdentityService
   ) { }
 
   ngOnInit() {
+    this.activeAccount = this.Identity.activeAccount;
     this.processing = false;
     this.contact = {
-      displayName: 'Demo Account1',
-      identity: ''
+      displayName: '',
+      username: ''
     };
   }
 
   async onAddContact(contact: IAddContact) {
-    if (this.contact.identity === '') {
+    if (this.contact.username === '') {
       return alert("An ODIN Identity is required to add another user.");
-    } else if (this.contact.identity.indexOf('@') < 0) {
-      return alert("You've entered an invalid ODIN Identity, please check and try again.");
+    } else if (this.contact.username.indexOf('@') < 0) {
+      return alert("Usernames should include '@', please check and try again.");
     }
     
     this.processing = true;
     this._sb.simple('Fetching contact details', '#ffffff', '#333333', 3, false);
 
     try { 
-      if (await this._user.hasFriend(this.contact.identity)) {
+      if (await this.activeAccount.hasFriend(this.contact.username)) {
         this.processing = false;
         return alert("This user is already on your local contacts list!");
       }
 
-      let contactDetails = await this._osmClient.fetchContact(this.contact.identity);
+      let contactDetails = await this._osmClient.fetchContact(this.contact.username);
 
-      if (await this._user.addFriend(contactDetails, this.contact.displayName)) {
+      if (await this.activeAccount.addFriend(this.contact, contactDetails)) {
         this.processing = false;
         this.contact = {
           displayName: '',
-          identity: ''
+          username: ''
         };
   
-        alert(`Successfully added ${this.contact.identity} to your local contacts!`);
+        alert(`Successfully added ${this.contact.username} to your local contacts!`);
         this._router.navigate(['/messenger']);
       } else {
         this.processing = false;
