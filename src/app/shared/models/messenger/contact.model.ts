@@ -8,7 +8,7 @@ export class Contact extends Database {
   unread: boolean;
 
   constructor(props: any) {
-    super();
+    super('Contact');
     this.deserialize(props);
   }
 

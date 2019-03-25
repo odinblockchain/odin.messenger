@@ -12,7 +12,7 @@ export class Wallet extends Database {
   last_tx_timestamp: number;
 
   constructor(props: any) {
-    super();
+    super('Wallet');
     this.deserialize(props);
   }
 
@@ -63,7 +63,7 @@ export class Wallet extends Database {
           throw new Error(`unspent txid(${unspent.txid}) NOT UPDATED`);
         }
       } catch (err) {
-        console.log(`Unable to update txid(${unspent.txid}) for wallet(${this.id})`);
+        this.log(`Unable to update txid(${unspent.txid}) for wallet(${this.id})`);
         console.log(err);
         return false;
       }

@@ -1,23 +1,49 @@
 import { Database } from '../database.model';
 import { Message } from '../messenger/message.model';
-// import { ODIN } from '~/app/bundle.odin';
-// import Hashids from 'hashids';
 
+/**
+ * The Account is the primary parent of the ODIN Application modules. There can be
+ * many accounts under one identity, and every account has related contacts, messages,
+ * wallets, and transactions.
+ */
 export class Account extends Database {
   bip44_index: number;
   client_id: number;
   username: string;
+  registered: boolean;
 
   constructor(props?: any) {
-    super();
+    super('Account');
+
+    this.bip44_index = -1;
+    this.client_id = -1;
+    this.username = '';
+    this.registered = false;
     this.deserialize(props);
 
     this.save = this.save.bind(this);
   }
 
   deserialize(input: any) {
+    if (!input) return this;
+    
+    if (`${input.registered}` === "0") {
+      input.registered = false
+    } else if (`${input.registered}` === "1") {
+      input.registered = true;
+    }
+    
     Object.assign(this, input);
     return this;
+  }
+
+  serialize() {
+    return {
+      index: this.bip44_index,
+      client_id: this.client_id,
+      username: this.username,
+      registered: this.registered
+    };
   }
 
   public async storeMessage(message: Message) {
@@ -52,11 +78,15 @@ export class Account extends Database {
       return false;
     }
 
+    this.log('ATTEMPTING TO SAVE');
+    this.dir(this.serialize());
+
     return new Promise((resolve, reject) => {
-      this.db.execSQL(`UPDATE accounts SET bip44_index=?, client_id=?, username=? WHERE bip44_index=? AND username=?`, [
+      this.db.execSQL(`UPDATE accounts SET bip44_index=?, client_id=?, username=?, registered=? WHERE bip44_index=? AND username=?`, [
         this.bip44_index,
         this.client_id,
         this.username,
+        this.registered,
         this.bip44_index,
         this.username
       ])

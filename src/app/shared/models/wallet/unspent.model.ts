@@ -1,6 +1,7 @@
 import { Deserializable } from '../deserializable.model';
+import { Database } from '../database.model';
 
-export class Unspent implements Deserializable {
+export class Unspent extends Database {
   id: number;
   wallet_id: number;
   address_id: number;
@@ -10,6 +11,7 @@ export class Unspent implements Deserializable {
   value: number;
 
   constructor(props: any) {
+    super('Unspent');
     this.deserialize(props);
   }
 

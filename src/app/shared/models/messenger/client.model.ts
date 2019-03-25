@@ -1,17 +1,6 @@
 import { Database } from '../database.model';
 import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
-
-export interface ISignalClientPreKey {
-  id: number;
-  pubKey: string;
-  serialized: string;
-}
-
-export class SignalClientPreKey {
-  public id: number;
-  public pubKey: string;
-  public serialized: string;
-}
+import { SignalClientSerialized, SignalClientContact, PreKeyBundle, LocalContact, SignalAddress, SignalClientPreKey, SignalClient } from '../signal';
 
 export class Client extends Database {
   id: number;
@@ -21,27 +10,40 @@ export class Client extends Database {
   identity_key_pair: string; // encoded string
   signed_pre_key: any; // encoded string
   pre_keys: SignalClientPreKey[];
+  remote_key_total: number;
   
-  signalClient: any;
+  signalClient: LibsignalProtocol.Client;
 
   constructor(props?: any) {
-    super();
+    super('Client');
+    this.remote_key_total = 0;
     this.deserialize(props);
+
+    this.save = this.save.bind(this);
   }
 
   deserialize(input: any) {
     try {
-      console.log('attempting to parse prekeys');
-      console.dir(input.pre_keys);
-      if (typeof input.pre_keys === 'string') input.pre_keys = JSON.parse(input.pre_keys);
-      console.log('JSON PARSED pre_keys');
-      console.dir(input.pre_keys);
-    } catch (e) {
-      console.log('nothing to parse, prekeys');
-    }
+      input.pre_keys = (input.pre_keys && typeof input.pre_keys === 'string')
+        ? JSON.parse(input.pre_keys)
+        : [];
+    } catch (e) { }
     
     Object.assign(this, input);
     return this;
+  }
+
+  serialize() {
+    return {
+      id: this.id,
+      account_username: this.account_username,
+      registration_id: this.registration_id,
+      device_id: this.device_id,
+      identity_key_pair: this.identity_key_pair,
+      signed_pre_key: this.signed_pre_key,
+      remote_key_total: this.remote_key_total,
+      pre_keys: this.pre_keys
+    };
   }
 
   /**
@@ -55,18 +57,9 @@ export class Client extends Database {
    * @param signedPreKey 
    * @param preKeys 
    */
-  async loadSignalClient(): Promise<boolean> {
-    console.log(`UserModel... CREATE Signal Client`);
-    console.log({
-      account:    this.account_username,
-      regId:      this.registration_id,
-      devId:      this.device_id,
-      idKeyPair:  this.identity_key_pair,
-      signedPre:  this.signed_pre_key,
-      preKeys:    this.pre_keys ? this.pre_keys.length : 0,
-      preKey0:    this.pre_keys ? this.pre_keys[0] : ''
-    });
-
+  async loadSignalClient(): Promise<SignalClient> {
+    this.log(`Load signal client for [${this.account_username}]`);
+    
     // TODO LibsignalProtocol.Client should accept FALSE || null parameters
     this.signalClient = await new LibsignalProtocol.Client(
       this.account_username,
@@ -84,25 +77,22 @@ export class Client extends Database {
     );
 
     // TODO Client should allow exporting of serialized properties without first doing this
-    let serializedClient = JSON.parse(JSON.stringify(this.signalClient));
+    let serializedClient: SignalClientSerialized = JSON.parse(JSON.stringify(this.signalClient));
 
-    console.log(`UserModel... Sanity Check`);
-    console.log({
-      account:      this.signalClient.username,
-      regId:        this.signalClient.registrationId,
-      devId:        this.signalClient.deviceId,
-      idpair:       serializedClient.identityKeyPair,
-      signedPreKey: serializedClient.signedPreKey,
-      preKeys:      serializedClient.preKeys ? serializedClient.preKeys.length : 0,
-      preKey0:      serializedClient.preKeys ? serializedClient.preKeys[0] : ''
-    });
+    this.log(`Integrity check`);
+    this.log(`
+      account:      ${this.signalClient.username},
+      regId:        ${this.signalClient.registrationId},
+      devId:        ${this.signalClient.deviceId},
+      idpair:       ${serializedClient.identityKeyPair}
+      signedPreKey: ${serializedClient.signedPreKey}
+      preKeys:      ${serializedClient.preKeys ? serializedClient.preKeys.length : 0},
+      preKey0:      ${serializedClient.preKeys ? JSON.stringify(serializedClient.preKeys[0]) : ''}
+    `);
 
     this.identity_key_pair = serializedClient.identityKeyPair;
     this.signed_pre_key = serializedClient.signedPreKey;
     this.pre_keys = serializedClient.preKeys;
-
-    // await this._store.setString('signalClient', JSON.stringify(this._signalClient));
-    console.log(`UserModel... STORED Signal Client`);
 
     return this.signalClient;
   }
@@ -127,16 +117,22 @@ export class Client extends Database {
     }
 
     return new Promise((resolve, reject) => {
-      this.db.execSQL(`UPDATE clients SET registration_id=?, device_id=?, identity_key_pair=?, signed_pre_key=?, pre_keys=? WHERE account_username=?`, [
+      this.db.execSQL(`UPDATE clients SET registration_id=?, device_id=?, identity_key_pair=?, signed_pre_key=?, pre_keys=?, remote_key_total=? WHERE account_username=?`, [
         this.registration_id,
         this.device_id,
         this.identity_key_pair ? this.identity_key_pair : '',
         this.signed_pre_key ? this.signed_pre_key : '',
         this.stringify(this.pre_keys),
+        this.remote_key_total,
         this.account_username
       ])
       .then((updated: number) => {
-        console.log(`updated client [${this.account_username}] #${this.id} (${updated})`);
+        if (updated) {
+          this.log(`#${this.id} UPDATED`);
+        } else {
+          this.log(`#${this.id} NOT UPDATED`);
+        }
+
         return resolve(updated);
       })
       .catch(reject);

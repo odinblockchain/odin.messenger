@@ -14,7 +14,7 @@ export class Address extends Database {
   last_tx_timestamp: number;
 
   constructor(props: any) {
-    super();
+    super('Address');
     this.deserialize(props);
   }
 
@@ -45,7 +45,7 @@ export class Address extends Database {
           transaction.timestamp
         ]);
       } catch (err) {
-        console.log(`Unable to insert txid(${transaction.txid}) into address(${this.address})`);
+        this.log(`Unable to insert txid(${transaction.txid}) into address(${this.address})`);
         console.log(err);
         return false;
       }
@@ -69,7 +69,7 @@ export class Address extends Database {
           throw new Error(`txid(${transaction.txid}) NOT UPDATED`);
         }
       } catch (err) {
-        console.log(`Unable to update txid(${transaction.txid}) for address(${this.address})`);
+        this.log(`Unable to update txid(${transaction.txid}) for address(${this.address})`);
         console.log(err);
         return false;
       }

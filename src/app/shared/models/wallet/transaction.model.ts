@@ -1,6 +1,7 @@
 import { Deserializable } from '../deserializable.model';
+import { Database } from '../database.model';
 
-export class Transaction implements Deserializable {
+export class Transaction extends Database {
   id: number;
   wallet_id: number;
   address_id: number;
@@ -12,6 +13,7 @@ export class Transaction implements Deserializable {
   timestamp: number;
 
   constructor(props: any) {
+    super('Transaction');
     this.deserialize(props);
   }
 
