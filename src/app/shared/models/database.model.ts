@@ -3,8 +3,8 @@ import { Inject, Optional } from "@angular/core";
 import { Subject } from "rxjs";
 
 export class Database implements Deserializable {
+  private eventStream: Subject<string>;
   public db: any;
-  public eventStream: Subject<string>;
 
   constructor(
     @Inject('modelId') @Optional() public modelId?: string) {
@@ -13,6 +13,10 @@ export class Database implements Deserializable {
 
     this.log('[Init]');
     this.emit(`Init`);
+  }
+
+  get eventStream$() {
+    return this.eventStream.asObservable();
   }
 
   public deserialize(input: any) {

@@ -33,7 +33,7 @@ import {
 
 @Injectable()
 export class StorageService {
-  public eventStream: any;
+  private eventStream: ReplaySubject<string>;
   public databaseName: string;
   public odb: any;
   
@@ -51,6 +51,10 @@ export class StorageService {
     this.createTable = this.createTable.bind(this);
     this.purgeTable = this.purgeTable.bind(this);
     this.connect = this.connect.bind(this);
+  }
+
+  get eventStream$() {
+    return this.eventStream.asObservable();
   }
 
   /**
@@ -185,6 +189,8 @@ export class StorageService {
         await this.removeTables();
         await this.clearStorage();
       }
+
+      // await this.purgeTable('contacts');
 
       this.emit('TableLoadBegin');
       this.log('[loadTables] Start');
