@@ -1,8 +1,10 @@
 import { Database } from '../database.model';
 import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
 import { SignalClientSerialized, SignalClientContact, PreKeyBundle, LocalContact, SignalAddress, SignalClientPreKey, SignalClient } from '../signal';
+import { IRemoteContact } from '../identity';
 
 export class Client extends Database {
+  // database
   id: number;
   account_username: string; // foreign_key accounts(username)
   registration_id: number;
@@ -12,6 +14,7 @@ export class Client extends Database {
   pre_keys: SignalClientPreKey[];
   remote_key_total: number;
   
+  // runtime
   signalClient: LibsignalProtocol.Client;
 
   constructor(props?: any) {
@@ -137,5 +140,46 @@ export class Client extends Database {
       })
       .catch(reject);
     });
+  }
+
+  /**
+   * Stores a contact locally by adding a session to the `SignalClient` instance
+   * and adding them to the local cache of friends (it non-existent).
+   * 
+   * @param contact 
+   * @param preKeyBundle 
+   */
+  public async storeContact(remoteContact: IRemoteContact): Promise<boolean> {
+    this.log(`Storing Contact ${remoteContact.address.name}`);
+
+    const signalContact: SignalClientContact = {
+      address: {
+        name: remoteContact.address.name,
+        registrationId: remoteContact.address.registrationId,
+        deviceId: remoteContact.address.deviceId
+      },
+      preKeyBundle: this.buildBundlePackage(remoteContact)
+    };
+
+    return this.signalClient.addSession(signalContact.address, signalContact.preKeyBundle);
+  }
+
+  /**
+   * Converts a RemoteContact package into a `PreKeyBundle` which will be used
+   * throughout the `SignalClient` session.
+   * 
+   * @param remoteContact 
+   */
+  private buildBundlePackage(remoteContact: IRemoteContact): PreKeyBundle {
+    return {
+      registrationId:       remoteContact.address.registrationId,
+      deviceId:             remoteContact.address.deviceId,
+      preKeyPublic:         remoteContact.publicPreKey.pubKey,
+      preKeyRecordId:       remoteContact.publicPreKey.id,
+      signedPreKeyPublic:   remoteContact.signedPreKey.pubKey,
+      signedPreKeyRecordId: remoteContact.signedPreKey.id,
+      signature:            remoteContact.signedPreKey.signature,
+      identityPubKey:       remoteContact.identityPubKey
+    }
   }
 }

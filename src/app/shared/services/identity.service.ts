@@ -3,18 +3,24 @@ import { StorageService } from '../storage.service';
 import { Identity } from '../models/identity/identity.model';
 import { ODIN } from '~/app/bundle.odin';
 import { identity } from 'rxjs';
+import { AccountService } from './account.service';
+import { Account } from '../models/identity';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IdentityService extends StorageService {
-  identity: Identity;
+  public identity: Identity;
+  public activeAccount: Account;
 
-  constructor() {
+  constructor(
+    private Account: AccountService
+  ) {
     super('IdentityService');
 
     this.init = this.init.bind(this);
     this.loadIdentity = this.loadIdentity.bind(this);
+    this.setActiveAccount = this.setActiveAccount.bind(this);
     this.storeIdentity = this.storeIdentity.bind(this);
     this.fetchIdentity = this.fetchIdentity.bind(this);
   }
@@ -51,6 +57,32 @@ export class IdentityService extends StorageService {
       // this.registered.next(this.identity.registered);
       return resolve(this.identity);
     });
+  }
+
+  /**
+   * Sets the internal account. Defaults to the last saved account index if none are
+   * provided.
+   * 
+   * @param accountIndex The account index to set as active within the application
+   */
+  public async setActiveAccount(accountIndex?: number) {
+    if (typeof accountIndex === 'undefined' || isNaN(Number(accountIndex))) {
+      accountIndex = this.identity.activeAccountIndex;
+    } else {
+      accountIndex = Number(accountIndex);
+    }
+
+    this.log(`setActiveAccount (${accountIndex})`);
+    console.log(typeof accountIndex, accountIndex, this.identity.activeAccountIndex);
+    
+    if (this.Account.accounts[accountIndex]) {
+      this.identity.activeAccountIndex = accountIndex;
+      this.identity.save();
+      this.activeAccount = this.Account.accounts[accountIndex];
+      this.log(`Set activeAccount to [${this.activeAccount.username}]`);
+    } else {
+      this.log(`Account #${accountIndex} not found, activeAccount not set`);
+    }
   }
 
   /**
@@ -97,8 +129,8 @@ export class IdentityService extends StorageService {
         return resolve(this.identity);
       }
   
-      const mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
-      // const mnemonic = 'cool cool cool cool cool cool cool cool cool cool cool cool';
+      // const mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
+      const mnemonic = 'cool cool cool cool cool cool cool cool cool cool cool cool';
 
       this.identity.masterSeed = masterSeed;
       this.identity.mnemonicPhrase = mnemonic;

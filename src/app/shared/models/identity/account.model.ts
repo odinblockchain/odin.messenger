@@ -1,5 +1,16 @@
 import { Database } from '../database.model';
 import { Message } from '../messenger/message.model';
+import { Contact } from '../messenger';
+import { SignalAddress, SignedPreKey, PublicPreKey, PreKeyBundle, SignalClientContact } from '../signal';
+import { Client } from '../messenger/client.model';
+
+export interface IRemoteContact {
+  address: SignalAddress;
+  displayName?: string;
+  identityPubKey: string;
+  signedPreKey: SignedPreKey;
+  publicPreKey: PublicPreKey;
+} 
 
 /**
  * The Account is the primary parent of the ODIN Application modules. There can be
@@ -7,10 +18,15 @@ import { Message } from '../messenger/message.model';
  * wallets, and transactions.
  */
 export class Account extends Database {
+  // database
   bip44_index: number;
   client_id: number;
   username: string;
   registered: boolean;
+
+  // runtime
+  contacts: Contact[];
+  client: Client;
 
   constructor(props?: any) {
     super('Account');
@@ -19,9 +35,11 @@ export class Account extends Database {
     this.client_id = -1;
     this.username = '';
     this.registered = false;
+    this.contacts = [];
     this.deserialize(props);
 
     this.save = this.save.bind(this);
+    this.storeContact = this.storeContact.bind(this);
   }
 
   deserialize(input: any) {
@@ -46,6 +64,83 @@ export class Account extends Database {
     };
   }
 
+  public async loadContacts() {
+    return new Promise(async (resolve, reject) => {
+      if (!this.dbReady()) {
+        return resolve([]);
+      }
+
+      const contacts: Contact[] = await this.db.all(`SELECT contacts.username, account_bip44, name, unread FROM contacts INNER JOIN accounts ON contacts.account_bip44 = accounts.bip44_index WHERE accounts.bip44_index = ?`, this.bip44_index);
+      
+      this.contacts = contacts.map(contact => {
+        console.dir(contact.username);
+        this.log(`Load Contact [${contact.username}]
+        index:        ${contact.account_bip44}
+        username:     ${contact.username}
+        display:      ${contact.name}`);
+
+        contact = new Contact(contact);
+        return contact;
+      });
+      
+      return resolve(this.contacts);
+    });
+  }
+
+  /**
+   * Checks for the existence of `contactIdentity` within locally stored friend cache.
+   * 
+   * @param contactIdentity 
+   */
+  hasFriend(username: string): boolean {
+    let index = this.contacts.findIndex((c: Contact) => c.username === username);
+    return !!(index >= 0);
+  }
+
+  /**
+   * Adds a `remoteContact` to the local client's friend list. Will check if contact
+   * exists already.
+   * 
+   * @param remoteContact 
+   * @param displayName 
+   * 
+   * MOVED
+   */
+  async addFriend(newContact: any, remoteContact: IRemoteContact): Promise<boolean> {
+    this.log(`Add friend [${newContact.username}]`);
+
+    if (this.hasFriend(newContact.username)) {
+      throw new Error('ContactExists');
+    }
+
+    if (typeof newContact.displayName === 'undefined') newContact.displayName = '';
+
+    const contact: Contact = new Contact({
+      account_bip44: this.bip44_index,
+      username: newContact.username,
+      name: newContact.displayName,
+      unread: false
+    })
+
+    try {
+      await this.client.storeContact(remoteContact);
+
+      if (this.client.signalClient.hasSession(contact.username)) {
+        await this.storeContact(contact);
+        this.contacts.push(contact);
+        return true;
+      } else {
+        this.log(`Failed Signal Store Contact check`);
+        return false;
+      }
+    } catch (err) {
+      this.log(`Failed to store contact [${newContact.username}]`);
+      console.log(err);
+      return false;
+    }
+  }
+
+
   public async storeMessage(message: Message) {
     if (!this.dbReady()) {
       return false;
@@ -59,6 +154,18 @@ export class Account extends Database {
       message.timestamp,
       false,
       (message.owner_username === this.username ? false : true)
+    ]);
+  }
+
+  public async storeContact(contact: Contact) {
+    if (!this.dbReady()) {
+      return false;
+    }
+
+    return await this.db.execSQL(`INSERT INTO contacts (account_bip44, username, name) values (?, ?, ?)`, [
+      this.bip44_index,
+      contact.username,
+      contact.name
     ]);
   }
 

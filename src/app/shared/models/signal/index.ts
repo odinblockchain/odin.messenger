@@ -52,3 +52,30 @@ export class SignalClientPreKey {
   pubKey: string;
   serialized: string;
 }
+
+export interface SignedPreKey {
+  id: number;
+  pubKey: string;
+  signature: string;
+}
+
+export interface PublicPreKey {
+  id: number;
+  pubKey: string;
+}
+
+export interface PreKeyBundle {
+  registrationId: number,
+  deviceId: number,
+  preKeyPublic: string,
+  preKeyRecordId: number,
+  signedPreKeyPublic: string,
+  signedPreKeyRecordId: number,
+  signature: string,
+  identityPubKey: string
+}
+
+export interface SignalClientContact {
+  address: SignalAddress;
+  preKeyBundle: PreKeyBundle;
+}
