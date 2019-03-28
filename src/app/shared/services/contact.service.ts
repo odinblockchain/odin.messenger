@@ -48,6 +48,7 @@ export class ContactService extends StorageService {
     });
   }
 
+  // TODO Investigate unnecessary additional load of contacts here VS within the Contact Model
   private async loadContacts() {
     if (!this.dbReady()) {
       return new Error('db_not_open');
@@ -55,14 +56,17 @@ export class ContactService extends StorageService {
 
     return new Promise(async (resolve, reject) => {
       try {
-        const contacts: Contact[] = await this.odb.all('SELECT account_bip44, username, name, address FROM contacts');
-        this.contacts = contacts.map(contact => {
-          contact = new Contact(contact);
-          contact.db = this.odb;
-          return contact;
-        });
+        // this.contacts = [];
 
-        this.log(`coins loaded...${this.contacts.length}`);
+        const contacts: Contact[] = await this.odb.all('SELECT * FROM contacts');
+        while (contacts.length > 0) {
+          const contact: Contact = new Contact(contacts.shift());
+          contact.db = this.odb;
+          await contact.loadMessages();
+          this.contacts.push(contact);
+        }
+
+        this.log(`contacts loaded...${this.contacts.length}`);
         return resolve(this.contacts);
       } catch (err) {
         this.log('Unable to load contacts...');
