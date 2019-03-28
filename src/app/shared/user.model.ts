@@ -402,6 +402,8 @@ export class UserModel extends Observable {
    * 
    * @param remoteContact 
    * @param displayName 
+   * 
+   * MOVED
    */
   async addFriend(remoteContact: IRemoteContact, displayName?: string): Promise<boolean> {
     console.log(`UserModel... ADD FRIEND ${remoteContact.address.name}`);
@@ -443,6 +445,8 @@ export class UserModel extends Observable {
    * Checks for the existence of `contactIdentity` within locally stored friend cache.
    * 
    * @param contactIdentity 
+   * 
+   * MOVED
    */
   hasFriend(contactIdentity: string): boolean {
     let index = this.friends.findIndex((friend) => friend.name === contactIdentity);
