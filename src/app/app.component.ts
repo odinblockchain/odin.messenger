@@ -34,6 +34,7 @@ import { AccountService, ContactService, CoinService, WalletService, AddressServ
 import { Identity } from './shared/models/identity/identity.model';
 import { IdentityService } from './shared/services/identity.service';
 import { ClientService } from './shared/services/client.service';
+import { LogService } from './shared/services/log.service';
 
 declare var android: any;
 
@@ -64,7 +65,9 @@ export class AppComponent implements OnInit, AfterViewInit {
     private _Contact: ContactService,
     private _Coin: CoinService,
     private _Wallet: WalletService,
-    private _Address: AddressService
+    private _Address: AddressService,
+    private _Preferences: PreferencesService,
+    private _Log: LogService
   ) {
     this.connected    = true;
     this.initAttempts = 0;
@@ -114,6 +117,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
     this.initAttempts++;
     this._storage.loadStorage(false)
+    .then(this._Preferences.loadPreferences)
+    .then(this._Preferences.savePreferences)
     .then(this._Identity.init)
     .then(this._Account.init)
     .then(this._Client.init)
@@ -121,6 +126,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     .then(this._Coin.init)
     .then(this._Wallet.init)
     .then(this._Address.init)
+    .then(this._Log.init)
     .then(this._Identity.setActiveAccount)
     .then(this.postInit)
     .catch((err) => {
@@ -137,10 +143,12 @@ export class AppComponent implements OnInit, AfterViewInit {
    */
   private postInit() {
     // set local useraccount to the activeAccount of Identity
-    this.userAccount = this._Identity.activeAccount;
-    this.userAccount.client = this._Client.findClientById(this.userAccount.client_id);
-    console.log('set client');
-    console.dir(this._Identity.activeAccount);
+    if (this._Identity.activeAccount) {
+      this.userAccount = this._Identity.activeAccount;
+      this.userAccount.client = this._Client.findClientById(this.userAccount.client_id);
+      console.log('set client');
+      console.dir(this._Identity.activeAccount);
+    }
   }
 
   private createEventListeners() {
