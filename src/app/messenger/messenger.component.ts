@@ -12,7 +12,9 @@ import { UserModel, ISignalAddress } from '~/app/shared/user.model';
 import { SignalAddress } from '../shared/models/signal';
 import { AccountService } from '../shared/services';
 import { IdentityService } from '../shared/services/identity.service';
-import { Contact } from '../shared/models/messenger';
+import { Contact, Message } from '../shared/models/messenger';
+import { StorageService } from '../shared';
+import { PreferencesService } from '../shared/preferences.service';
 
 @Component({
 	moduleId: module.id,
@@ -30,20 +32,43 @@ export class MessengerComponent implements OnInit {
     private _router: RouterExtensions,
     private _user: UserModel,
     private Account: AccountService,
-    private Identity: IdentityService
+    private IdentityServ: IdentityService,
+    private Storage: StorageService,
+    private Preferences: PreferencesService
   ) {
     this.friends = [];
+
+    this.onFetchMessages = this.onFetchMessages.bind(this);
   }
 
   ngOnInit() {
     console.log('view >> /messenger');
-    this.Identity.activeAccount.loadContacts()
+    this.IdentityServ.activeAccount.loadContacts()
     .then((contacts: Contact[]) => {
       console.log('loaded contacts', contacts.map(c => c.username).join(','));
       // console.dir(contacts);
       this.friends = contacts;
     })
     .catch(console.log);
+
+    // this.IdentityServ.activeAccount.fetchMessages(this.IdentityServ.activeAccount.client)
+    // .then((messages: any[]) => {
+    //   while(messages.length) {
+    //     const message = messages.shift();
+    //     console.log(`handle`, message.key);
+    //     this.IdentityServ.activeAccount.handleMessage(new Message({
+    //       key: message.key,
+    //       account_bip44: this.IdentityServ.activeAccount.bip44_index,
+    //       contact_username: message.value.accountHash,
+    //       owner_username: this.IdentityServ.activeAccount.username,
+    //       message: message.value.ciphertextMessage,
+    //       timestamp: message.value.timestamp
+    //     }));
+    //   }
+
+    //   console.log('done');
+    // })
+    // .catch(console.log);
   }
   
   onAddContact() {
@@ -56,15 +81,16 @@ export class MessengerComponent implements OnInit {
   }
 
   onViewMessages(contactIdentity: string) {
-    // this._router.navigate(['/messenger/message', contactIdentity], {
-    //   queryParams: {
-    //     name: 'foobar',
-    //     id: 123
-    //   },
-    //   transition: {
-    //     name: 'slideLeft'
-    //   }
-    // });
+    console.log('onViewMessage', contactIdentity);
+    this._router.navigate(['/messenger/message', contactIdentity], {
+      queryParams: {
+        name: 'foobar',
+        id: 123
+      },
+      transition: {
+        name: 'slideLeft'
+      }
+    });
   }
 
   /**
@@ -90,6 +116,12 @@ export class MessengerComponent implements OnInit {
   }
 
   onFetchMessages() {
-    this._user.fetchMessages();
+    this.IdentityServ.activeAccount.fetchRemoteMessages()
+    .then(x => {
+      console.log('DONE')
+    })
+    .catch(console.log);
+    
+    //(this.IdentityServ.activeAccount.client);
   }
 }

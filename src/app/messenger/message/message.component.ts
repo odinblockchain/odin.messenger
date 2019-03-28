@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef  } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy  } from '@angular/core';
 import { PageRoute } from "nativescript-angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
 // import { switchMap } from "rxjs/operators";
@@ -19,6 +19,10 @@ import { displayedEvent, exitEvent, launchEvent, lowMemoryEvent,
   orientationChangedEvent, resumeEvent, suspendEvent, uncaughtErrorEvent, 
   ApplicationEventData, LaunchEventData, OrientationChangedEventData, UnhandledErrorEventData,
   on as applicationOn, run as applicationRun } from "tns-core-modules/application";
+import { ContactService } from '~/app/shared/services';
+import { Contact, Message } from '~/app/shared/models/messenger';
+import { IdentityService } from '~/app/shared/services/identity.service';
+import { Subscription, Observable } from 'rxjs';
 
 let ipsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel nibh eu massa tempus mattis. Cras sit amet tempus sem. Morbi tristique augue quis arcu malesuada gravida. Maecenas maximus ornare congue. Vestibulum tellus diam, tempor eget blandit eget, vulputate id odio.';
 
@@ -30,11 +34,16 @@ declare var android: any;
 	templateUrl: './message.component.html',
 	styleUrls: ['./message.component.css']
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, OnDestroy {
   public contactIdentity: string;
   public contactIdentityShort: string;
-  public contactMessages: ObservableArray<any>; //any[];
+  public contactMessages: any;//ObservableArray<any>; //any[];
   public message: string;
+  public contact: Contact;
+  // public contactMessages$: ObservableArray<Message>;
+  public contactMessages$: Observable<Message>;
+
+  private contactMessageSub: Subscription;
     
   @ViewChild("list") lv: ElementRef;
   @ViewChild("textfield") tf: ElementRef;
@@ -47,27 +56,31 @@ export class MessageComponent implements OnInit {
     private _router: RouterExtensions,
     private _route: ActivatedRoute,
     private page: Page,
-    private _user: UserModel
+    private _user: UserModel,
+    private ContactServ: ContactService,
+    private IdentityServ: IdentityService
   ) {
 
-    // load route params...
+    this.contactMessages = [];
+    this.contactMessages$ = new Observable(); //new ObservableArray();
+
     this._route.params
-    .subscribe(params => {
-      console.log('GOT route params', params);
-      if (params.hasOwnProperty('contactId')) {
-        this.contactIdentity = params['contactId'];
-        this.contactIdentityShort = this.contactIdentity[0].toUpperCase();
-      } else {
-        alert("Something went wrong while loading the requested messages.");
-        this._router.navigate(['/messenger']);
-      }
-    });
+      .subscribe(params => {
+        console.log('GOT route params', params);
+        if (params.hasOwnProperty('contactId')) {
+          this.contactIdentity = params['contactId'];
+          this.contactIdentityShort = this.contactIdentity[0].toUpperCase();
+        } else {
+          alert("Something went wrong while loading the requested messages.");
+          this._router.navigate(['/messenger']);
+        }
+      });
 
     // load query params (if any)...
-    this._route.queryParams
-    .subscribe(params => {
-      console.log('GOT params', params);
-    });
+    // this._route.queryParams
+    // .subscribe(params => {
+    //   console.log('GOT params', params);
+    // });
 
     this.page.on("loaded", (args) => {
       var window = app.android.startActivity.getWindow();
@@ -89,16 +102,41 @@ export class MessageComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    console.log('Cleaning up Message View...');
+    this.contactMessageSub.unsubscribe();
+  }
+
   ngOnInit() {
     console.log(`MessageView... Loading Contact ${this.contactIdentity}`);
     
-    // load local messages for contact as observablearray
-    this.contactMessages = this._user.loadLocalContact(this.contactIdentity);
+    // this.ContactServ.findContact(this.contactIdentity);
+    // this.IdentityServ.activeAccount.fetchMessages(this.IdentityServ.activeAccount.client)
+    
+    this.contact = this.IdentityServ.activeAccount.findContact(this.contactIdentity);
+    console.log('contact', this.contact);
+    console.log('contact msg', this.contact.msgs);
 
-    // subscribe to new messages for the hell of it (test)
-    this._user.on(`NewMessage_${this.contactIdentity}`, function(eventData) {
-      console.log(`[UserModel Event] --- ${eventData.eventName}`);
+    // this.contact.loadMessages()
+    // .then(contact => {
+    //   console.log('loaded contact messages');
+    // }).catch(console.log);
+
+    this.contactMessageSub = this.contact.messages$.subscribe(value => {
+      console.log('subscribed!');
+      this.contactMessages.push(value);
+      console.log('NEW MESSAGE', value);
     });
+
+    this.contactMessages$ = this.contact.messages$;// this.contact.oMessages$;
+
+    // load local messages for contact as observablearray
+    // this.contactMessages = [];// this._user.loadLocalContact(this.contactIdentity);
+
+    // // subscribe to new messages for the hell of it (test)
+    // this._user.on(`NewMessage_${this.contactIdentity}`, function(eventData) {
+    //   console.log(`[UserModel Event] --- ${eventData.eventName}`);
+    // });
   }
 
   ngAfterViewInit() {
@@ -177,6 +215,9 @@ export class MessageComponent implements OnInit {
   }
 
   onFetchMessages() {
-    this._user.fetchMessages();
+    this.IdentityServ.activeAccount.fetchRemoteMessages()
+    .then(() => {
+      console.log('done fetching');
+    }).catch(console.log);
   }
 }
