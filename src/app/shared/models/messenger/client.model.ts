@@ -127,6 +127,7 @@ export class Client extends Database {
         this.signed_pre_key ? this.signed_pre_key : '',
         this.stringify(this.pre_keys),
         this.remote_key_total,
+        
         this.account_username
       ])
       .then((updated: number) => {
@@ -150,7 +151,7 @@ export class Client extends Database {
    * @param preKeyBundle 
    */
   public async storeContact(remoteContact: IRemoteContact): Promise<boolean> {
-    this.log(`Storing Contact ${remoteContact.address.name}`);
+    this.log(`Storing Contact Session [${remoteContact.address.name}]`);
 
     const signalContact: SignalClientContact = {
       address: {
@@ -164,13 +165,15 @@ export class Client extends Database {
     return this.signalClient.addSession(signalContact.address, signalContact.preKeyBundle);
   }
 
+
+
   /**
    * Converts a RemoteContact package into a `PreKeyBundle` which will be used
    * throughout the `SignalClient` session.
    * 
    * @param remoteContact 
    */
-  private buildBundlePackage(remoteContact: IRemoteContact): PreKeyBundle {
+  public buildBundlePackage(remoteContact: IRemoteContact): PreKeyBundle {
     return {
       registrationId:       remoteContact.address.registrationId,
       deviceId:             remoteContact.address.deviceId,
