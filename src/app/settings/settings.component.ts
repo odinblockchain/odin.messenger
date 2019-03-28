@@ -40,7 +40,7 @@ export class SettingsComponent implements OnInit {
   }
 
   onUpdate() {
-    this._pref.setPreferences(this.preferences);
+    this._pref.savePreferences(this.preferences);
     console.log('prefs', this.preferences);
   }
 

@@ -30,11 +30,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.storageEventListener = this._storage.eventStream.subscribe(data => {
+    this.storageEventListener = this._storage.eventStream$.subscribe(data => {
       this.currentActivity = data;
 
       if (data === 'StorageService::Ready') {
-        const registeredAccount = this.Account.accounts.find((a: Account) => a.registered);
+        const registeredAccount = this.Account.accounts.find((a: Account) => a.registered === true);
       
         if (registeredAccount) {
           console.log('[Home] >> Session exists, redirect to messages home');
