@@ -63,10 +63,10 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
       </FormattedString>
     </Label>
 
-    <Label class="no-connection" *ngIf="userAccount.osmConnected">
+    <Label class="no-connection" *ngIf="['unknown', 'none'].includes(networkState)">
       <FormattedString>
-        <Span class="fa" text="&#xf12a;   "></Span>
-        <Span text="NO INTERNET"></Span>
+        <Span class="fa" text="&#xf12a;&nbsp;&nbsp;"></Span>
+        <Span text="LIMITED NETWORK DETECTED"></Span>
       </FormattedString>
     </Label>
 

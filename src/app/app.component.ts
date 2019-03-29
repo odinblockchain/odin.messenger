@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { RouterExtensions } from 'nativescript-angular/router';
 import { registerElement } from 'nativescript-angular/element-registry';
@@ -35,6 +35,12 @@ import { Identity } from './shared/models/identity/identity.model';
 import { IdentityService } from './shared/services/identity.service';
 import { ClientService } from './shared/services/client.service';
 import { LogService } from './shared/services/log.service';
+import {
+  connectionType,
+  getConnectionType,
+  startMonitoring,
+  stopMonitoring
+} from 'tns-core-modules/connectivity';
 
 declare var android: any;
 
@@ -43,7 +49,7 @@ declare var android: any;
   selector: 'ns-app',
   templateUrl: 'app.component.html'
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private _activatedUrl: string;
   private _sideDrawerTransition: DrawerTransitionBase;
   private _pingServer: any;
@@ -52,6 +58,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   public userAccount: any;
   public connected: boolean;
   public isWalletView: boolean;
+  public networkState: string;
 
   constructor(
     private router: Router,
@@ -72,7 +79,47 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.connected    = true;
     this.initAttempts = 0;
 
+    this.setNetworkState(getConnectionType());
+
     this.postInit = this.postInit.bind(this);
+    this.setNetworkState = this.setNetworkState.bind(this);
+
+    console.log('connection', getConnectionType());
+
+    startMonitoring(this.setNetworkState);
+
+    // const conType = ({
+    //   `${connectionType.none}`: 'no connection',
+
+    // })[getConnectionType()];
+
+    // console.log(connectionType);
+  }
+
+  setNetworkState(connection) {
+    switch (connection) {
+      case connectionType.none:
+        this.networkState = 'none';
+        break;
+      case connectionType.wifi:
+        this.networkState = 'wifi';
+        break;
+      case connectionType.mobile:
+        this.networkState = 'mobile';
+        break;
+      case connectionType.ethernet:
+        this.networkState = 'ethernet';
+        break;
+      default:
+        this.networkState = 'unknown';
+        break;
+    }
+
+    console.log(`CONNECTION TYPE DETECTED – ${this.networkState}`);
+  }
+
+  ngOnDestroy(): void {
+    stopMonitoring();
   }
 
   ngOnInit(): void {
@@ -143,11 +190,11 @@ export class AppComponent implements OnInit, AfterViewInit {
    */
   private postInit() {
     // set local useraccount to the activeAccount of Identity
-    if (this._Identity.activeAccount) {
-      this.userAccount = this._Identity.activeAccount;
+    this.userAccount = this._Identity.getActiveAccount();
+    if (this.userAccount) {
       this.userAccount.client = this._Client.findClientById(this.userAccount.client_id);
       console.log('set client');
-      console.dir(this._Identity.activeAccount);
+      console.dir(this.userAccount);
     }
   }
 
