@@ -473,6 +473,7 @@ export class UserModel extends Observable {
    * @param message 
    */
   async sendMessage(toIdentity: string, message: string): Promise<boolean> {
+    console.log('DEPRECATED');
     console.log(`UserModel... SEND MESSAGE ${toIdentity}`);
 
     let contact: ISignalAddress = await this.getFriend(toIdentity);

@@ -314,6 +314,78 @@ export class Account extends Database {
     });
   }
 
+  public async sendRemoteMessage(contact: Contact, messageStr: string): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      this.log(`Sending remote message – ${contact.username} (${messageStr})`);
+
+      const remoteContact: IRemoteContact = await this.fetchRemoteBundle(contact);
+      if (!remoteContact.publicPreKey) {
+        alert('Recipient has ran out of message tokens, please try again later when they have refreshed.');
+        throw new Error(`Unable to deliver message to [${contact.username}]. Reason: Out of message tokens`);
+      }
+
+      this.client.storeContact(remoteContact);
+
+      let encodedMessage = await this.client.signalClient.prepareMessage(contact.username, messageStr)
+        .then(this.client.signalClient.encodeMessage);
+
+      await this.publishMessage({
+        destinationDeviceId: remoteContact.address.deviceId,
+        destinationRegistrationId: remoteContact.address.registrationId,
+        deviceId: this.client.device_id,
+        registrationId: this.client.registration_id,
+        accountHash: this.client.account_username,
+        ciphertextMessage: encodedMessage
+      });
+
+      const message = new Message({
+        key: `${Date.now()}`,
+        account_bip44: contact.account_bip44,
+        contact_username: contact.username,
+        owner_username: this.username,
+        message: messageStr,
+        timestamp: Date.now(),
+        favorite: false
+      });
+
+      await contact.saveMessage(message);
+      resolve(true);
+    })
+  }
+
+  private async publishMessage(messageBundle: any) {
+    this.log(`pushing new message to remote server`);
+
+    const pushMessageRes: HttpResponse = await request({
+      url: `${this.preferences.api_url}/messages`,
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      content: JSON.stringify(messageBundle)
+    });
+
+    if (pushMessageRes.statusCode !== 200) {
+      this.log('failed to push message');
+      throw new Error(`Failed to push remote message statusCode: ${pushMessageRes.statusCode}`);
+    }
+
+    return true;
+  }
+
+  private async fetchRemoteBundle(contact: Contact): Promise<IRemoteContact> {
+    const remoteContactRes: HttpResponse = await request({
+      url: `${this.preferences.api_url}/keys/?user=${contact.username}`,
+      method: 'GET'
+    });
+
+    if (remoteContactRes.statusCode !== 200) {
+      throw new Error(`Failed to fetch remote contact details [${contact.username}] statusCode: ${remoteContactRes.statusCode}`);
+    }
+
+    this.log(`Remote bundle grabbed for [${contact.username}]`);
+
+    return remoteContactRes.content.toJSON();
+  }
+
   /**
    * Process a provided `RemoteMessage`. Will make an attempt to decipher it through `decipherMessage()`.
    * After a message is processed (whether successful or not) a request will be made to remove it from

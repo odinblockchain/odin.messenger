@@ -23,6 +23,7 @@ import { ContactService } from '~/app/shared/services';
 import { Contact, Message } from '~/app/shared/models/messenger';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Subscription, Observable } from 'rxjs';
+import { Account } from '~/app/shared/models/identity';
 
 let ipsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In vel nibh eu massa tempus mattis. Cras sit amet tempus sem. Morbi tristique augue quis arcu malesuada gravida. Maecenas maximus ornare congue. Vestibulum tellus diam, tempor eget blandit eget, vulputate id odio.';
 
@@ -44,6 +45,7 @@ export class MessageComponent implements OnInit, OnDestroy {
   public contactMessages$: Observable<Message>;
 
   private contactMessageSub: Subscription;
+  private activeAccount: Account;
     
   @ViewChild("list") lv: ElementRef;
   @ViewChild("textfield") tf: ElementRef;
@@ -100,6 +102,13 @@ export class MessageComponent implements OnInit, OnDestroy {
         window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
       }
     });
+
+    this.message = '';
+    this.sendMessage = this.sendMessage.bind(this);
+
+    this.filter = this.filter.bind(this);
+    this.align = this.align.bind(this);
+    this.showImage = this.showImage.bind(this);
   }
 
   ngOnDestroy() {
@@ -113,22 +122,27 @@ export class MessageComponent implements OnInit, OnDestroy {
     // this.ContactServ.findContact(this.contactIdentity);
     // this.IdentityServ.activeAccount.fetchMessages(this.IdentityServ.activeAccount.client)
     
-    this.contact = this.IdentityServ.activeAccount.findContact(this.contactIdentity);
-    console.log('contact', this.contact);
-    console.log('contact msg', this.contact.msgs);
+    if (this.IdentityServ.getActiveAccount()) {
+      this.activeAccount = this.IdentityServ.getActiveAccount();
+      this.contact = this.IdentityServ.getActiveAccount().findContact(this.contactIdentity);
 
-    // this.contact.loadMessages()
-    // .then(contact => {
-    //   console.log('loaded contact messages');
-    // }).catch(console.log);
+      console.log('contact', this.contact);
+      console.log('contact msg', this.contact.msgs);
 
-    this.contactMessageSub = this.contact.messages$.subscribe(value => {
-      console.log('subscribed!');
-      this.contactMessages.push(value);
-      console.log('NEW MESSAGE', value);
-    });
+      // this.contact.loadMessages()
+      // .then(contact => {
+      //   console.log('loaded contact messages');
+      // }).catch(console.log);
 
-    this.contactMessages$ = this.contact.messages$;// this.contact.oMessages$;
+      this.contactMessageSub = this.contact.messages$.subscribe(value => {
+        console.log('subscribed!');
+        this.contactMessages.push(value);
+        console.log('NEW MESSAGE', value);
+      });
+
+      this.contactMessages$ = this.contact.messages$;// this.contact.oMessages$;
+    }
+    
 
     // load local messages for contact as observablearray
     // this.contactMessages = [];// this._user.loadLocalContact(this.contactIdentity);
@@ -151,50 +165,57 @@ export class MessageComponent implements OnInit, OnDestroy {
     this.list.refresh();
   }
 
-  /**
-   * Send a message to the current loaded contact
-   * 
-   * @param message Plaintext message to encrypt, encode, and push forward
-   */
-  async chat(message: string) {
+  sendMessage() {
+    console.log('SEND MESSAGE');
+    console.log(this.message.length);
+    console.log(this.message);
 
-    if(message.length == 0) {
-      // Empty messages should not be sent. 
-      alert('Make sure you have entered a message');
-    } else {
-      try {
-        if (await this._user.sendMessage(this.contactIdentity, message)) {
-          this.scroll(this.list.items.length);
-          this.textfield.text = '';
-          this.textfield.dismissSoftInput(); // Hide Keyboard. 
-        } else {
-          console.log(`MessageView... Something went wrong while delivering...`);
-        }
-      } catch (err) {
-        console.log(`MessageView... Something unexpected happened while delivering...`);
-        console.log(err.message ? err.message : err);
-        alert('Something unexpected occurred while delivering your message, please try again.');
-      }
-
+    if (this.message.length == 0) {
+      return alert(`Please enter a message to send`);
     }
 
+    if (!this.activeAccount) {
+      return alert(`Unable to deliver message at this time`);
+    }
+
+    try {
+      this.activeAccount.sendRemoteMessage(this.contact, this.message)
+      .then(() => {
+        console.log('SENT');
+        this.message = '';
+        this.textfield.dismissSoftInput();
+      })
+      .catch(console.log);
+
+      // if (await this._user.sendMessage(this.contactIdentity, message)) {
+      //   this.scroll(this.list.items.length);
+      //   this.textfield.text = '';
+      //   this.textfield.dismissSoftInput(); // Hide Keyboard. 
+      // } else {
+      //   console.log(`MessageView... Something went wrong while delivering...`);
+      // }
+    } catch (err) {
+      console.log(`MessageView... Something unexpected happened while delivering...`);
+      console.log(err.message ? err.message : err);
+      alert('Something unexpected occurred while delivering your message, please try again.');
+    }
   }
 
   // ***
   //  View helper methods
   // ***
   filter(senderIdentity: string) {
-    if (senderIdentity === 'me') return "me";
+    if (senderIdentity === this.activeAccount.username) return "me";
     return "them";
   }
 
   align(senderIdentity: string) {
-    if (senderIdentity === 'me') return "right";
+    if (senderIdentity === this.activeAccount.username) return "right";
     return "left";
   }
 
   showImage(senderIdentity: string) {
-    if (senderIdentity === 'me') return "collapsed";
+    if (senderIdentity === this.activeAccount.username) return "collapsed";
     return "visible";
   }
   
@@ -215,9 +236,13 @@ export class MessageComponent implements OnInit, OnDestroy {
   }
 
   onFetchMessages() {
-    this.IdentityServ.activeAccount.fetchRemoteMessages()
-    .then(() => {
-      console.log('done fetching');
-    }).catch(console.log);
+    if (this.IdentityServ.getActiveAccount()) {
+      this.IdentityServ.getActiveAccount().fetchRemoteMessages()
+      .then(() => {
+        console.log('done fetching');
+      }).catch(console.log);
+    } else {
+      console.log('NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
+    }
   }
 }

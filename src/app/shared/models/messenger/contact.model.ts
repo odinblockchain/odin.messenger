@@ -102,7 +102,12 @@ export class Contact extends Database {
       (message.owner_username === this.username ? false : true)
     ]);
 
-    await this.setUnread(true)
+    // set contact to unread if owner === contact (outsider message)
+    if (message.owner_username === message.contact_username) {
+      this.log('SET UNREAD');
+      await this.setUnread(true);
+    }
+
     await this.setLastContacted(message.timestamp);
     return await this.save();
   }

@@ -43,7 +43,7 @@ export class MessengerComponent implements OnInit {
 
   ngOnInit() {
     console.log('view >> /messenger');
-    this.IdentityServ.activeAccount.loadContacts()
+    this.IdentityServ.getActiveAccount().loadContacts()
     .then((contacts: Contact[]) => {
       console.log('loaded contacts', contacts.map(c => c.username).join(','));
       // console.dir(contacts);
@@ -116,12 +116,14 @@ export class MessengerComponent implements OnInit {
   }
 
   onFetchMessages() {
-    this.IdentityServ.activeAccount.fetchRemoteMessages()
-    .then(x => {
-      console.log('DONE')
-    })
-    .catch(console.log);
-    
-    //(this.IdentityServ.activeAccount.client);
+    if (this.IdentityServ.getActiveAccount()) {
+      this.IdentityServ.getActiveAccount().fetchRemoteMessages()
+      .then(x => {
+        console.log('DONE')
+      })
+      .catch(console.log);
+    } else {
+      console.log('NO ACTIVE ACCOUNT - UNABLE TO FETCH');
+    }
   }
 }

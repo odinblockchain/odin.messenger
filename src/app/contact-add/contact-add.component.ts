@@ -33,7 +33,7 @@ export class ContactAddComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.activeAccount = this.Identity.activeAccount;
+    this.activeAccount = this.Identity.getActiveAccount();
     this.processing = false;
     this.contact = {
       displayName: '',

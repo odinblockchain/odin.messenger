@@ -14,8 +14,8 @@
       <ListView [class.active]="contactMessages.length" class="message-wrap" #list [items]="contactMessages">
           <ng-template let-message="item">
               <GridLayout columns="*" rows="auto" class="msg">
-                  <StackLayout [class]="filter(message.from)" orientation="horizontal" [horizontalAlignment]="align(message.from)">
-                      <FlexboxLayout [visibility]="showImage(message.from)" class="author" col="1">
+                  <StackLayout [class]="filter(message.owner_username)" orientation="horizontal" [horizontalAlignment]="align(message.owner_username)">
+                      <FlexboxLayout [visibility]="showImage(message.owner_username)" class="author" col="1">
                         <Label class="innerLabel bold" [text]="contactIdentityShort"></Label>
                       </FlexboxLayout>
                       <Label [text]='message.message' class="msg_text" textWrap="true" verticalAlignment="top"></Label>
@@ -26,8 +26,8 @@
 
       <StackLayout #chatbox class="chatbox" height="10%">
         <GridLayout class="chatbox--wrap" columns="*, auto">
-          <TextField #textfield class="chatbox--input" row="0" col="0" [(ngModel)]="message" hint="Type a message..." returnKeyType="send" (returnPress)="chat(message)"></TextField>
-          <Button #btn class="chatbox--btn btn btn-primary" row="0" col="1" text="send" (tap)=chat(message)></Button>
+          <TextField #textfield class="chatbox--input" row="0" col="0" [(ngModel)]="message" hint="Type a message..." returnKeyType="send" (returnPress)="sendMessage()"></TextField>
+          <Button #btn class="chatbox--btn btn btn-primary" row="0" col="1" text="send" (tap)=sendMessage()></Button>
         </GridLayout>
       </StackLayout>
 
