@@ -243,6 +243,11 @@ export class Account extends Database {
   //   ]);
   // }
 
+  /**
+   * @todo Compare with Client.Model.StoreContact
+   * 
+   * @param contact 
+   */
   public async storeContact(contact: Contact) {
     if (!await this.dbReady()) {
       return false;

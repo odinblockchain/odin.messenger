@@ -268,7 +268,7 @@ export class StorageService {
    * Will return `true` if checks complete, `false` otherwise.
    */
   public async dbReady(): Promise<boolean> {
-    if ( !!(this.odb && this.odb.isOpen())) {
+    if (!this.odb || !this.odb.isOpen()) {
       this.log('RESTARTING DB SERVICE');
       this.odb = await new SqlLite(this.databaseName);
       this.odb.resultType(SqlLite.RESULTSASOBJECT);

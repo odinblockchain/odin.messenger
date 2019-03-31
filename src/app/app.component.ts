@@ -128,12 +128,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userAccount = this.userModel.saveData; //TODO REMOVE
     this.isWalletView = false;
 
-    this.adjustStatusBar();
+    // this.adjustStatusBar();
 
-    console.log('EVENTS', {
-      suspend: hasListeners(suspendEvent),
-      resume: hasListeners(resumeEvent)
-    });
+    // console.log('EVENTS', {
+    //   suspend: hasListeners(suspendEvent),
+    //   resume: hasListeners(resumeEvent)
+    // });
 
     this.createEventListeners = this.createEventListeners.bind(this);
     this.createPlatformListeners = this.createPlatformListeners.bind(this);

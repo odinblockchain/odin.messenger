@@ -6,7 +6,7 @@ import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { confirm } from "tns-core-modules/ui/dialogs";
 import * as utilityModule from "utils/utils";
-import { UserModel } from '~/app/shared/user.model';
+// import { UserModel } from '~/app/shared/user.model';
 import { GestureTypes, TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { IdentityService } from '../shared/services/identity.service';
 import { AccountService } from '../shared/services';
@@ -77,7 +77,7 @@ export class CreateAccountComponent implements OnInit {
       this.onAdvanceStep(2);
     } else {
       this.secureRandom   = new SecureRandom();
-      this.seeder         = new Seeder();
+      this.seeder         = new Seeder(25);
 
       console.log('>> USING SEEDER');
       this.seeder.poolFilled = false;
@@ -102,7 +102,6 @@ export class CreateAccountComponent implements OnInit {
    * @param seedHex 
    */
   private async useSeed(seedHex?: string) {
-    // await this.user.onSaveMasterSeed(seedHex);
     this.IdentityServ.saveMasterseed(seedHex)
     .then((id: Identity) => this.AccountServ.createAccountFromMnemonic(id.mnemonicPhrase, 0))
     .then((account: Account) => {

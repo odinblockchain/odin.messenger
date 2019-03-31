@@ -144,6 +144,8 @@ export class Client extends Database {
   }
 
   /**
+   * @todo Compare with Account.Model.StoreContact
+   * 
    * Stores a contact locally by adding a session to the `SignalClient` instance
    * and adding them to the local cache of friends (it non-existent).
    * 

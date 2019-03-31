@@ -8,13 +8,13 @@ import * as app from "tns-core-modules/application";
 import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { GridLayout } from "ui/layouts/grid-layout";
 import { RouterExtensions } from "nativescript-angular/router";
-import { UserModel, ISignalAddress } from '~/app/shared/user.model';
+// import { UserModel, ISignalAddress } from '~/app/shared/user.model';
 // import { SignalAddress } from '../shared/models/signal';
-import { AccountService } from '../shared/services';
+// import { AccountService } from '../shared/services';
 import { IdentityService } from '../shared/services/identity.service';
 import { Contact, Message } from '../shared/models/messenger';
-import { StorageService } from '../shared';
-import { PreferencesService } from '../shared/preferences.service';
+// import { StorageService } from '../shared';
+// import { PreferencesService } from '../shared/preferences.service';
 
 @Component({
 	moduleId: module.id,
@@ -30,11 +30,11 @@ export class MessengerComponent implements OnInit {
 	constructor(
     private _page: Page,
     private _router: RouterExtensions,
-    private _user: UserModel,
-    private Account: AccountService,
+    // private _user: UserModel,
+    // private Account: AccountService,
     private IdentityServ: IdentityService,
-    private Storage: StorageService,
-    private Preferences: PreferencesService
+    // private Storage: StorageService,
+    // private Preferences: PreferencesService
   ) {
     this.friends = [];
 

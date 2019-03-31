@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { Page } from "ui/page";
 import { RouterExtensions } from "nativescript-angular/router";
-import { UserModel } from "~/app/shared/user.model";
+// import { UserModel } from "~/app/shared/user.model";
 import { StorageService } from "../shared";
 import { AccountService } from "../shared/services";
 import { Account } from "../shared/models/identity";
@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private _page: Page,
     private _router: RouterExtensions,
-    private _user: UserModel,
+    // private _user: UserModel,
     private _storage: StorageService,
     private Account: AccountService) {
     this._page.actionBarHidden = true;

@@ -4,7 +4,7 @@ import { RouterExtensions } from "nativescript-angular/router";
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { OSMClientService } from "~/app/shared/osm-client.service";
-import { UserModel } from "~/app/shared/user.model";
+// import { UserModel } from "~/app/shared/user.model";
 import { IdentityService } from '../shared/services/identity.service';
 import { Account } from '../shared/models/identity';
 
@@ -28,7 +28,7 @@ export class ContactAddComponent implements OnInit {
     private _router: RouterExtensions,
     private _sb: SnackBar,
     private _osmClient: OSMClientService,
-    private _user: UserModel,
+    // private _user: UserModel,
     private Identity: IdentityService
   ) { }
 
