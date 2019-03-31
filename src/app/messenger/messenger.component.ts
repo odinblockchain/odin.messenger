@@ -9,7 +9,7 @@ import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { GridLayout } from "ui/layouts/grid-layout";
 import { RouterExtensions } from "nativescript-angular/router";
 import { UserModel, ISignalAddress } from '~/app/shared/user.model';
-import { SignalAddress } from '../shared/models/signal';
+// import { SignalAddress } from '../shared/models/signal';
 import { AccountService } from '../shared/services';
 import { IdentityService } from '../shared/services/identity.service';
 import { Contact, Message } from '../shared/models/messenger';
@@ -45,8 +45,7 @@ export class MessengerComponent implements OnInit {
     console.log('view >> /messenger');
     this.IdentityServ.getActiveAccount().loadContacts()
     .then((contacts: Contact[]) => {
-      console.log('loaded contacts', contacts.map(c => c.username).join(','));
-      // console.dir(contacts);
+      console.log('loaded contacts', contacts.map(c => `${c.username}`).join(','));
       this.friends = contacts;
     })
     .catch(console.log);

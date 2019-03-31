@@ -6,31 +6,89 @@
   <Label class="action-bar--title" [text]="contactIdentity"></Label>
 </ActionBar>
 
-<ScrollView>
-  <StackLayout class="message-view" height="100%">
+<GridLayout class="message-view" rows="*, 60">
 
-      <Label *ngIf="contactMessages.length == 0" text="No messages yet! Say hi!" class="h3 p15 placeholder"></Label>
+  <RadListView row="0" #listView [items]="dataItems" [itemTemplateSelector]="messageTemplate" (loaded)="loadedEvent($event)" (dataPopulated)="populatedEvent($event)">
+    <ng-template tkListItemTemplate let-item="item">
+      <GridLayout class="message-wrap" columns="*" rows="auto" class="msg">
+          <StackLayout [class]="" class="them" orientation="horizontal" [horizontalAlignment]="left">
+            <Label text="default"></Label>
+            <FlexboxLayout visibility="visible" class="author" col="1">
+              <Label class="innerLabel bold" text="?"></Label>
+            </FlexboxLayout>
+            <Label [text]='item.id'></Label>
+            <Label [text]='item.message' class="msg_text" textWrap="true" verticalAlignment="top"></Label>
+            <Label [text]='item.delivered'></Label>
+            <Label [text]='item.status'></Label>
+          </StackLayout>
+      </GridLayout>
+      <!-- <StackLayout orientation="vertical">
+        <Label text="default" class="nameLabel"></Label>
+        <Label text="{{item | json}}" textWrap="true"></Label>
+        <Label text="{{item.message}}" textWrap="true"></Label>
+        <Label text="{{item.get('message')}}" textWrap="true"></Label>
+      </StackLayout> -->
+    </ng-template>
 
-      <ListView [class.active]="contactMessages.length" class="message-wrap" #list [items]="contactMessages">
-          <ng-template let-message="item">
-              <GridLayout columns="*" rows="auto" class="msg">
-                  <StackLayout [class]="filter(message.owner_username)" orientation="horizontal" [horizontalAlignment]="align(message.owner_username)">
-                      <FlexboxLayout [visibility]="showImage(message.owner_username)" class="author" col="1">
-                        <Label class="innerLabel bold" [text]="contactIdentityShort"></Label>
-                      </FlexboxLayout>
-                      <Label [text]='message.message' class="msg_text" textWrap="true" verticalAlignment="top"></Label>
-                  </StackLayout>
-              </GridLayout>
-          </ng-template>
-      </ListView>
+    <ng-template tkTemplateKey="contact" let-item="item">
+      <GridLayout columns="*" rows="*, auto" class="message them">
+        <StackLayout row="0" orientation="horizontal" horizontalAlignment="left">
+          
+          <FlexboxLayout visibility="visible" class="author" col="1">
+            <Label class="innerLabel bold" text="{{ item?.contact_username[0].toUpperCase() }}"></Label>
+          </FlexboxLayout>
 
-      <StackLayout #chatbox class="chatbox" height="10%">
-        <GridLayout class="chatbox--wrap" columns="*, auto">
-          <TextField #textfield class="chatbox--input" row="0" col="0" [(ngModel)]="message" hint="Type a message..." returnKeyType="send" (returnPress)="sendMessage()"></TextField>
-          <Button #btn class="chatbox--btn btn btn-primary" row="0" col="1" text="send" (tap)=sendMessage()></Button>
-        </GridLayout>
-      </StackLayout>
+          <StackLayout orientation="horizontal">
+            <Label  [class.pending]="item.status === 'pending'"
+                    [class.failed]="item.status === 'fail'"
+                    [class.accepted]="item.status === 'accepted'"
+                    class="message--bubble"
+                    textWrap="true"
+                    [text]="item.message"
+                    verticalAlignment="top">
+            </Label>
+            <Label *ngIf="item.status === 'fail'" style="margin-left: 10" class="fa error-icon" text="&#xf12a;" verticalAlignment="center"></Label>
+          </StackLayout>
+        </StackLayout>
 
+        <StackLayout *ngIf="item.status === 'fail'"  style="margin-top: 5" row="1" orientation="horizontal" horizontalAlignment="right">
+          <Label style="margin-left: 10" class="error-text" text="Not Delivered" verticalAlignment="center"></Label>
+        </StackLayout>
+
+      </GridLayout>
+    </ng-template>
+
+    <ng-template tkTemplateKey="me" let-item="item">
+      <GridLayout columns="*" rows="*, auto" class="message me">
+        
+        <StackLayout row="0" orientation="horizontal" horizontalAlignment="right">
+
+          <StackLayout orientation="horizontal">
+            <Label  [class.pending]="item.status === 'pending'"
+                    [class.failed]="item.status === 'fail'"
+                    [class.accepted]="item.status === 'accepted'"
+                    class="message--bubble"
+                    textWrap="true"
+                    [text]="item.message"
+                    verticalAlignment="top">
+            </Label>
+            <Label *ngIf="item.status === 'fail'" style="margin-left: 10" class="fa error-icon" text="&#xf12a;" verticalAlignment="center"></Label>
+            <Label *ngIf="item.status === 'pending'" style="margin-left: 10" class="pending-icon" text="•••" verticalAlignment="center"></Label>
+          </StackLayout>
+        </StackLayout>
+
+        <StackLayout *ngIf="item.status === 'fail'"  style="margin-top: 5" row="1" orientation="horizontal" horizontalAlignment="right">
+          <Label style="margin-left: 10" class="error-text" text="Not Delivered" verticalAlignment="center"></Label>
+        </StackLayout>
+
+      </GridLayout>
+    </ng-template>
+  </RadListView>
+
+  <StackLayout row="1" #chatbox class="chatbox">
+    <GridLayout class="chatbox--wrap" columns="*, auto">
+      <TextField #textfield class="chatbox--input" row="0" col="0" [(ngModel)]="message" hint="Type a message..." returnKeyType="send" (returnPress)="sendMessage()"></TextField>
+      <Button #btn class="chatbox--btn btn btn-primary" row="0" col="1" text="send" (tap)=sendMessage()></Button>
+    </GridLayout>
   </StackLayout>
-</ScrollView>
-  
+</GridLayout>

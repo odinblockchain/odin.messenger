@@ -25,14 +25,39 @@ ListView {
   }
 }
 
-.msg {
+.message {
   font-size: 14;
-  // padding: 5;
-  // margin-left: 15;
   padding-left: 15;
   padding-right: 15;
-  // margin-bottom: 15;
   padding-bottom: 15;
+
+  .message--bubble {
+    color: #ffffff;
+    background-color: #999999;
+    padding: 8;
+    border-radius: 10;
+    font-family: "Montserrat-SemiBold";
+  
+    &.failed {
+      background-color: #e57373;
+      color: #333333;
+    }
+  
+    &.pending {
+      background-color: #757575;
+    }
+  }
+}
+
+.me .message--bubble {
+  background-color: #30A9FF;
+  border-radius: 10 3 10 10; 
+}
+
+.them .message--bubble {
+  color: #333333;
+  background-color: #f0f0f0;
+  border-radius: 3 10 10 10;
 }
 
 .author {
@@ -55,22 +80,23 @@ ListView {
   // vertical-align: center;
 }
 
-.me .msg_text {
-  background-color: #30A9FF;
-  color: white;
-  padding: 8;
-  // margin-right: 10;
-  border-radius: 10 3 10 10;
+.error-text,
+.error-icon {
+  color: #ff5252;
 }
 
-.them .msg_text {
-  background-color: #f0f0f0;
-  color: #333;
-  padding: 7;
-  border-radius: 3 10 10 10;
-  // margin-right: 40;
-  // margin-left: 15;
-  // margin-right: 15;
+.pending-icon {
+  font-size: 32;
+  color: #4face0;
+}
+
+.error-icon,
+.pending-icon {
+  font-size: 18;
+}
+
+.error-text {
+  font-size: 14;
 }
 
 .authorimg {
@@ -114,30 +140,3 @@ ListView {
 
   }
 }
-
-// #chatbox {
-
-//   .chatbox--wrap {
-//     background-color: red;
-//     padding-top: 10;
-//     border-top-width: 1;
-//     border-top-style: solid;
-//     border-top-color: #e4e4e4;
-//   }
-
-//   .chatbox--input {
-//     // padding: 5;
-//     // background-color: #ffffff85;
-//     // background-color: rgba(255, 255, 255, 1);
-//     // border-radius: 4;
-//   }
-// }
-
-// Button {
-//   padding: 5;
-//   margin: 5;
-//   background-color: dodgerblue;
-//   color: white;
-//   height: 40;
-//   border-radius: 5;
-// }
