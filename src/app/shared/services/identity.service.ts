@@ -11,7 +11,8 @@ import { Account } from '../models/identity';
 })
 export class IdentityService extends StorageService {
   public identity: Identity;
-  public activeAccount: Account;
+  
+  private activeAccount: Account;
 
   constructor(
     private Account: AccountService
@@ -20,6 +21,7 @@ export class IdentityService extends StorageService {
 
     this.init = this.init.bind(this);
     this.loadIdentity = this.loadIdentity.bind(this);
+    this.getActiveAccount = this.getActiveAccount.bind(this);
     this.setActiveAccount = this.setActiveAccount.bind(this);
     this.storeIdentity = this.storeIdentity.bind(this);
     this.fetchIdentity = this.fetchIdentity.bind(this);
@@ -85,6 +87,14 @@ export class IdentityService extends StorageService {
     }
   }
 
+  public getActiveAccount(): Account {
+    if (!this.activeAccount) {
+      this.setActiveAccount(0);
+    }
+
+    return this.activeAccount;
+  }
+
   /**
    * Attempts to stringify a passed `identity` reference and store it within ApplicationSettings
    * as a string.
@@ -129,8 +139,8 @@ export class IdentityService extends StorageService {
         return resolve(this.identity);
       }
   
-      // const mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
-      const mnemonic = 'cool cool cool cool cool cool cool cool cool cool cool cool';
+      const mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
+      // const mnemonic = 'cool cool cool cool cool cool cool cool cool cool cool cool';
 
       this.identity.masterSeed = masterSeed;
       this.identity.mnemonicPhrase = mnemonic;

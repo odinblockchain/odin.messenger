@@ -31,7 +31,7 @@ export class CoinService extends StorageService {
   }
 
   private async loadCoins() {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 
@@ -54,7 +54,7 @@ export class CoinService extends StorageService {
   }
 
   public async createCoin(coin: Coin) {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 

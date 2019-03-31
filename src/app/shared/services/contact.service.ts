@@ -50,7 +50,7 @@ export class ContactService extends StorageService {
 
   // TODO Investigate unnecessary additional load of contacts here VS within the Contact Model
   private async loadContacts() {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 
@@ -77,7 +77,7 @@ export class ContactService extends StorageService {
   }
 
   public async createContact(contact: Contact) {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 

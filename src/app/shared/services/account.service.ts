@@ -52,7 +52,7 @@ export class AccountService extends StorageService {
    * and creates an internal list of active accounts.
    */
   private async loadAccounts() {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 
@@ -74,6 +74,7 @@ export class AccountService extends StorageService {
         });
 
         this.log(`accounts loaded...${this.accounts.length}`);
+        this.emit('ready');
         return resolve(this.accounts);
       } catch (err) {
         this.log('Unable to load accounts...');
@@ -99,7 +100,7 @@ export class AccountService extends StorageService {
    * @param account The account with a username and index
    */
   public async createAccount(account: Account): Promise<any> {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return false;
     }
 
@@ -135,7 +136,7 @@ export class AccountService extends StorageService {
    * @param bip44_index Index for account deriviation
    */
   public async createAccountFromMnemonic(mnemonic: string, bip44_index: number): Promise<any> {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return false;
     }
 
@@ -168,14 +169,15 @@ export class AccountService extends StorageService {
    */
   public async registerAccount(account: Account, client: Client): Promise<any> {
     this.log(`Attempt to register ${account.username}`);
+    this.emit('onRegisterNewAccount');
 
     if (!account || !client) return false;
     if (!account.username.length) return false;
     if (account.registered) return true;
 
     return new Promise(async (resolve, reject) => {
-      account.registered = true;
-      client.remote_key_total = 123;
+      // account.registered = true;
+      // client.remote_key_total = 123;
 
       // Fake a successful registration
       // account.save()
@@ -195,30 +197,31 @@ export class AccountService extends StorageService {
           this.log(`Registration success – Registered Keys (${registeredKeys.count})`);
         }
 
-        account.save()
-        .then(client.save)
-        .then(() => {
-          account.emit('registered');
-          return resolve(true)
-        })
-        .catch(reject);
+        await account.save();
+        await client.save();
+
+        account.emit('registered');
+        this.emit('registerNewAccountSuccess');
+        return resolve(true);
       } catch (err) {
         if (err.message && err.message === 'Max_PreKeys') {
           account.registered = true;
           client.remote_key_total = 100;
           this.log(`Registration "success" – Registered Keys (100)`);
 
-          account.save()
-          .then(client.save)
-          .then(() => {
-            account.emit('registered');
-            return resolve(true)
-          })
-          .catch(reject);
+          await account.save();
+          await client.save();
+
+          account.emit('registered');
+          this.emit('registerNewAccountSuccess');
+          return resolve(true);
         } else {
           this.log(`Account [${account.username}] failed to register`);
           console.log(err);
           alert('Your account coult not be registered at this time. Please try again later.');
+
+          account.emit('registrationFailed');
+          this.emit('registerNewAccountFailed');
         }
       }
     });

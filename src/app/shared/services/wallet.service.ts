@@ -31,7 +31,7 @@ export class WalletService extends StorageService {
   }
 
   private async loadWallets() {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 
@@ -55,7 +55,7 @@ export class WalletService extends StorageService {
   }
 
   public async createWallet(wallet: Wallet) {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 

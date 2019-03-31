@@ -33,7 +33,7 @@ export class LogService extends StorageService {
   }
 
   private async loadLogs() {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 
@@ -57,26 +57,29 @@ export class LogService extends StorageService {
   }
 
   public logger(message: string|any) {
-    if (!this.dbReady()) {
-      return new Error('db_not_open');
-    }
+    this.dbReady()
+    .then(ready => {
+      if (!ready) {
+        this.log('logger failed, db not ready');
+        return;
+      }
 
-    const timestamp   = Date.now();
-    const logMessage  = typeof message === 'object'
-                      ? JSON.stringify(message)
-                      : message;
- 
-    this.odb.execSQL(`INSERT INTO logs (timestamp, message) values (?, ?)`, [
-      timestamp,
-      logMessage
-    ])
-    .then((id: number) => {
-      this.logs.push(new Log({
-        timestamp: timestamp,
-        message: logMessage
-      }));
-      this.log('successful log');
-    })
-    .catch(console.log);
+      const timestamp   = Date.now();
+      const logMessage  = typeof message === 'object'
+                        ? JSON.stringify(message)
+                        : message;
+  
+      this.odb.execSQL(`INSERT INTO logs (timestamp, message) values (?, ?)`, [
+        timestamp,
+        logMessage
+      ])
+      .then((id: number) => {
+        this.logs.push(new Log({
+          timestamp: timestamp,
+          message: logMessage
+        }));
+        this.log('message logged');
+      }).catch(console.log);
+    }).catch(console.log);
   }
 }

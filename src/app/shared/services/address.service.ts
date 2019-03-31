@@ -30,7 +30,7 @@ export class AddressService extends StorageService {
   }
 
   private async loadAddresses() {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 
@@ -54,7 +54,7 @@ export class AddressService extends StorageService {
   }
 
   public async createAddress(address: Address) {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
 

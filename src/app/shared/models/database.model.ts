@@ -2,14 +2,19 @@ import { Deserializable } from "./deserializable.model";
 import { Inject, Optional } from "@angular/core";
 import { Subject } from "rxjs";
 
+const SqlLite = require('nativescript-sqlite');
+const DatabaseName = 'odin.db';
+
 export class Database implements Deserializable {
   private eventStream: Subject<string>;
   public db: any;
+  private databaseName: string;
 
   constructor(
     @Inject('modelId') @Optional() public modelId?: string) {
     this.modelId = modelId || 'Database';
     this.eventStream = new Subject();
+    this.databaseName = DatabaseName;
 
     this.log('[Init]');
     this.emit(`Init`);
@@ -28,8 +33,18 @@ export class Database implements Deserializable {
    * Checks if `odb` has been created and is open.
    * Will return `true` if checks complete, `false` otherwise.
    */
-  public dbReady(): boolean {
-    return !!(this.db && this.db.isOpen());
+  public async dbReady(): Promise<boolean> {
+    if (!this.db || !this.db.isOpen()) {
+      this.log('RESTARTING DB SERVICE');
+      this.db = await new SqlLite(this.databaseName);
+      this.db.resultType(SqlLite.RESULTSASOBJECT);
+    }
+
+    return true;
+  }
+
+  public dbClose(): void {
+    if (this.dbReady()) this.db.close();
   }
 
   /**

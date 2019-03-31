@@ -115,7 +115,7 @@ export class Client extends Database {
    * Executes a SQL `UPDATE` on the current Account user saving the current account back to the table.
    */
   public async save(): Promise<any> {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return false;
     }
 
