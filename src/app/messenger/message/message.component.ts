@@ -54,52 +54,54 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
   private _dataItems: ObservableArray<any>;
   private _timer: any;
 
-  constructor(private _page: PageRoute,
+  constructor(
+    private _page: PageRoute,
     private _router: RouterExtensions,
     private _route: ActivatedRoute,
-    private IdentityServ: IdentityService) {
+    private IdentityServ: IdentityService
+  ) {
 
-      // this.contactMessages = [];
-      // this.contactMessages$ = new Observable(); //new ObservableArray();
+    // this.contactMessages = [];
+    // this.contactMessages$ = new Observable(); //new ObservableArray();
 
-      this._route.params
-      .subscribe(params => {
-        console.log('GOT route params', params);
-        if (params.hasOwnProperty('contactId')) {
-          this.contactIdentity = params['contactId'];
-        } else {
-          alert("Something went wrong while loading the requested messages.");
-          this._router.navigate(['/messenger']);
-        }
-      });
+    this._route.params
+    .subscribe(params => {
+      console.log('GOT route params', params);
+      if (params.hasOwnProperty('contactId')) {
+        this.contactIdentity = params['contactId'];
+      } else {
+        alert("Something went wrong while loading the requested messages.");
+        this._router.navigate(['/messenger']);
+      }
+    });
 
-      this.message = '';
-      this.sendMessage = this.sendMessage.bind(this);
+    this.message = '';
+    this.sendMessage = this.sendMessage.bind(this);
 
-      // load query params (if any)...
-      // this._route.queryParams
-      // .subscribe(params => {
-      //   console.log('GOT params', params);
-      // });
+    // load query params (if any)...
+    // this._route.queryParams
+    // .subscribe(params => {
+    //   console.log('GOT params', params);
+    // });
 
-      // this.page.on("loaded", (args) => {
-      //   var window = app.android.startActivity.getWindow();
-      //   window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-      // });
+    // this.page.on("loaded", (args) => {
+    //   var window = app.android.startActivity.getWindow();
+    //   window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+    // });
 
-      // applicationOn(suspendEvent, (args: ApplicationEventData) => {
-      //   // For Android applications, args.android is an android activity class.
-      //   if (args.android) console.log("SUSPEND Activity: " + args.android);
-      //   else if (args.ios) console.log("UIApplication: " + args.ios);
-      // });
+    // applicationOn(suspendEvent, (args: ApplicationEventData) => {
+    //   // For Android applications, args.android is an android activity class.
+    //   if (args.android) console.log("SUSPEND Activity: " + args.android);
+    //   else if (args.ios) console.log("UIApplication: " + args.ios);
+    // });
 
-      // applicationOn(resumeEvent, (args: ApplicationEventData) => {
-      //   if (args.android) {
-      //     console.log("RESUME Activity: " + args.android);
-      //     var window = app.android.startActivity.getWindow();
-      //     window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-      //   }
-      // });
+    // applicationOn(resumeEvent, (args: ApplicationEventData) => {
+    //   if (args.android) {
+    //     console.log("RESUME Activity: " + args.android);
+    //     var window = app.android.startActivity.getWindow();
+    //     window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+    //   }
+    // });
   }
 
   ngOnDestroy() {
@@ -143,7 +145,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
     this.list = this.lv.nativeElement;
   }
 
-  get dataItems(): ObservableArray<Data> {
+  get dataItems(): ObservableArray<Message> {
     return this._dataItems;
   }
 
@@ -239,6 +241,10 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
   /**
    * Menu option methods
    */
+  public onPreviousView() {
+    this._router.back();
+  }
+
   public onEditContact() {
     alert('This feature is not available yet!');
   }
