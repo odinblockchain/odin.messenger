@@ -3,15 +3,15 @@ RadSideDrawer is a UI component part of the Progress NativeScript UI set of comp
 Learn more about the RadSideDrawer UI component and how it can be customized in this documentation article:
 http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawer/getting-started
 -->
-<RadSideDrawer [drawerTransition]="sideDrawerTransition" [gesturesEnabled]="userAccount.registered">
+<RadSideDrawer [drawerTransition]="sideDrawerTransition" [gesturesEnabled]="userAccount?.registered">
 
   <GridLayout tkDrawerContent rows="auto, *, 50" class="sidedrawer sidedrawer-left">
     <StackLayout row="0" class="sidedrawer-header">
       <FlexboxLayout class="client-name">
-        <Label class="innerLabel" text="{{ userAccount.username[0] }}"></Label>
+        <Label class="innerLabel" text="{{ userAccount?.username[0] }}"></Label>
       </FlexboxLayout>
       <!-- <Label class="innerLabel bold" text="ME"></Label> -->
-      <Label class="sidedrawer-header-text var" [text]="userAccount.username"></Label>
+      <Label class="sidedrawer-header-text var" [text]="userAccount?.username"></Label>
     </StackLayout>
 
     <ScrollView row="1">

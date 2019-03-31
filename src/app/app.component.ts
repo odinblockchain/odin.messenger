@@ -54,6 +54,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private _sideDrawerTransition: DrawerTransitionBase;
   private _pingServer: any;
   public initAttempts: number;
+  private _loading: boolean;
+  private _ready: boolean;
 
   public userAccount: any;
   public connected: boolean;
@@ -76,24 +78,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private _Preferences: PreferencesService,
     private _Log: LogService
   ) {
+    this._loading     = false;
+    this._ready       = false;
     this.connected    = true;
     this.initAttempts = 0;
-
-    this.setNetworkState(getConnectionType());
 
     this.postInit = this.postInit.bind(this);
     this.setNetworkState = this.setNetworkState.bind(this);
 
-    console.log('connection', getConnectionType());
-
+    this.setNetworkState(getConnectionType());
     startMonitoring(this.setNetworkState);
-
-    // const conType = ({
-    //   `${connectionType.none}`: 'no connection',
-
-    // })[getConnectionType()];
-
-    // console.log(connectionType);
   }
 
   setNetworkState(connection) {
@@ -116,6 +110,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     console.log(`CONNECTION TYPE DETECTED – ${this.networkState}`);
+
+    // rebuild services if the network is disabled
+    // odd bug noticed that sqlite connections appear to drop when switching off data
+    // if ((this._ready && !this._loading) && this.networkState === 'none') {
+    //   this.buildServices();
+    // }
   }
 
   ngOnDestroy(): void {
@@ -145,6 +145,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     console.log('[App] AfterViewInit');
     this.buildServices();
+    this._Account.eventStream$.subscribe(event => {
+      console.log('Account Event', event)
+      if (event === 'AccountService::registerNewAccountSuccess') {
+        console.log('GOT registered!');
+        if (!this.userAccount) {
+          this.postInit();
+        }
+      }
+    });
   }
 
   /**
@@ -154,6 +163,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private buildServices(): void {
     if (this.initAttempts >= 4) {
       console.log('[App] MAX ATTEMPTS to build services... Abort...');
+      this._loading = false;
+      this._ready = false;
+      this.initAttempts = 0;
       this._storage.listAllTables()
       .then(tables => {
         console.log('[App] DEBUG Current Tables:');
@@ -162,6 +174,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
+    this._loading = true;
     this.initAttempts++;
     this._storage.loadStorage(false)
     .then(this._Preferences.loadPreferences)
@@ -190,12 +203,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   private postInit() {
     // set local useraccount to the activeAccount of Identity
+    this.initAttempts = 0;
+    this._loading = false;
+    this._ready = true;
     this.userAccount = this._Identity.getActiveAccount();
     if (this.userAccount) {
       this.userAccount.client = this._Client.findClientById(this.userAccount.client_id);
       console.log('set client');
       console.dir(this.userAccount);
     }
+
+    // stopMonitoring();
+    // startMonitoring(this.setNetworkState);
   }
 
   private createEventListeners() {
