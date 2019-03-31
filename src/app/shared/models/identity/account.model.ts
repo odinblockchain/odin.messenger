@@ -4,6 +4,7 @@ import { Contact } from '../messenger';
 import { SignalAddress, SignedPreKey, PublicPreKey, PreKeyBundle, SignalClientContact } from '../signal';
 import { Client } from '../messenger/client.model';
 import { request, HttpResponse } from 'http';
+import Hashids from 'hashids';
 
 export interface IRemoteContact {
   address: SignalAddress;
@@ -31,6 +32,13 @@ export class RemoteMessage {
 export class RemoteMessages {
   status: string;
   messages: RemoteMessage[];
+}
+
+class ProcessError extends Error {
+  constructor(message: string) {
+    super(message); // (1)
+    this.name = "ProcessError"; // (2)
+  }
 }
 
 /**
@@ -236,7 +244,7 @@ export class Account extends Database {
   // }
 
   public async storeContact(contact: Contact) {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return false;
     }
 
@@ -252,14 +260,14 @@ export class Account extends Database {
       return [];
     }
     
-    return await this.db.all(`SELECT messages.account_bip44, name, contact_username, owner_username, message, timestamp, messages.unread, favorite FROM messages INNER JOIN accounts ON messages.account_bip44 = accounts.bip44_index INNER JOIN contacts ON messages.contact_username = contacts.username WHERE accounts.bip44_index = ?`, this.bip44_index);
+    return await this.db.all(`SELECT messages.account_bip44, name, contact_username, owner_username, message, timestamp, messages.unread, favorite, status FROM messages INNER JOIN accounts ON messages.account_bip44 = accounts.bip44_index INNER JOIN contacts ON messages.contact_username = contacts.username WHERE accounts.bip44_index = ?`, this.bip44_index);
   }
 
   /**
    * Executes a SQL `UPDATE` on the current Account user saving the current account back to the table.
    */
   public async save(): Promise<any> {
-    if (!this.dbReady()) {
+    if (!await this.dbReady()) {
       return false;
     }
 
@@ -316,41 +324,65 @@ export class Account extends Database {
 
   public async sendRemoteMessage(contact: Contact, messageStr: string): Promise<any> {
     return new Promise(async (resolve, reject) => {
-      this.log(`Sending remote message – ${contact.username} (${messageStr})`);
-
-      const remoteContact: IRemoteContact = await this.fetchRemoteBundle(contact);
-      if (!remoteContact.publicPreKey) {
-        alert('Recipient has ran out of message tokens, please try again later when they have refreshed.');
-        throw new Error(`Unable to deliver message to [${contact.username}]. Reason: Out of message tokens`);
+      if (!await this.dbReady()) {
+        this.log('db not ready');
       }
 
-      this.client.storeContact(remoteContact);
+      this.log(`Sending remote message – ${contact.username} (${messageStr})`);
 
-      let encodedMessage = await this.client.signalClient.prepareMessage(contact.username, messageStr)
-        .then(this.client.signalClient.encodeMessage);
-
-      await this.publishMessage({
-        destinationDeviceId: remoteContact.address.deviceId,
-        destinationRegistrationId: remoteContact.address.registrationId,
-        deviceId: this.client.device_id,
-        registrationId: this.client.registration_id,
-        accountHash: this.client.account_username,
-        ciphertextMessage: encodedMessage
-      });
-
-      const message = new Message({
-        key: `${Date.now()}`,
+      const hashids = new Hashids(contact.username, 16, '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz');
+      const message = await contact.saveMessage(new Message({
+        key: hashids.encode(Date.now()),
         account_bip44: contact.account_bip44,
         contact_username: contact.username,
         owner_username: this.username,
         message: messageStr,
         timestamp: Date.now(),
-        favorite: false
-      });
+        favorite: false,
+        delivered: false,
+        status: 'pending'
+      }));
 
-      await contact.saveMessage(message);
+      this.log('Message saved, not delivered');
+
+      try {
+        const remoteContact: IRemoteContact = await this.fetchRemoteBundle(contact);
+        if (!remoteContact.publicPreKey) {
+          throw new ProcessError(`${contact.username} has ran out of message tokens, please try again later when they have published new ones.`);
+        }
+
+        this.client.storeContact(remoteContact);
+
+        let encodedMessage = await this.client.signalClient.prepareMessage(contact.username, messageStr)
+          .then(this.client.signalClient.encodeMessage);
+
+        await this.publishMessage({
+          destinationDeviceId: remoteContact.address.deviceId,
+          destinationRegistrationId: remoteContact.address.registrationId,
+          deviceId: this.client.device_id,
+          registrationId: this.client.registration_id,
+          accountHash: this.client.account_username,
+          ciphertextMessage: encodedMessage
+        });
+
+        message.status = 'accepted';
+        message.delivered = true;
+      } catch (err) {
+        this.log('Failed to publish message');
+
+        if (err.name === 'ProcessError') {
+          alert(err);
+        } else {
+          console.log(err);
+        }
+        
+        message.status = 'fail';
+        message.delivered = true;
+      }
+
+      await contact.updateMessage(message);
       resolve(true);
-    })
+    });
   }
 
   private async publishMessage(messageBundle: any) {
@@ -365,25 +397,35 @@ export class Account extends Database {
 
     if (pushMessageRes.statusCode !== 200) {
       this.log('failed to push message');
-      throw new Error(`Failed to push remote message statusCode: ${pushMessageRes.statusCode}`);
+      throw new ProcessError(`Failed to push remote message statusCode: ${pushMessageRes.statusCode}`);
     }
 
     return true;
   }
 
-  private async fetchRemoteBundle(contact: Contact): Promise<IRemoteContact> {
+  private async fetchRemoteBundle(contact: Contact): Promise<IRemoteContact|any> {
+    this.log(`fetching remote contact bundle for [${contact.username}]`);
+
     const remoteContactRes: HttpResponse = await request({
       url: `${this.preferences.api_url}/keys/?user=${contact.username}`,
-      method: 'GET'
+      // url: 'http://ba272957.ngrok.io',
+      method: 'GET',
+      timeout: 3000
     });
-
+    
     if (remoteContactRes.statusCode !== 200) {
-      throw new Error(`Failed to fetch remote contact details [${contact.username}] statusCode: ${remoteContactRes.statusCode}`);
+      this.log(`Bad status code for remote bundle. User [${contact.username}] Code [${remoteContactRes.statusCode}]`);
+      throw new ProcessError(`Unable to establish secure delivery to ${contact.username}. Please try again later.`);
     }
 
-    this.log(`Remote bundle grabbed for [${contact.username}]`);
-
-    return remoteContactRes.content.toJSON();
+    try {
+      const bundle = remoteContactRes.content.toJSON();
+      this.log(`Remote bundle grabbed for [${contact.username}]`);
+      return bundle;
+    } catch (err) {
+      this.log(`Unreadable bundle package. User [${contact.username}]`);
+      throw new ProcessError(`Unable to establish secure delivery to ${contact.username}. Please try again later.`);
+    }
   }
 
   /**
