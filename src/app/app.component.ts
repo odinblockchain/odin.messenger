@@ -9,6 +9,8 @@ import { setInterval, clearInterval } from 'tns-core-modules/timer';
 import { isAndroid, isIOS, device, screen } from 'tns-core-modules/platform';
 import { DrawerTransitionBase, RadSideDrawer, SlideInOnTopTransition } from 'nativescript-ui-sidedrawer';
 import { filter } from 'rxjs/operators';
+import * as Clipboard from 'nativescript-clipboard';
+import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 
 import { UserModel } from '~/app/shared/user.model';
 import { PreferencesService } from '~/app/shared/preferences.service';
@@ -56,6 +58,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public initAttempts: number;
   private _loading: boolean;
   private _ready: boolean;
+  private _sb: any;
 
   public userAccount: any;
   public connected: boolean;
@@ -78,6 +81,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private _Preferences: PreferencesService,
     private _Log: LogService
   ) {
+    this._sb          = new SnackBar();
     this._loading     = false;
     this._ready       = false;
     this.connected    = true;
@@ -415,5 +419,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     const sideDrawer = <RadSideDrawer>app.getRootView();
     sideDrawer.closeDrawer();
     this.isWalletView = false;
+  }
+
+  public onCopyText(text: string) {
+    let sb = this._sb;
+    Clipboard.setText(text)
+    .then(async function() {
+      try {
+        await sb.simple('Username copied to clipboard!', '#ffffff', '#333333', 3, false);
+        console.log('Clipboard success');
+      } catch (err) {
+        console.log('Unable to copy to clipboard');
+      }
+    });
   }
 }

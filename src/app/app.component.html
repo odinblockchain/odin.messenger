@@ -11,7 +11,7 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
         <Label class="innerLabel" text="{{ userAccount?.username[0] }}"></Label>
       </FlexboxLayout>
       <!-- <Label class="innerLabel bold" text="ME"></Label> -->
-      <Label class="sidedrawer-header-text var" [text]="userAccount?.username"></Label>
+      <Label class="sidedrawer-header-text var" [text]="userAccount?.username" (tap)="onCopyText(userAccount?.username)" (longPress)="onCopyText(userAccount?.username)"></Label>
     </StackLayout>
 
     <ScrollView row="1">

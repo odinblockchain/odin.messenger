@@ -16,11 +16,18 @@
           <ScrollView #userList row="1" scrollBarIndicatorVisible="false" id="userList">
             <StackLayout>
 
-              <ContentView *ngIf="!friends.length"  class="card">
+              <ContentView *ngIf="!friends.length" class="card">
                 <StackLayout class="card-content">
                   <Label class="h2" textWrap="true" text="NO CONTACTS"></Label>
-                  <Label class="body" textWrap="true" text="ODIN Messenger has an internal contact system. You'll need to add another user to begin having secure conversations."></Label>
-                  <Label class="body last" textWrap="true" text="Touch the '+' icon on the bottom of this screen to get started."></Label>
+                  <Label class="body" textWrap="true" text="ODIN.chat has an internal contact system which means it cannot use your phone contacts. You will need to add another ODIN.chat contact to begin having secure conversations."></Label>
+                  <Label class="body last" textWrap="true" text="Touch the '+' icon on the bottom of this screen to add your first contact!"></Label>
+                </StackLayout>
+              </ContentView>
+
+              <ContentView *ngIf="!friends.length" class="card">
+                <StackLayout class="card-content">
+                  <Label class="h2" textWrap="true" text="Tip:"></Label>
+                  <Label class="body last" textWrap="true" text="To copy your username at anytime, just click the menu icon (☰) and tap on your username."></Label>
                 </StackLayout>
               </ContentView>
 
