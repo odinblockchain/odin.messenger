@@ -217,13 +217,13 @@ export class WalletService extends StorageService {
       try {
         const wallets: Wallet[] = await this.odb.all('SELECT * FROM wallets');
         while (wallets.length > 0) {
-          let wallet = wallets.shift();
+          let wallet = new Wallet(wallets.shift());
           wallet.db = this.odb;
           await wallet.loadCoinDetails();
 
           this.log(`added wallet – ${wallet.id}`);
-          this.wallets.push(new Wallet(wallet));
-          this.wallets$.push(fromObject(wallet));
+          this.wallets.push(wallet);
+          this.wallets$.push(fromObject(wallet.serialize()));
         }
 
         this.log(`wallets loaded...${this.wallets.length}`);
@@ -236,20 +236,24 @@ export class WalletService extends StorageService {
     });
   }
 
-  public async createDefaultWallet() {
+  public async createDefaultWallet(): Promise<Wallet> {
     this.emit('CreateDefaultWallet');
     this.log('[Wallet Default Creation Start]');
 
     const defaultCoin = this._CoinServ.defaultCoinDetails();
-
-    this.createWallet(defaultCoin, 0)
-    .then(wallet => {
-
+    try {
+      const wallet = await this.createWallet(defaultCoin, 0);
       this.emit('FinishDefaultWallet');
       this.log('[Wallet Default Creation Finished]');
 
       console.log(wallet.serialize());
-    }).catch(console.log);
+      return wallet;
+    } catch (err) {
+      this.log('ERR – Unable to create default wallet!');
+      console.log(err.message ? err.message : err);
+      console.log(err.stack);
+      throw new Error('WalletCreationFailed');
+    }
   }
 
   private async createWallet(coin: Coin, walletAccountPath: number): Promise<any> {
@@ -262,24 +266,17 @@ export class WalletService extends StorageService {
       let seed  = ODIN.bip39.mnemonicToSeed(phrase);
       let sroot = ODIN.bip32.fromSeed(seed);
 
-      let wallet = new Wallet({
+      let wallet = await Wallet.Create({
         coin_name: coin.name,
         account_bip44: this._IdentityServ.getActiveAccount().bip44_index,
         bip44_index: walletAccountPath
       });
 
-      const walletId = await this.odb.execSQL(`INSERT INTO wallets (coin_name, account_bip44, bip44_index) values (?, ?, ?)`, [
-        wallet.coin_name,
-        wallet.account_bip44,
-        wallet.bip44_index
-      ]);
-
-      wallet.id   = walletId;
       wallet.db   = this.odb;
       wallet.coin = coin;
 
       this.wallets.push(wallet);
-      this.wallets$.push(fromObject(wallet));
+      this.wallets$.push(fromObject(wallet.serialize()));
       
       await this.establishConnection(wallet);
       this.log('Done with connection');
@@ -321,6 +318,8 @@ export class WalletService extends StorageService {
     let sumExternalUnconfirmed = externalDiscovery.addresses.reduce(this.sumAddressUnconfirmedBalance, 0);
     let sumInternalUnconfirmed = internalDiscovery.addresses.reduce(this.sumAddressUnconfirmedBalance, 0);
 
+    console.log('ext', externalDiscovery.transactions);
+    console.log('int', internalDiscovery.transactions);
     wallet.balance_conf       = Number(sumExternalConfirmed + sumInternalConfirmed);
     wallet.balance_unconf     = Number(sumExternalUnconfirmed + sumInternalUnconfirmed);
     wallet.last_tx_timestamp  = this.findMostRecentTimestamp(externalDiscovery.transactions.concat(internalDiscovery.transactions));
@@ -339,6 +338,7 @@ export class WalletService extends StorageService {
   private findMostRecentTimestamp(transactions: Transaction[]): number {
     if (!transactions || !transactions.length) return 0;
     return transactions.reduce((timestamp: number, tx: Transaction) => {
+      if (!tx || isNaN(tx.timestamp)) return timestamp;
       if (timestamp === 0 || tx.timestamp > timestamp) timestamp = tx.timestamp;
       return timestamp;
     }, 0);
@@ -418,7 +418,7 @@ export class WalletService extends StorageService {
       });
 
       const addressTransactions = await this.transactionDiscovery(wallet, address, addressPull.transactions);
-      if (addressTransactions.length) {
+      if (addressTransactions && addressTransactions.length) {
         address.used = true;
         address.last_tx_timestamp = this.findMostRecentTimestamp(addressTransactions);
         await address.save();
@@ -482,8 +482,10 @@ export class WalletService extends StorageService {
         used: false
       });
 
+      this.log(`external address ${address.address} transactions ${addressPull.transactions.length}`);
+
       const addressTransactions = await this.transactionDiscovery(wallet, address, addressPull.transactions);
-      if (addressTransactions.length) {
+      if (addressTransactions && addressTransactions.length) {
         address.used = true;
         address.last_tx_timestamp = this.findMostRecentTimestamp(addressTransactions);
         await address.save();
@@ -573,8 +575,9 @@ export class WalletService extends StorageService {
       const storedTransaction = await Transaction.Find(txMeta.tx_hash, address.id);
 
       if (storedTransaction && storedTransaction.type !== Transaction.TRANSACTION_PENDING) {
-        this.log(`Already saved tx [${storedTransaction.txid}]`);
-        return;
+        this.log(`Already saved tx [${storedTransaction.txid}] and not pending`);
+        // completedTransactions.push(storedTransaction);
+        continue;
       }
 
       try {
