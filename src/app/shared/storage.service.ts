@@ -1,36 +1,24 @@
-import { Injectable, Inject, Optional } from "@angular/core";
-import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
-import { Subject, ReplaySubject } from "rxjs";
+import { Inject, Injectable, Optional } from "@angular/core";
+import { ReplaySubject } from "rxjs";
+import { clear, getString, hasKey, setString } from "tns-core-modules/application-settings";
 
-import { getNativeApplication } from "tns-core-modules/application";
-import { isAndroid, isIOS } from "tns-core-modules/platform";
-import * as utils from "tns-core-modules/utils/utils";
 
 const SqlLite = require('nativescript-sqlite');
 const DatabaseName = 'odin.db';
 
-const AccountsSQL = `CREATE TABLE IF NOT EXISTS accounts (bip44_index INTEGER NOT NULL, client_id INTEGER, username TEXT NOT NULL PRIMARY KEY, registered BOOLEAN DEFAULT(0), FOREIGN KEY (client_id) REFERENCES clients (id))`;
+const AccountsSQL = `CREATE TABLE IF NOT EXISTS accounts (bip44_index INTEGER NOT NULL, client_id INTEGER, username TEXT NOT NULL PRIMARY KEY, registered BOOLEAN DEFAULT false, FOREIGN KEY (client_id) REFERENCES clients (id))`;
 const ClientsSQL =  `CREATE TABLE IF NOT EXISTS clients (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, account_username STRING NOT NULL, device_id INTEGER, registration_id INTEGER, identity_key_pair STRING, signed_pre_key STRING, pre_keys STRING, remote_key_total INTEGER DEFAULT(0), FOREIGN KEY (account_username) REFERENCES accounts (username) ON DELETE CASCADE)`;
-const ContactsSQL = `CREATE TABLE IF NOT EXISTS contacts (account_bip44 INTEGER NOT NULL, username TEXT PRIMARY KEY NOT NULL, name TEXT, address TEXT, unread BOOLEAN DEFAULT (0), accepted BOOLEAN DEFAULT (0), blocked BOOLEAN DEFAULT (0), theme TEXT DEFAULT "", last_contacted INTEGER, FOREIGN KEY (account_bip44) REFERENCES accounts (bip44_index) ON DELETE CASCADE)`;
-const MessagesSQL = `CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, "key" STRING, account_bip44 INTEGER NOT NULL, contact_username TEXT NOT NULL, owner_username TEXT NOT NULL, message TEXT DEFAULT "", timestamp INTEGER, favorite BOOLEAN DEFAULT (0), unread BOOLEAN DEFAULT (0), delivered BOOLEAN DEFAULT false, status STRING DEFAULT "", FOREIGN KEY (contact_username) REFERENCES contacts (username) ON DELETE CASCADE, FOREIGN KEY (account_bip44) REFERENCES accounts (bip44_index) ON DELETE CASCADE)`;
-const CoinsSQL = `CREATE TABLE IF NOT EXISTS coins (name TEXT PRIMARY KEY NOT NULL, label TEXT DEFAULT "", symbol TEXT NOT NULL, icon_path TEXT DEFAULT "", explorer_host TEXT DEFAULT "", electrumx_host TEXT DEFAULT "", electrumx_port INTEGER DEFAULT (50001))`;
+const ContactsSQL = `CREATE TABLE IF NOT EXISTS contacts (account_bip44 INTEGER NOT NULL, username TEXT PRIMARY KEY NOT NULL, name TEXT, address TEXT, unread BOOLEAN DEFAULT false, accepted BOOLEAN DEFAULT false, blocked BOOLEAN DEFAULT false, theme TEXT DEFAULT "", last_contacted INTEGER, FOREIGN KEY (account_bip44) REFERENCES accounts (bip44_index) ON DELETE CASCADE)`;
+const MessagesSQL = `CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY AUTOINCREMENT, "key" STRING, account_bip44 INTEGER NOT NULL, contact_username TEXT NOT NULL, owner_username TEXT NOT NULL, message TEXT DEFAULT "", timestamp INTEGER, favorite BOOLEAN DEFAULT false, unread BOOLEAN DEFAULT false, delivered BOOLEAN DEFAULT false, status STRING DEFAULT "", FOREIGN KEY (contact_username) REFERENCES contacts (username) ON DELETE CASCADE, FOREIGN KEY (account_bip44) REFERENCES accounts (bip44_index) ON DELETE CASCADE)`;
+const CoinsSQL = `CREATE TABLE IF NOT EXISTS coins (name TEXT PRIMARY KEY NOT NULL, is_default BOOLEAN DEFAULT false, bip44 INTEGER UNIQUE, label TEXT DEFAULT "", symbol TEXT NOT NULL, icon_path TEXT DEFAULT "", explorer_host TEXT, explorer_api_host STRING, explorer_api_stats STRING, electrumx_host TEXT, electrumx_port INTEGER DEFAULT (50001))`;
 const WalletsSQL = `CREATE TABLE IF NOT EXISTS wallets (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, coin_name TEXT NOT NULL, account_bip44 INTEGER NOT NULL, bip44_index INTEGER NOT NULL, balance_conf REAL DEFAULT (0), balance_unconf REAL DEFAULT (0), last_updated INTEGER, last_tx_timestamp INTEGER, FOREIGN KEY (coin_name) REFERENCES coins (name) ON DELETE CASCADE, FOREIGN KEY (account_bip44) REFERENCES accounts (bip44_index) ON DELETE CASCADE)`;
-const AddressesSQL = `CREATE TABLE IF NOT EXISTS addresses (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, bip44_index INTEGER NOT NULL, address TEXT NOT NULL, hash TEXT NOT NULL, balance_conf REAL DEFAULT (0), balance_unconf REAL DEFAULT (0), external INTEGER DEFAULT (0), last_updated INTEGER, last_tx_timestamp INTEGER, FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE)`;
-const TransactionsSQL = `CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, address_id INTEGER NOT NULL, txid TEXT NOT NULL, height INTEGER, vin_addresses TEXT, vout_addresses TEXT, value REAL, timestamp INTEGER, FOREIGN KEY (address_id) REFERENCES addresses (id) ON DELETE CASCADE, FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE)`;
+const AddressesSQL = `CREATE TABLE IF NOT EXISTS addresses (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, bip44_index INTEGER NOT NULL, address TEXT NOT NULL, hash TEXT NOT NULL, balance_conf REAL DEFAULT (0), balance_unconf REAL DEFAULT (0), external BOOLEAN DEFAULT false, used BOOLEAN DEFAULT false, last_updated INTEGER, last_tx_timestamp INTEGER, FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE)`;
+const TransactionsSQL = `CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, address_id INTEGER NOT NULL, type TEXT, txid TEXT NOT NULL, height INTEGER, vin_addresses TEXT, vout_addresses TEXT, value REAL, timestamp INTEGER, FOREIGN KEY (address_id) REFERENCES addresses (id) ON DELETE CASCADE, FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE)`;
 const UnspentSQL = `CREATE TABLE IF NOT EXISTS unspent (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, address_id INTEGER NOT NULL, height INTEGER, txid TEXT NOT NULL, txid_pos INTEGER NOT NULL, value REAL NOT NULL DEFAULT (0), FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE, FOREIGN KEY (address_id) REFERENCES addresses (id))`;
 const LogsSQL = `CREATE TABLE logs (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp INTEGER, message STRING DEFAULT "")`;
 
-import {
-  getBoolean,
-  setBoolean,
-  getNumber,
-  setNumber,
-  getString,
-  setString,
-  hasKey,
-  remove,
-  clear
-} from "tns-core-modules/application-settings";
+const DefaultCoinsSQL = `INSERT INTO coins (name, bip44, is_default, label, symbol, icon_path, explorer_host, explorer_api_host, explorer_api_stats, electrumx_host, electrumx_port) values ("ODIN", 2100, "true", "ODIN", "Ø", "res://coin_odin", "https://explore.odinblockchain.org/", "https://inspect.odinblockchain.org/api", "https://inspect.odinblockchain.org/api/stats", "electrumx.odinblockchain.org", 50001)`;
+
 
 @Injectable()
 export class StorageService {
@@ -114,7 +102,7 @@ export class StorageService {
    * @param tableName The name of the table, used for events and logging
    * @param sql The SQL query to create the table
    */
-  private async createTable(tableName: string, sql: string): Promise<boolean> {
+  private async createTable(tableName: string, sql: string, defaultInsert?: string): Promise<boolean> {
     tableName = tableName.toLowerCase();
     if (!await this.dbReady()) {
       this.log(`...Table: [${tableName}] Skipped -- Not Connected`);
@@ -128,6 +116,11 @@ export class StorageService {
       await this.odb.execSQL(sql);
       this.log(`...Table: [${tableName}] Created`);
       this.emit(`TableCreation::Create${tableName}`);
+
+      if (defaultInsert && defaultInsert.length) {
+        await this.odb.execSQL(defaultInsert);
+        this.log(`...Table: [${tableName}] Default Data Executed`);
+      }
     }
     return true;
   }
@@ -197,6 +190,12 @@ export class StorageService {
 
       // await this.purgeTable('contacts');
       // await this.purgeTable('messages');
+      await this.purgeTable('coins');
+      await this.purgeTable('wallets');
+      await this.purgeTable('addresses');
+      await this.purgeTable('transactions');
+      await this.purgeTable('unspent');
+
 
       this.emit('TableLoadBegin');
       this.log('[loadTables] Start');
@@ -207,7 +206,7 @@ export class StorageService {
         await this.createTable('clients', ClientsSQL);
         await this.createTable('contacts', ContactsSQL);
         await this.createTable('messages', MessagesSQL);
-        await this.createTable('coins', CoinsSQL);
+        await this.createTable('coins', CoinsSQL, DefaultCoinsSQL);
         await this.createTable('wallets', WalletsSQL);
         await this.createTable('addresses', AddressesSQL);
         await this.createTable('transactions', TransactionsSQL);

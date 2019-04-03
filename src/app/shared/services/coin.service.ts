@@ -79,4 +79,8 @@ export class CoinService extends StorageService {
       .catch(reject);
     });
   }
+
+  public defaultCoinDetails() {
+    return this.coins.find(c => !!(c.is_default === true));
+  }
 }
