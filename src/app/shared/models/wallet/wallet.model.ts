@@ -25,7 +25,7 @@ export class Wallet extends Database {
   private transactionStream: ReplaySubject<Transaction>;
   private transactionTableIds: any[];
 
-  constructor(props: any) {
+  constructor(props?: any) {
     super('Wallet');
     this.account_bip44 = -1;
     this.bip44_index = -1;
@@ -41,7 +41,7 @@ export class Wallet extends Database {
     this.deserialize(props);
   }
 
-  deserialize(input: any) {
+  deserialize(input?: any) {
     Object.assign(this, input);
     return this;
   }
@@ -199,5 +199,96 @@ export class Wallet extends Database {
 
     this.log(`wallet [${this.id}] updated (${updated})`);
     return updated;
+  }
+
+  /**
+   * Searches internally for a matching wallet and returns it as a new `Wallet` instance.
+   * Returns `null` otherwise.
+   * 
+   * @param id The wallet internal id
+   */
+  static async FindById(id: number = 0): Promise<Wallet|null> {
+    let wallet = new Wallet();
+    if (!await wallet.dbReady()) {
+      throw new Error('Unable to connect to db');
+    }
+    
+    const matchingWallet = await wallet.db.get('SELECT * FROM wallets WHERE id=?', [
+      id
+    ]);
+
+    if (!matchingWallet) return null;
+
+    wallet.log(`FindById – Found match id:[${matchingWallet.id}] bip44:[${matchingWallet.bip44_index}]`);
+    wallet.deserialize(matchingWallet);
+    return wallet;
+  }
+
+
+  /**
+   * Searches internally for a matching wallet and returns it as a new `Wallet` instance.
+   * Returns `null` otherwise.
+   * 
+   * @param bip44 The wallet BIP44 Path
+   * @param account_bip44 (optional) An account BIP44 Path
+   */
+  static async FindByBip44(bip44: number = 0, account_bip44?: number): Promise<Wallet|null> {
+    let wallet = new Wallet();
+    if (!await wallet.dbReady()) {
+      throw new Error('Unable to connect to db');
+    }
+    
+    const sql = (!isNaN(account_bip44))
+                  ? 'SELECT * FROM wallets WHERE bip44_index=? AND account_bip44=?'
+                  : 'SELECT * FROM wallets WHERE bip44_index=?';
+                  
+    const matchingWallet = await wallet.db.get(sql, (!isNaN(account_bip44)) ? [bip44, account_bip44] : [bip44]);
+    if (!matchingWallet) return null;
+
+    wallet.log(`FindByBip44 – Found match id:[${matchingWallet.id}] bip44:[${matchingWallet.bip44_index}]`);
+    wallet.deserialize(matchingWallet);
+    return wallet;
+  }
+
+  /**
+   * Attempts to insert a new `Wallet` internally. Requires `input` have at least a `coin_name`, `account_bip44`,
+   * and `bip44_index`.
+   * 
+   * After validation, it will check if the provided wallet already exists. If it does,
+   * it will merge the existing wallet with the provided `input` and then execute a `save()`.
+   * 
+   * If it does not exist, a new one will be inserted.
+   * 
+   * @async
+   * @function Create
+   * @static
+   * @param input (optional) The wallet input, should match properties of a `Wallet`
+   * @returns {Promise<Wallet>}
+   */
+  static async Create(input?: any): Promise<Wallet> {
+    const wallet = new Wallet(input);
+    if (!await wallet.dbReady()) {
+      throw new Error('Unable to connect to db');
+    }
+
+    const matchingWallet = await Wallet.FindByBip44(wallet.bip44_index, wallet.account_bip44);
+    if (matchingWallet) {
+      wallet.log(`id:[${matchingWallet.id}] b:[${wallet.bip44_index}] already saved... merging`);
+      matchingWallet.deserialize(wallet);
+      await matchingWallet.save();
+      return matchingWallet;
+    }
+    else {
+      const walletId = await wallet.db.execSQL(`INSERT INTO wallets (coin_name, account_bip44, bip44_index) values (?, ?, ?)`, [
+        wallet.coin_name,
+        wallet.account_bip44,
+        wallet.bip44_index
+      ]);
+
+      wallet.id = walletId;
+      wallet.log(`Stored b[${wallet.bip44_index}] with id:${wallet.id}`);
+    }
+
+    return wallet;
   }
 }

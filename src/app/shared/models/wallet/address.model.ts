@@ -18,9 +18,6 @@ export class Address extends Database {
   constructor(props?: any) {
     super('Address');
     
-    this.id = -1;
-    this.wallet_id = -1;
-    this.bip44_index = -1;
     this.address = '';
     this.hash = '';
     this.balance_conf = 0;
@@ -34,6 +31,8 @@ export class Address extends Database {
   }
 
   deserialize(input?: any) {
+    if (!input || typeof input !== 'object') return this;
+
     if (input.hasOwnProperty('external') && input.external === 'false') {
       input.external = false;
     } else if (input.hasOwnProperty('external') && input.external === 'true') {
@@ -76,7 +75,7 @@ export class Address extends Database {
 
     // this.log('ATTEMPTING TO SAVE');
     // this.dir(this.serialize());
-    this.log(`saving ${this.address}...`);
+    this.log(`saving #${this.id} ${this.address}... then:${this.last_updated} now:${Number(moment().format('x'))}`);
 
     const updated = await this.db.execSQL(`UPDATE addresses SET wallet_id=?, bip44_index=?, address=?, hash=?, balance_conf=?, balance_unconf=?, external=?, used=?, last_updated=?, last_tx_timestamp=? WHERE id=?`, [
       this.wallet_id,
@@ -95,6 +94,31 @@ export class Address extends Database {
 
     this.log(`account [${this.address}] updated (${updated})`);
     return updated;
+  }
+
+  /**
+   * Searches internally for a matching wallet and returns it as a new `Wallet` instance.
+   * Returns `null` otherwise.
+   * 
+   * @param bip44 The wallet BIP44 Path
+   * @param account_bip44 (optional) An account BIP44 Path
+   */
+  static async FindByAddress(addressStr: string, wallet_id?: number): Promise<Address|null> {
+    let address = new Address();
+    if (!await address.dbReady()) {
+      throw new Error('Unable to connect to db');
+    }
+    
+    const sql = (!isNaN(wallet_id))
+                  ? 'SELECT * FROM addresses WHERE address=? AND wallet_id=?'
+                  : 'SELECT * FROM addresses WHERE address=?';
+
+    const matchingAddress = await address.db.get(sql, (!isNaN(wallet_id)) ? [addressStr, wallet_id] : [addressStr]);
+    if (!matchingAddress) return null;
+
+    address.log(`FindByAddress – Found match id:[${matchingAddress.id}] walletId:[${matchingAddress.wallet_id}] bip44:[${matchingAddress.bip44_index}]`);
+    address.deserialize(matchingAddress);
+    return address;
   }
 
   /**
@@ -124,12 +148,9 @@ export class Address extends Database {
       throw new Error('Unable to create address, missing wallet id!');
     }
 
-    const matchingAddress = await address.db.get('SELECT * FROM addresses WHERE address=? AND wallet_id=?', [
-      address.address, address.wallet_id
-    ]);
-
+    const matchingAddress = await Address.FindByAddress(address.address, address.wallet_id);
     if (matchingAddress) {
-      address.log(`[${address.address}] already saved, merging`);
+      address.log(`[${address.address}] already saved, merging idA:${address.id} idB:${matchingAddress.id}`);
       matchingAddress.deserialize(address);
       await matchingAddress.save();
       return matchingAddress;

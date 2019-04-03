@@ -61,6 +61,8 @@ export class Message extends Database {
   }
   
   deserialize(input: any) {
+    if (!input || typeof input !== 'object') return this;
+    
     if (input.hasOwnProperty('delivered') && input.delivered === 'false') {
       input.delivered = false;
     } else if (input.hasOwnProperty('delivered') && input.delivered === 'true') {
