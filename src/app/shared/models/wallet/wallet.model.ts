@@ -1,24 +1,73 @@
 import { Database } from '../database.model';
 import { Unspent } from './unspent.model';
+import { Coin } from '../identity';
+import { ReplaySubject } from 'rxjs';
+import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
+import { Transaction } from './transaction.model';
+import { fromObjectRecursive, Observable, fromObject } from 'tns-core-modules/data/observable/observable';
 
 export class Wallet extends Database {
-  id: number;
-  coin_name: string;
-  account_bip44: number;
-  bip44_index: number;
-  balance_conf: number;
-  balance_unconf: number;
-  last_updated: number;
-  last_tx_timestamp: number;
+  // database
+  public id: number;
+  public coin_name: string;
+  public account_bip44: number;
+  public bip44_index: number;
+  public balance_conf: number;
+  public balance_unconf: number;
+  public last_updated: number;
+  public last_tx_timestamp: number;
+
+  // runtime
+  public electrumXClient: any;
+  public coin: Coin;
+  public blockheight: number;
+  public transactions$: ObservableArray<Observable>;
+  private transactionStream: ReplaySubject<Transaction>;
+  private transactionTableIds: any[];
 
   constructor(props: any) {
     super('Wallet');
+    this.account_bip44 = -1;
+    this.bip44_index = -1;
+    this.balance_conf = 0;
+    this.balance_unconf = 0;
+    this.last_updated = 0;
+    this.last_tx_timestamp = 0;
+
+    this.transactionStream = new ReplaySubject();
+    this.transactions$ = new ObservableArray();
+    this.transactionTableIds = [];
+
     this.deserialize(props);
   }
 
   deserialize(input: any) {
     Object.assign(this, input);
     return this;
+  }
+
+  public get transactionsStream$() {
+    return this.transactionStream.asObservable();
+  }
+
+  public serialize() {
+    return {
+      id: this.id,
+      coin_name: this.coin_name,
+      account_bip44: this.account_bip44,
+      bip44_index: this.bip44_index,
+      balance_conf: this.balance_conf,
+      balance_unconf: this.balance_unconf,
+      last_updated: this.last_updated,
+      last_tx_timestamp: this.last_tx_timestamp,
+      blockheight: (this.blockheight) ? this.blockheight : 0,
+      coin: (this.coin)
+              ? {
+                  bip44: this.coin.bip44,
+                  label: this.coin.label
+                }
+              : {}
+    };
   }
 
   public async upsertUnspent(unspent: Unspent) {
@@ -76,5 +125,79 @@ export class Wallet extends Database {
     }
     
     return await this.db.all(`SELECT unspent.height, unspent.txid, unspent.txid_pos, unspent.value, addresses.address, addresses.hash FROM unspent INNER JOIN wallets ON unspent.wallet_id = wallets.id INNER JOIN addresses ON unspent.address_id = addresses.id WHERE unspent.wallet_id = ?`, this.id);
+  }
+
+  public async loadCoinDetails() {
+    if (!await this.dbReady()) {
+      this.log(`wallet [${this.id}] – db not active`);
+      return false;
+    }
+
+    this.coin = await this.db.get(`SELECT * FROM coins WHERE name=?`, [this.coin_name]);
+  }
+
+  public async loadTransactions() {
+    this.transactionStream = new ReplaySubject();
+    this.transactions$ = new ObservableArray();
+    this.transactionTableIds = [];
+
+    const transactions = await this.getTransactions();
+    while (transactions.length > 0) {
+      const transaction = transactions.shift();
+      this.log(`added transaction – ${transaction.txid}`);
+      this.transactionStream.next(new Transaction(transaction));
+      this.transactions$.push(fromObject(transaction));
+      this.transactionTableIds.push(transaction.id);
+    }
+
+    this.log(`loaded transactions for wallet#${this.id}`);
+    return this;
+  }
+
+  public async getTransactions() {
+    if (!await this.dbReady()) {
+      this.log(`failed to pull transactions for wallet#${this.id} – db not active`);
+      return [];
+    }
+
+    // return await this.db.all(`SELECT messages.account_bip44, messages.id, key, name, contact_username, owner_username, message, timestamp, messages.unread, favorite, delivered, status FROM messages INNER JOIN contacts ON messages.contact_username = contacts.username WHERE contacts.username = ?`, this.username);
+
+    return await this.db.all(`SELECT transactions.address_id, transactions.type, transactions.txid, transactions.height, transactions.vin_addresses, transactions.vout_addresses, transactions.value, transactions.timestamp FROM transactions INNER JOIN wallets ON transactions.wallet_id = wallets.id WHERE transactions.wallet_id = ?`, this.id);
+  }
+
+  // public async getUnspent() {
+  //   if (!this.db || !this.db.isOpen()) {
+  //     return [];
+  //   }
+    
+  //   return await this.db.all(`SELECT unspent.height, unspent.txid, unspent.txid_pos, unspent.value, addresses.address, addresses.hash FROM unspent INNER JOIN wallets ON unspent.wallet_id = wallets.id INNER JOIN addresses ON unspent.address_id = addresses.id WHERE unspent.wallet_id = ?`, this.id);
+  // }
+
+  /**
+   * Executes a SQL `UPDATE` on the current Account user saving the current account back to the table.
+   */
+  public async save(): Promise<any> {
+    if (!await this.dbReady()) {
+      this.log(`wallet [${this.id}] for [${this.coin_name}] not saved – db not active`);
+      return false;
+    }
+
+    // this.log('ATTEMPTING TO SAVE');
+    // this.dir(this.serialize());
+    this.log(`saving wallet#${this.id}...`);
+
+    const updated = await this.db.execSQL(`UPDATE wallets SET coin_name=?, account_bip44=?, balance_conf=?, balance_unconf=?, last_updated=?, last_tx_timestamp=? WHERE id=?`, [
+      this.coin_name,
+      this.account_bip44,
+      this.balance_conf,
+      this.balance_unconf,
+      Date.now(),
+      this.last_tx_timestamp,
+
+      this.id
+    ]);
+
+    this.log(`wallet [${this.id}] updated (${updated})`);
+    return updated;
   }
 }
