@@ -226,23 +226,6 @@ export class Account extends Database {
     return this.contacts.find((c: Contact) => c.username === username);
   }
 
-  // public async storeMessage(message: Message) {
-  //   if (!this.dbReady()) {
-  //     return false;
-  //   }
-
-  //   return await this.db.execSQL(`INSERT INTO messages (key, account_bip44, contact_username, owner_username, message, timestamp, favorite, unread) values (?, ?, ?, ?, ?, ?, ?, ?)`, [
-  //     message.key,
-  //     this.bip44_index,
-  //     message.contact_username,
-  //     message.owner_username,
-  //     message.message,
-  //     message.timestamp,
-  //     false,
-  //     (message.owner_username === this.username ? false : true)
-  //   ]);
-  // }
-
   /**
    * @todo Compare with Client.Model.StoreContact
    * 

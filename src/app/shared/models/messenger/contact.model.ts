@@ -44,6 +44,7 @@ export class Contact extends Database {
   public async loadMessages() {
     this.messageStream = new ReplaySubject();
     this.messages = [];
+    this.msgKeys = [];
 
     const messages = await this.getMessages();
     while (messages.length > 0) {
