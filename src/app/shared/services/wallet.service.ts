@@ -12,9 +12,11 @@ import { IdentityService } from './identity.service';
 import { InspectTransaction, InspectAPIFetchTransaction, InspectAPITransactionVIN, InspectAPITransactionVOUT } from '../models/inspect-api';
 import { ElectrumxTransaction, ElectrumxUnspent, ElectrumxAddress, ElectrumxAddressDiscovery, ElectrumxBalance } from '../models/electrumx';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
-import { Observable } from 'tns-core-modules/ui/page/page';
-import { fromObject } from 'tns-core-modules/data/observable/observable';
+// import { Observable } from 'tns-core-modules/ui/page/page';
+import { fromObject, Observable } from 'tns-core-modules/data/observable/observable';
 import { HttpResponse, request } from 'tns-core-modules/http/http';
+import { ReplaySubject } from 'rxjs';
+// import { Observable } from 'rxjs';
 
 const WalletKey = 'app_wallets';
 const UserAgent = 'ODINX 0.2.6';
@@ -166,6 +168,7 @@ class AddressDiscovery {
 export class WalletService extends StorageService {
   public wallets: Wallet[];
   public wallets$: ObservableArray<Observable>;
+  private walletStream: ReplaySubject<Wallet>;
 
   public electrumxConnected: boolean;
   private electrumxClient: any;
@@ -182,6 +185,7 @@ export class WalletService extends StorageService {
     super('WalletService');
     this.wallets = [];
     this.wallets$ = new ObservableArray();
+    this.walletStream = new ReplaySubject();
     this.electrumxConnected = false;
     this.activeWalletIndex = null;
     this.activeWallet = null;
@@ -208,6 +212,10 @@ export class WalletService extends StorageService {
     });
   }
 
+  public get walletStream$() {
+    return this.walletStream.asObservable();
+  }
+
   private async loadWallets() {
     if (!await this.dbReady()) {
       return new Error('db_not_open');
@@ -224,6 +232,7 @@ export class WalletService extends StorageService {
           this.log(`added wallet – ${wallet.id}`);
           this.wallets.push(wallet);
           this.wallets$.push(fromObject(wallet.serialize()));
+          this.walletStream.next(wallet);
         }
 
         this.log(`wallets loaded...${this.wallets.length}`);
@@ -277,6 +286,7 @@ export class WalletService extends StorageService {
 
       this.wallets.push(wallet);
       this.wallets$.push(fromObject(wallet.serialize()));
+      this.walletStream.next(wallet);
       
       await this.establishConnection(wallet);
       this.log('Done with connection');
@@ -642,7 +652,7 @@ export class WalletService extends StorageService {
     return completedTransactions;
   }
 
-  public async establishConnection(wallet: Wallet): Promise<any> {
+  public async establishConnection(wallet: Wallet|any): Promise<any> {
     this.log(`connect to ${wallet.coin.electrumx_host}:${wallet.coin.electrumx_port}`);
 
     // this.walletData.busy    = true;
@@ -803,9 +813,12 @@ export class WalletService extends StorageService {
       msg: err.message ? err.message : '??'
     }, err);
 
-    if (err.name === 'TCPClientError!') {
+    if (err.name === 'TCPClientError') {
       this.electrumxConnected = false;
       this.emit('TCPClientError');
+      
+      clearTimeout(this._electrumxTimer);
+      this.validateSession();
     }
   }
 }
