@@ -62,10 +62,7 @@ export class Wallet extends Database {
       last_tx_timestamp: this.last_tx_timestamp,
       blockheight: (this.blockheight) ? this.blockheight : 0,
       coin: (this.coin)
-              ? {
-                  bip44: this.coin.bip44,
-                  label: this.coin.label
-                }
+              ? new Coin(this.coin).serialize()
               : {}
     };
   }
