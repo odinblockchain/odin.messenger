@@ -6,10 +6,6 @@
 $wallet--width: 300;
 $wallet--border-radius: 4;
 
-.wallets {
-  background-color: $dark-02;
-}
-
 .wallet {
   min-width: $wallet--width;
   max-width: $wallet--width;
@@ -27,6 +23,28 @@ $wallet--border-radius: 4;
 
   &.empty {
     background-color: $dark-03;
+  }
+}
+
+.wallet--add-new {
+  .wallet--content {
+    left: 15;
+    top: 30;
+
+    .wallet--label {
+      font-size: 16;
+    }
+  }
+
+  .wallet--notice {
+    background-color: $odin-green;
+    width: $wallet--width;
+    border-radius: 0 0 $wallet--border-radius $wallet--border-radius;
+    
+    .wallet--label {
+      font-size: 12;
+      padding: 5 10;
+    }
   }
 }
 

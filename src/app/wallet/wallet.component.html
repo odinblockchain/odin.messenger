@@ -15,17 +15,17 @@
   </FlexboxLayout>
 
   <TabView class="tabView" row="1" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)">
-      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Send [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Send>
+      <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
+        <Send [currentWallet]="selectedWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Send>
       </ContentView>
 
-      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Overview [blockheight]="blockheight" [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Overview>
+      <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
+        <Overview [blockheight]="blockheight" [currentWallet]="selectedWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Overview>
         <!-- <Button height="50" width="200" text="{{ lightBar ? 'dark' : 'light' }}" (tap)="switchView()"></Button> -->
       </ContentView>
 
-      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Receive [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Receive>
+      <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
+        <Receive [currentWallet]="selectedWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Receive>
       </ContentView>
   </TabView>
 

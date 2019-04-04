@@ -6,14 +6,29 @@
       <Label flexGrow="1" class="label" text="Balance"></Label>
       <Label flexGrow="1" class="balance">
         <FormattedString>
-          <Span [text]="currentWallet.balance.confirmed | satoshiValueConverter"></Span>
-          <Span text=" {{currentWallet.coin.coin}}"></Span>
+          <Span [text]="currentWallet.balance_conf | satoshiValueConverter"></Span>
+          <Span text=" {{currentWallet.coin.label}}"></Span>
         </FormattedString>
       </Label>
       <Label flexGrow="1" class="blockheight">
         <FormattedString>
           <Span text="Block: "></Span>
           <Span [text]="blockheight"></Span>
+        </FormattedString>
+      </Label>
+    </StackLayout>
+
+    <StackLayout *ngIf="!currentWallet" orientation="vertical" verticalAlignment="center">
+      <Label flexGrow="1" class="label" text="Balance"></Label>
+      <Label flexGrow="1" class="balance">
+        <FormattedString>
+          <Span text="—"></Span>
+        </FormattedString>
+      </Label>
+      <Label flexGrow="1" class="blockheight">
+        <FormattedString>
+          <Span text="Block: "></Span>
+          <Span text="—"></Span>
         </FormattedString>
       </Label>
     </StackLayout>
@@ -30,7 +45,7 @@
           <StackLayout *ngIf="currentWallet">
             <Label class="header" text="Transactions"></Label>
             
-            <ContentView class="transaction" *ngFor="let transaction of currentWallet.transactions; index as i;">
+            <!-- <ContentView class="transaction" *ngFor="let transaction of currentWallet.transactions; index as i;">
               <GridLayout rows="50" columns="45,auto,*">
 
                 <FlexboxLayout *ngIf="transaction.received" col="0" class="transaction--icon received">
@@ -63,7 +78,7 @@
                   <Label verticalAlignment="center" textWrap="true" [text]="transaction.value"></Label>
                 </ContentView>
               </GridLayout>
-            </ContentView>
+            </ContentView> -->
 
             <!-- <ContentView class="transaction">
               <GridLayout rows="50" columns="45,auto,*">

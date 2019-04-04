@@ -1,6 +1,7 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptCommonModule } from "nativescript-angular/common";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
+import { NativeScriptUIListViewModule } from 'nativescript-ui-listview/angular';
 
 import { WalletRoutingModule } from "./wallet.routing.module";
 import { WalletComponent } from "./wallet.component";
@@ -16,6 +17,7 @@ import { RelativeTime } from "../utils/relativeTime";
   imports: [
     NativeScriptCommonModule,
     NativeScriptFormsModule,
+    NativeScriptUIListViewModule,
     WalletRoutingModule
   ],
   declarations: [
