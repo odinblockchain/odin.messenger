@@ -32,6 +32,7 @@
 **/
 .summary {
   text-align: center;
+  margin-bottom: 15;
 
   .label {
     font-size: 14;
@@ -52,10 +53,13 @@
 */
 .transactions {
   .header {
-    font-size: 20;
-    margin-left: 20;
-    margin-bottom: 15;
     margin-top: 0;
+    margin-bottom: 15;
+
+    .h2 {
+      font-size: 20;
+      text-align: center;
+    }
   }
 }
 
@@ -89,7 +93,7 @@
   }
 
   &.received {
-    background-color: $odin-blue;
+    background-color: $odin-green;
   }
 
   &.sent {
