@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
 // import { StorageService } from "./storage.service";
 import { alert } from "ui/dialogs";
-
+import { environment } from "~/environments/environment";
 import {
   getBoolean,
   setBoolean,
@@ -77,7 +77,7 @@ export class PreferencesService {
 
   private _defaultPreferences(): any {
     return {
-      api_url: 'https://osm-testnet.obsidianplatform.com',
+      api_url: (environment.osmServerUrl || 'https://osm-testnet.obsidianplatform.com'),
       explorer_url: 'https://inspect.odinblockchain.org/api'
     };
   }

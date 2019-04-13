@@ -1,7 +1,7 @@
 import { Inject, Injectable, Optional } from "@angular/core";
 import { ReplaySubject } from "rxjs";
 import { clear, getString, hasKey, setString } from "tns-core-modules/application-settings";
-
+import { environment } from "~/environments/environment";
 
 const SqlLite = require('nativescript-sqlite');
 const DatabaseName = 'odin.db';
@@ -183,19 +183,28 @@ export class StorageService {
         return reject('database_not_loaded');
       }
 
-      if (forcePurge) {
+      if (forcePurge || environment.purgeAll === true) {
+        this.log(`@@@ PURGE — ALL TABLES, LOCAL STORAGE`);
         await this.removeTables();
         await this.clearStorage();
       }
+      
+      console.log('purge?', environment.purgeAll);
 
-      // await this.purgeTable('contacts');
-      // await this.purgeTable('messages');
-      await this.purgeTable('coins');
-      await this.purgeTable('wallets');
-      await this.purgeTable('addresses');
-      await this.purgeTable('transactions');
-      await this.purgeTable('unspent');
-
+      if (environment.purgeWallet === true) {
+        this.log(`@@@ PURGE — ALL WALLET TABLES`);
+        await this.purgeTable('coins');
+        await this.purgeTable('wallets');
+        await this.purgeTable('addresses');
+        await this.purgeTable('transactions');
+        await this.purgeTable('unspent');
+      }
+      
+      if (environment.purgeMessenger === true) {
+        this.log(`@@@ PURGE — ALL MESSENGER TABLES`);
+        await this.purgeTable('contacts');
+        await this.purgeTable('messages');
+      }
 
       this.emit('TableLoadBegin');
       this.log('[loadTables] Start');

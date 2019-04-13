@@ -1,7 +1,8 @@
 // this import should be first in order to load some required settings (like globals and reflect-metadata)
 import { platformNativeScriptDynamic } from "nativescript-angular/platform";
 import { android as androidNS, ApplicationEventData, AndroidActivityEventData, AndroidActivityResultEventData, AndroidActivityBackPressedEventData, AndroidApplication, AndroidActivityBundleEventData } from "tns-core-modules/application";
-import { AppModule } from "./app/app.module";
+import { AppModule } from "~/app/app.module";
+import { environment } from '~/environments/environment';
 
 declare var android: any;
 
@@ -152,5 +153,20 @@ if (androidNS) {
     console.log('ODIN Messenger -- Event.activityDestroyedEvent');
   });
 }
+
+console.log(`<Environment>
+
+    api: ${environment.osmServerUrl}
+    mock Identity?: ${environment.mockIdentity}
+
+    prod?:  ${environment.production}
+    reg?:   ${environment.regression}
+    dev?:   ${environment.development}
+
+    wipe All?:        ${environment.purgeAll}
+    wipe Wallet?:     ${environment.purgeWallet}
+    wipe Messenger?:  ${environment.purgeMessenger}
+
+</Environment>`);
 
 platformNativeScriptDynamic().bootstrapModule(AppModule);

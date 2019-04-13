@@ -4,6 +4,7 @@ import { Client } from '../models/messenger/client.model';
 import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
 import { SignalClient } from '../models/signal';
 import { device } from 'tns-core-modules/platform';
+import { environment } from '~/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -90,10 +91,14 @@ export class ClientService extends StorageService {
         return reject(new Error(`Client (${client.account_username}) already exists`));
       }
 
-      client.registration_id = Number(LibsignalProtocol.KeyHelper.generateRegistrationId());
-      client.device_id        = Math.abs(Number(`${LibsignalProtocol.KeyHelper.generateRegistrationId()}${device.uuid.replace(/\D/g,'')}`));
-      // client.device_id        = 100001;
-      // client.registration_id  = 100001;
+      if (environment.mockIdentity === true) {
+        this.log(`@@@ MockIdentity Active — Mocking DeviceId, RegistrationId`);
+        client.device_id        = 100001;
+        client.registration_id  = 100001;
+      } else {
+        client.registration_id  = Number(LibsignalProtocol.KeyHelper.generateRegistrationId());
+        client.device_id        = Math.abs(Number(`${LibsignalProtocol.KeyHelper.generateRegistrationId()}${device.uuid.replace(/\D/g,'')}`));
+      }
 
       this.odb.execSQL(`INSERT INTO clients (account_username, registration_id, device_id, identity_key_pair, signed_pre_key, pre_keys) values (?, ?, ?, ?, ?, ?)`, [
         client.account_username,

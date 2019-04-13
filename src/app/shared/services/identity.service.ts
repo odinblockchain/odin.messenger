@@ -5,6 +5,7 @@ import { ODIN } from '~/app/bundle.odin';
 import { identity } from 'rxjs';
 import { AccountService } from './account.service';
 import { Account } from '../models/identity';
+import { environment } from '~/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -138,12 +139,15 @@ export class IdentityService extends StorageService {
         this.log('masterseed already exists');
         return resolve(this.identity);
       }
-  
-      const mnemonic = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
-      // const mnemonic = 'cool cool cool cool cool cool cool cool cool cool cool cool';
 
       this.identity.masterSeed = masterSeed;
-      this.identity.mnemonicPhrase = mnemonic;
+      if (environment.mockIdentity === true) {
+        this.log(`@@@ MockIdentity Active — Mocking mnemonic phrase`);
+        this.identity.mnemonicPhrase = 'pixel pixel pixel pixel pixel pixel pixel pixel pixel pixel pixel pixel';
+      } else {
+        this.identity.mnemonicPhrase = ODIN.bip39.entropyToMnemonic(masterSeed.substr(0, 32));
+      }
+      
       this.identity.save();
       return resolve(this.identity);
     });

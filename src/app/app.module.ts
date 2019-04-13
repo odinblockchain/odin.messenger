@@ -14,9 +14,11 @@ import { SnackBar, SnackBarOptions } from 'nativescript-snackbar';
 import { WalletClientService } from './shared/wallet-client.service';
 
 @NgModule({
+  // Bootstrap – Creates components in declarations and inserts into DOM
   bootstrap: [
     AppComponent
   ],
+  // Providers – Services this module needs to function properly, available globally if defined here
   providers: [
     StorageService,
     PreferencesService,
@@ -26,12 +28,14 @@ import { WalletClientService } from './shared/wallet-client.service';
     WalletModel,
     SnackBar
   ],
+  // Imports – Other modules that this module needs to function properly
   imports: [
     AppRoutingModule,
     NativeScriptModule,
     NativeScriptUISideDrawerModule,
     NativeScriptUIListViewModule
   ],
+  // Declarations – What components belong to this module
   declarations: [
     AppComponent
   ],
