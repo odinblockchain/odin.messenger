@@ -1,6 +1,6 @@
 {
   "name": "odin.chat.client",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "ODIN Chat developed on NativeScript",
   "nativescript": {
     "id": "org.odinblockchain.chat",
@@ -40,11 +40,13 @@
   },
   "homepage": "https://github.com/odinblockchain/odin.messenger#readme",
   "scripts": {
-    "lint": "tslint \"src/**/*.ts\"",
-    "clean": "rm -rf node_modules platforms hooks && npm i",
     "build.android": "npm i && tns platform add android && tns build android",
     "remove.android": "tns platform remove android",
-    "cleanup": "rm -rf hooks/ node_modules/ platforms/"
+    "lint": "tslint \"src/**/*.ts\"",
+    "clean": "rm -rf hooks/ node_modules/ platforms/",
+    "run.android.prod": "tns run android --bundle --env.environment=prod",
+    "run.android.dev": "tns run android --bundle --env.environment=dev",
+    "run.android.reg": "tns run android --bundle --env.environment=reg" 
   },
   "dependencies": {
     "@angular/animations": "~7.0.0",
