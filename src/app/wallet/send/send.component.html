@@ -1,82 +1,33 @@
 <GridLayout class="page" rows="*" columns="*">
   
   <ScrollView row="1" class="overview">
-    <GridLayout rows="170, *">
 
-      <WalletSelection row="0" [selectedWallet]="selectedWalletId" (walletSelected)="proxyWalletSelection($event)"></WalletSelection>
-      <!-- <ScrollView row="0" orientation="horizontal">
-        <StackLayout class="wallets" orientation="horizontal">
+    <FlexboxLayout class="view">
 
-          <AbsoluteLayout class="wallet first" [class.active]="selectedWallet == 0" (tap)="selectedWallet = 0">
-            <ContentView class="wallet--accent"></ContentView>
-
-            <ContentView class="wallet--logo">
-              <Image src="res://icon" height="200"></Image>
-            </ContentView>
-
-            <StackLayout class="wallet--meta">
-              <Label class="wallet--label" textWrap="true" text="wallet name"></Label>
-              <Label class="wallet--balance">
-                <FormattedString>
-                  <Span text="1,950,124.12345678"></Span>
-                  <Span class="wallet--balance--symbol" text=" ODIN"></Span>
-                </FormattedString>
-              </Label>
-              <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
-              <Label class="wallet--last-transaction-time" text="5 hours ago"></Label>
-            </StackLayout>
-          </AbsoluteLayout>
-
-          <AbsoluteLayout class="wallet" [class.active]="selectedWallet == 1" (tap)="selectedWallet = 1">
-            <ContentView class="wallet--accent"></ContentView>
-
-            <ContentView class="wallet--logo">
-              <Image src="res://icon" height="200"></Image>
-            </ContentView>
-
-            <StackLayout class="wallet--meta">
-              <Label class="wallet--label" textWrap="true" text="wallet#2"></Label>
-              <Label class="wallet--balance">
-                <FormattedString>
-                  <Span text="950,124.12345678"></Span>
-                  <Span class="wallet--balance--symbol" text=" ODIN"></Span>
-                </FormattedString>
-              </Label>
-              <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
-              <Label class="wallet--last-transaction-time" text="10 hours ago"></Label>
-            </StackLayout>
-          </AbsoluteLayout>
-
+      <ContentView class="card">
+        <StackLayout class="card-content">
+          <Label class="h2" textWrap="true" text="Recipient address"></Label>
+          <Label class="body help" textWrap="true" text="Enter the blockchain address where you would like to send an amount of ODIN to."></Label>
+          <TextField textWrap="true" [(ngModel)]="transactionDetails.address" returnKeyType="next" class="input input-border" hint="Enter an ODIN Address..."></TextField>
         </StackLayout>
-      </ScrollView> -->
+      </ContentView>
 
-      <FlexboxLayout class="view" row="1">
+      <ContentView class="card">
+        <StackLayout class="card-content">
+          <Label class="h2" textWrap="true" text="Amount to send"></Label>
+          <Label class="body help" textWrap="true" text="Enter the amount of ODIN to send to the above address."></Label>
+          <TextField textWrap="true" [(ngModel)]="transactionDetails.amount" returnKeyType="done" (returnPress)="onReturnPress($event)" class="input input-border" hint="ODIN Amount..." keyboardType="number"></TextField>
+        </StackLayout>
+      </ContentView>
 
-        <ContentView class="card">
-          <StackLayout class="card-content">
-            <Label class="h2" textWrap="true" text="Recipient address"></Label>
-            <Label class="body help" textWrap="true" text="Enter the blockchain address where you would like to send an amount of ODIN to."></Label>
-            <TextField textWrap="true" [(ngModel)]="transactionDetails.recipient" returnKeyType="next" class="input input-border" hint="Enter an ODIN Address..."></TextField>
-          </StackLayout>
-        </ContentView>
+      <ContentView class="actions">
+        <StackLayout class="actions">
+          <Button class="btn btn-primary" text="Send Transaction" (tap)="onReturnPress($event)"></Button>
+        </StackLayout>
+      </ContentView>
 
-        <ContentView class="card">
-          <StackLayout class="card-content">
-            <Label class="h2" textWrap="true" text="Amount to send"></Label>
-            <Label class="body help" textWrap="true" text="Enter the amount of ODIN to send to the above recipient."></Label>
-            <TextField textWrap="true" [(ngModel)]="transactionDetails.amount" returnKeyType="done" (returnPress)="onReturnPress($event)" class="input input-border" hint="ODIN Amount..." keyboardType="number"></TextField>
-          </StackLayout>
-        </ContentView>
-
-        <ContentView class="actions">
-          <StackLayout class="actions">
-            <Button class="btn btn-primary" text="Send Transaction" (tap)="onReturnPress($event)"></Button>
-          </StackLayout>
-        </ContentView>
-
-      </FlexboxLayout>
+    </FlexboxLayout>
       
-    </GridLayout>
   </ScrollView>
   
 </GridLayout>
