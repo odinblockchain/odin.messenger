@@ -10,6 +10,7 @@ import { OverviewComponent } from './overview/overview.component';
 import { ReceiveComponent } from "./receive/receive.component";
 import { WalletSelectionComponent } from "./wallet-selection/wallet-selection.component";
 import { SatoshiValueConverter } from "~/app/utils/satoshiValueConverter";
+import { TxValueFormatter } from "~/app/utils/txValueFormatter";
 import { TransactionConfirmations } from "~/app/utils/transactionConfirmations";
 import { RelativeTime } from "../utils/relativeTime";
 
@@ -22,6 +23,7 @@ import { RelativeTime } from "../utils/relativeTime";
   ],
   declarations: [
     SatoshiValueConverter,
+    TxValueFormatter,
     TransactionConfirmations,
     RelativeTime,
     WalletComponent,
