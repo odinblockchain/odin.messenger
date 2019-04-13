@@ -1,0 +1,157 @@
+// Import the theme’s variables. If you’re using a color scheme
+// other than “light”, switch the path to the alternative scheme,
+// for example '~nativescript-theme-core/scss/dark'.
+@import '~nativescript-theme-core/scss/forest';
+// @import '~nativescript-theme-core/css/grey.css';
+
+
+/**
+  Theme/Branding
+*/
+$odin-dark: #1D2323;
+$odin-white: #FCF9F1;
+$odin-white2: #F9F7F3;
+$odin-beige: #DAD7C3;
+$odin-blue-light: #41C0D1;
+$odin-blue: #00A8B6;
+$odin-green-light: #88A881;
+$odin-green: #619772;
+$odin-yellow: #C4943F;
+$odin-amber: #AD6A39;
+$odin-orange: #DD6B40;
+$odin-red: #CC4F49;
+
+/**
+  Functions
+**/
+@function dynamic-text-color($color) {
+  @if (lightness($color) > 50) {
+    @return $odin-dark; // Lighter backgorund, return dark color
+  } @else {
+    @return $odin-white; // Darker background, return light color
+  }
+}
+
+/**
+  Dark UI
+**/
+$dark-01: #000000;
+$dark-02: #212121;
+$dark-03: #303030;
+$dark-04: #424242;
+
+/**
+  Action Bar
+*/
+$ab-background: $dark-02;
+$ab-color: dynamic-text-color($ab-background);
+
+/**
+  Baseline
+**/
+$base: #000;
+$text-color: #333333;
+$app-background: $odin-dark;
+$app-text-color: $odin-white2;
+$text-light: $odin-white;
+$text-dark: $odin-dark;
+$link-color: $odin-orange;
+$hr-light-color: $dark-04;
+
+$background: $app-background;
+$text-color: $text-dark;
+$accent: $odin-blue-light;
+$warning: $odin-orange;
+
+$app-drawer-background: $dark-02;
+$app-drawer-header-background: $app-drawer-background;
+$app-drawer-avatar-background: $odin-orange;
+$app-drawer-avatar-border-color: $odin-orange;
+$app-drawer-line-color: $hr-light-color;
+
+
+
+// $background: #1F271B;
+// $color: #DAE0F2;
+// $text-color: #DAE0F2;
+// $primary: #DAE0F2;
+
+// Custom colors
+// $background-dark: #666666 !default;
+// $background-light: #666666 !default;
+
+// $blue-dark: #022734 !default;
+// $blue-light: #02556E !default;
+// $blue-50: rgba($blue-dark, 0.5) !default;
+// $blue-20: rgba($blue-dark, 0.2) !default;
+// $blue-10: rgba($blue-dark, 0.1) !default;
+
+// $accent-dark: #3A53FF !default;
+// $accent-light: #4781FE !default;
+
+// $success-dark: #06CE6A !default;
+// $success-light: #00E676 !default;
+
+// $warning-dark: #f39c11 !default;
+// $warning-light: #F2C112 !default;
+
+// $error-dark: #D84039 !default;
+// $error-light: #ED473F !default;
+
+// $midnight-dark: #0F336D !default;
+// $midnight-light: #14418B !default;
+
+// $night-dark: #023141 !default;
+// $night-light: #01526C !default;
+
+// $page-icon-color: #D7D7D7 !default;
+
+// // Sizes
+// $page-content-placeholder-font-size: 20;
+
+// /**
+//  * Theme variables overrides
+// **/
+
+// // Colors
+// $background: #fff;
+// $primary: lighten(#000, 13%);
+// $secondary: lighten(#000, 46%);
+// $disabled: lighten(#000, 62%);
+// $accent: $accent-dark;
+// $error: $error-light;
+
+// // SideDrawer
+// $item-color-android : #737373;
+// $item-active-background: #F8F8F8;
+// $item-active-color: $accent;
+// $item-active-icon-color: $item-active-color;
+// $item-color-ios: $blue-dark;
+// $item-color-android: $blue-dark;
+
+ // Drawer navigation custom styles
+// $sidedrawer-header-image-size: 60;
+// $sidedrawer-header-image-offset-top: 20;
+// $sidedrawer-header-image-offset-bottom: 5;
+// $sidedrawer-list-item-offset-left: 15;
+// $sidedrawer-list-icon-offset: 10;
+// $sidedrawer-list-icon-size: 20;
+
+// $side-drawer-header-background: #fafafa;
+// $side-drawer-header-brand: #737373;
+// $side-drawer-background: #FFFFFF;
+
+// // ActionBar
+// $ab-background: $accent;
+// $ab-color: $white;
+
+// // Buttons
+// $btn-color-inverse: $white;
+// $btn-color: $accent;
+// $btn-color-secondary: darken($btn-color, 10%);
+// $btn-color-outline-highlighted: lighten($btn-color, 10%);
+
+// //Text colors
+// $headings-color: $blue-dark;
+// $secondary: $blue-dark;
+// $text-color: $blue-dark;
