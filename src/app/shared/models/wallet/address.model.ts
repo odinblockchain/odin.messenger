@@ -3,11 +3,13 @@ import { Transaction } from './transaction.model';
 import * as moment from 'moment';
 
 export class Address extends Database {
+  // database
   id: number;
   wallet_id: number;
   bip44_index: number;
   address: string;
   hash: string;
+  wif: string;
   balance_conf: number;
   balance_unconf: number;
   external: boolean;
@@ -56,6 +58,7 @@ export class Address extends Database {
       bip44_index: this.bip44_index,
       address: this.address,
       hash: this.hash,
+      wif: this.wif,
       balance_conf: this.balance_conf,
       balance_unconf: this.balance_unconf,
       external: this.external,
@@ -77,11 +80,12 @@ export class Address extends Database {
     // this.dir(this.serialize());
     this.log(`saving #${this.id} ${this.address}... then:${this.last_updated} now:${Number(moment().format('x'))}`);
 
-    const updated = await this.db.execSQL(`UPDATE addresses SET wallet_id=?, bip44_index=?, address=?, hash=?, balance_conf=?, balance_unconf=?, external=?, used=?, last_updated=?, last_tx_timestamp=? WHERE id=?`, [
+    const updated = await this.db.execSQL(`UPDATE addresses SET wallet_id=?, bip44_index=?, address=?, hash=?, wif=?, balance_conf=?, balance_unconf=?, external=?, used=?, last_updated=?, last_tx_timestamp=? WHERE id=?`, [
       this.wallet_id,
       this.bip44_index,
       this.address,
       this.hash,
+      this.wif,
       this.balance_conf,
       this.balance_unconf,
       this.external,
@@ -157,11 +161,12 @@ export class Address extends Database {
     } else {
       address.last_updated = Number(moment().format('x'));
 
-      const addressId = await address.db.execSQL(`INSERT INTO addresses (wallet_id, bip44_index, address, hash, balance_conf, balance_unconf, external, used, last_updated, last_tx_timestamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
+      const addressId = await address.db.execSQL(`INSERT INTO addresses (wallet_id, bip44_index, address, hash, wif,  balance_conf, balance_unconf, external, used, last_updated, last_tx_timestamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [
         address.wallet_id,
         address.bip44_index,
         address.address,
         address.hash,
+        address.wif,
         address.balance_conf,
         address.balance_unconf,
         address.external,

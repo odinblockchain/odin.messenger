@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Wallet, Address, Transaction } from '~/app/shared/models/wallet';
+import { Wallet, Address, Transaction, Unspent } from '~/app/shared/models/wallet';
 import { StorageService } from '../storage.service';
 import { CoinService } from './coin.service';
 import { Coin } from '../models/identity';
@@ -13,9 +13,9 @@ import { InspectTransaction, InspectAPIFetchTransaction, InspectAPITransactionVI
 import { ElectrumxTransaction, ElectrumxUnspent, ElectrumxAddress, ElectrumxAddressDiscovery, ElectrumxBalance } from '../models/electrumx';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 // import { Observable } from 'tns-core-modules/ui/page/page';
-import { fromObject, Observable } from 'tns-core-modules/data/observable/observable';
+import { fromObject, Observable, fromObjectRecursive } from 'tns-core-modules/data/observable/observable';
 import { HttpResponse, request } from 'tns-core-modules/http/http';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, BehaviorSubject } from 'rxjs';
 // import { Observable } from 'rxjs';
 
 const WalletKey = 'app_wallets';
@@ -151,6 +151,7 @@ class AddressBundle {
   index: number;
   address: string;
   hash: string;
+  wif: string;
   balance: ElectrumxBalance;
   transactions: ElectrumxTransaction[];
   unspent: ElectrumxUnspent[];
@@ -167,16 +168,20 @@ class AddressDiscovery {
 })
 export class WalletService extends StorageService {
   public wallets: Wallet[];
-  public wallets$: ObservableArray<Observable>;
+  public wallets$: ObservableArray<Wallet>;
   private walletStream: ReplaySubject<Wallet>;
 
   public electrumxConnected: boolean;
-  private electrumxClient: any;
+  public electrumxClient: any;
   private _electrumxTimer: any;
 
   public activeWalletIndex: number;
   public activeWallet: Wallet;
   public serverVersion: any;
+
+  public trackedBlockheight: BehaviorSubject<number>;
+
+  private blockStream: BehaviorSubject<number>;
 
   constructor(
     private _CoinServ: CoinService,
@@ -186,6 +191,8 @@ export class WalletService extends StorageService {
     this.wallets = [];
     this.wallets$ = new ObservableArray();
     this.walletStream = new ReplaySubject();
+    this.trackedBlockheight = new BehaviorSubject(0);
+    this.blockStream = new BehaviorSubject(0);
     this.electrumxConnected = false;
     this.activeWalletIndex = null;
     this.activeWallet = null;
@@ -212,6 +219,10 @@ export class WalletService extends StorageService {
     });
   }
 
+  public get blockStream$() {
+    return this.blockStream.asObservable();
+  }
+
   public get walletStream$() {
     return this.walletStream.asObservable();
   }
@@ -227,11 +238,14 @@ export class WalletService extends StorageService {
         while (wallets.length > 0) {
           let wallet = new Wallet(wallets.shift());
           wallet.db = this.odb;
+          wallet.observableIndex = this.wallets$.length;
+          this.log(`SETTING INDEX TO ${wallet.observableIndex}`);
           await wallet.loadCoinDetails();
 
           this.log(`added wallet – ${wallet.id}`);
           this.wallets.push(wallet);
-          this.wallets$.push(fromObject(wallet.serialize()));
+          // this.wallets$.push(fromObjectRecursive(wallet));
+          this.wallets$.push(wallet);
           this.walletStream.next(wallet);
         }
 
@@ -243,6 +257,10 @@ export class WalletService extends StorageService {
         return reject(err);
       }
     });
+  }
+
+  public keepAlive() {
+    this.log('--- KeepAlive');
   }
 
   public async createDefaultWallet(): Promise<Wallet> {
@@ -273,7 +291,7 @@ export class WalletService extends StorageService {
 
     if (coin.name === 'ODIN') {
       let seed  = ODIN.bip39.mnemonicToSeed(phrase);
-      let sroot = ODIN.bip32.fromSeed(seed);
+      let sroot = ODIN.bip32.fromSeed(seed, ODIN.networks.bitcoin);
 
       let wallet = await Wallet.Create({
         coin_name: coin.name,
@@ -283,9 +301,11 @@ export class WalletService extends StorageService {
 
       wallet.db   = this.odb;
       wallet.coin = coin;
+      wallet.observableIndex = this.wallets$.length;
 
       this.wallets.push(wallet);
-      this.wallets$.push(fromObject(wallet.serialize()));
+      // this.wallets$.push(fromObjectRecursive(wallet));
+      this.wallets$.push(wallet);
       this.walletStream.next(wallet);
       
       await this.establishConnection(wallet);
@@ -320,6 +340,43 @@ export class WalletService extends StorageService {
       wallet, pathRoot, accountPath, externalDiscovery.addresses.filter(this.usedAddress)
     );
 
+    // console.log('array1?', externalDiscovery.unspent[0] instanceof Array);
+    // console.log('unspent1a?', externalDiscovery.unspent[0] instanceof Unspent);
+    // console.log('unspent1b?', externalDiscovery.unspent[0] instanceof ElectrumxUnspent);
+    // console.log('array2?', externalDiscovery.unspent instanceof Array);
+    // console.log('unspent2?', externalDiscovery.unspent instanceof Unspent);
+
+    // save external unspent transactions
+    const externalUnspentArr = await wallet.storeUnspentArr(externalDiscovery.unspent.map(item => {
+      // console.log('ITEM???', item);
+      return new Unspent({
+        wallet_id: wallet.id,
+        address_id: (externalDiscovery.addresses.find((address) => address.address === item.address) || {id: ''}).id,
+        address: item.address,
+        height: item.height,
+        txid: item.tx_hash,
+        txid_pos: item.tx_pos,
+        value: item.value
+      });
+    }));
+
+    const internalUnspentArr = await wallet.storeUnspentArr(internalDiscovery.unspent.map(item => {
+      // console.log('ITEM???', item);
+      return new Unspent({
+        wallet_id: wallet.id,
+        address_id: (internalDiscovery.addresses.find((address) => address.address === item.address) || {id: ''}).id,
+        address: item.address,
+        height: item.height,
+        txid: item.tx_hash,
+        txid_pos: item.tx_pos,
+        value: item.value
+      });
+    }));
+
+    // console.log('UNSPENT');
+    // console.log(externalUnspentArr);
+    // console.log(internalUnspentArr);
+
     // sum confirmed balances (external/internal)
     let sumExternalConfirmed = externalDiscovery.addresses.reduce(this.sumAddressConfirmedBalance, 0);
     let sumInternalConfirmed = internalDiscovery.addresses.reduce(this.sumAddressConfirmedBalance, 0);
@@ -328,20 +385,37 @@ export class WalletService extends StorageService {
     let sumExternalUnconfirmed = externalDiscovery.addresses.reduce(this.sumAddressUnconfirmedBalance, 0);
     let sumInternalUnconfirmed = internalDiscovery.addresses.reduce(this.sumAddressUnconfirmedBalance, 0);
 
-    console.log('ext', externalDiscovery.transactions);
-    console.log('int', internalDiscovery.transactions);
+    // console.log('ext', externalDiscovery.transactions);
+    // console.log('int', internalDiscovery.transactions);
+
+    // set wallet conf/unconf balances
     wallet.balance_conf       = Number(sumExternalConfirmed + sumInternalConfirmed);
     wallet.balance_unconf     = Number(sumExternalUnconfirmed + sumInternalUnconfirmed);
-    wallet.last_tx_timestamp  = this.findMostRecentTimestamp(externalDiscovery.transactions.concat(internalDiscovery.transactions));
+    
+    const last_tx_timestamp   = this.findMostRecentTimestamp(externalDiscovery.transactions.concat(internalDiscovery.transactions));
+    if (last_tx_timestamp > wallet.last_tx_timestamp) wallet.last_tx_timestamp = last_tx_timestamp;
 
-    await wallet.save();
+    await this.updateWallet(wallet);
 
-    console.log('External', externalDiscovery.addresses[0]);
-    console.log('Internal', internalDiscovery.addresses[0]);
-    console.log('Wallet', wallet.serialize());
+    // console.log('External', externalDiscovery.addresses[0]);
+    // console.log('Internal', internalDiscovery.addresses[0]);
+    // console.log('Wallet', wallet.serialize());
 
     this.emit('FinishWalletDiscovery');
     this.log('[Discover Wallet Finish]');
+    return wallet;
+  }
+
+  private async updateWallet(wallet: Wallet): Promise<Wallet> {
+    this.log(`Updating wallet – id:${wallet.id} index:${wallet.observableIndex}`);
+    if (!isNaN(wallet.observableIndex)) {
+      // this.wallets$.setItem(wallet.observableIndex, fromObjectRecursive(wallet));
+      this.wallets$.setItem(wallet.observableIndex, wallet);
+    } else {
+      this.log(`Internal wallet array not updated, missing observableIndex`);
+    }
+
+    await wallet.save();
     return wallet;
   }
 
@@ -420,11 +494,12 @@ export class WalletService extends StorageService {
         bip44_index: addressPull.index,
         address: addressPull.address,
         hash: addressPull.hash,
+        wif: addressPull.wif,
         balance_conf: addressPull.balance.confirmed,
         balance_unconf: addressPull.balance.unconfirmed,
         external: false,
         last_tx_timestamp: 0,
-        used: false
+        used: (addressPull.transactions.length) ? true : false
       });
 
       const addressTransactions = await this.transactionDiscovery(wallet, address, addressPull.transactions);
@@ -485,14 +560,15 @@ export class WalletService extends StorageService {
         bip44_index: addressPull.index,
         address: addressPull.address,
         hash: addressPull.hash,
+        wif: addressPull.wif,
         balance_conf: addressPull.balance.confirmed,
         balance_unconf: addressPull.balance.unconfirmed,
         external: true,
         last_tx_timestamp: 0,
-        used: false
+        used: (addressPull.transactions.length) ? true : false
       });
 
-      this.log(`external address ${address.address} transactions ${addressPull.transactions.length}`);
+      this.log(`external address ${address.address} transactions ${addressPull.transactions.length} used?${address.used}`);
 
       const addressTransactions = await this.transactionDiscovery(wallet, address, addressPull.transactions);
       if (addressTransactions && addressTransactions.length) {
@@ -549,6 +625,7 @@ export class WalletService extends StorageService {
       index:          addressIndex,
       address:        Address.address,
       hash:           reversedHash,
+      wif:            AddressPath.toWIF(),
       balance:        balance,
       transactions:   txHistory.map((tx: ElectrumxTransaction) => Object.assign(tx, { address: Address.address })),
       unspent:        unspent.map((tx: ElectrumxUnspent) => Object.assign(tx, { address: Address.address }))
@@ -660,6 +737,8 @@ export class WalletService extends StorageService {
     // this.walletData.enabled = false;
 
     this.electrumxConnected = false;
+    this.trackedBlockheight.next(0);
+    this.blockStream.next(0);
     this.emit('EstablishConnection')
     
     try {
@@ -768,6 +847,8 @@ export class WalletService extends StorageService {
     if (data.result.hasOwnProperty('height') && data.result.hasOwnProperty('hex')) {
       this.log(`New blockheight discoverd: ${data.result.height}`);
       this.emit('NewBlockFound');
+      this.trackedBlockheight.next(data.result.height);
+      this.blockStream.next(data.result.height);
 
       if (this.activeWallet) {
         this.activeWallet.blockheight = data.result.height;
@@ -788,6 +869,8 @@ export class WalletService extends StorageService {
     if (header && header.hasOwnProperty('height')) {
       this.log(`New blockheight discoverd: ${header.height}`);
       this.emit('NewBlockFound');
+      this.trackedBlockheight.next(header.height);
+      this.blockStream.next(header.height);
       
       if (this.activeWallet) {
         this.activeWallet.blockheight = header.height;
