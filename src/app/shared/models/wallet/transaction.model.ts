@@ -57,6 +57,22 @@ export class Transaction extends Database {
     };
   }
 
+  public isTypePending() {
+    return this.type === Transaction.TRANSACTION_PENDING;
+  }
+
+  public isTypeReceived() {
+    return this.type === Transaction.TRANSACTION_RECEIVED;
+  }
+
+  public isTypeSent() {
+    return this.type === Transaction.TRANSACTION_SENT;
+  }
+
+  public isTypeSelf() {
+    return this.type === Transaction.TRANSACTION_SELF;
+  }
+
   /**
    * Executes a SQL `UPDATE` on the current Account user saving the current account back to the table.
    */
