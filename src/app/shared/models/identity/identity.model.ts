@@ -9,6 +9,7 @@ export class Identity extends Observable {
   mnemonicPhrase: string;
   seedHex: string;
   activeAccountIndex: number;
+  fcmToken: string;
 
   constructor(props?: any) {
     super();
@@ -17,6 +18,7 @@ export class Identity extends Observable {
     this.mnemonicPhrase = '';
     this.seedHex = '';
     this.activeAccountIndex = 0;
+    this.fcmToken = '';
 
     this.deserialize(props);
   }
@@ -30,12 +32,18 @@ export class Identity extends Observable {
     console.log(`[Identity] ${entry}`);
   }
 
+  setFcmToken(token: string) {
+    this.fcmToken = token;
+    this.save();
+  }
+
   save() {
     this.store({
       masterSeed:         this.masterSeed,
       seedHex:            this.seedHex,
       mnemonicPhrase:     this.mnemonicPhrase,
-      activeAccountIndex: this.activeAccountIndex
+      activeAccountIndex: this.activeAccountIndex,
+      fcmToken:           this.fcmToken
     });
   
     this.log(`[Identity] Integrity check — saved?${hasKey('identity')}`);
@@ -46,7 +54,8 @@ export class Identity extends Observable {
     return {
       masterSeed: this.masterSeed,
       mnemonicPhrase: this.mnemonicPhrase,
-      activeAccountIndex: this.activeAccountIndex
+      activeAccountIndex: this.activeAccountIndex,
+      fcmToken: this.fcmToken
     }
   }
 

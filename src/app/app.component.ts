@@ -14,8 +14,24 @@ import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 
 import { UserModel } from '~/app/shared/user.model';
 import { PreferencesService } from '~/app/shared/preferences.service';
+import { messaging, Message } from "nativescript-plugin-firebase/messaging";
+
+const firebase = require("nativescript-plugin-firebase");
 
 registerElement('Fab', () => require('nativescript-floatingactionbutton').Fab);
+
+const getCircularReplacer = () => {
+  const seen = new WeakSet;
+  return (key, value) => {
+    if (typeof value === "object" && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
 
 import {
   AndroidApplication,
@@ -43,6 +59,8 @@ import {
   startMonitoring,
   stopMonitoring
 } from 'tns-core-modules/connectivity';
+import { alert } from 'tns-core-modules/ui/dialogs/dialogs';
+import { request } from 'tns-core-modules/http/http';
 
 declare var android: any;
 
@@ -138,6 +156,32 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     //   suspend: hasListeners(suspendEvent),
     //   resume: hasListeners(resumeEvent)
     // });
+    firebase.init({
+      // Optionally pass in properties for database, authentication and cloud messaging,
+      // see their respective docs.
+      showNotifications: true,
+      showNotificationsWhenInForeground: true
+    }).then(() => {
+      console.log("firebase.init done");
+    }, (error) => {
+      console.log(`firebase.init error: ${error}`);
+    });
+
+    // messaging.registerForPushNotifications({
+    //   onPushTokenReceivedCallback: (token: string): void => {
+    //     console.log("Firebase plugin received a push token: " + token);
+    //   },
+    
+    //   onMessageReceivedCallback: (message: Message) => {
+    //     console.log("Push message received: " + message.title);
+    //   },
+    
+    //   // Whether you want this plugin to automatically display the notifications or just notify the callback. Currently used on iOS only. Default true.
+    //   showNotifications: true,
+    
+    //   // Whether you want this plugin to always handle the notifications when the app is in foreground. Currently used on iOS only. Default false.
+    //   showNotificationsWhenInForeground: true
+    // }).then(() => console.log("Registered for push"));
 
     this.createEventListeners = this.createEventListeners.bind(this);
     this.createPlatformListeners = this.createPlatformListeners.bind(this);
@@ -205,17 +249,64 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Methods to execute after services are initialized
    */
-  private postInit() {
+  private async postInit() {
     // set local useraccount to the activeAccount of Identity
     this.initAttempts = 0;
     this._loading = false;
     this._ready = true;
     this.userAccount = this._Identity.getActiveAccount();
+
     if (this.userAccount) {
       this.userAccount.client = this._Client.findClientById(this.userAccount.client_id);
       console.log('set client');
       console.dir(this.userAccount);
     }
+
+    console.log(`Notifications Check --
+    Enabled:  ${messaging.areNotificationsEnabled()}
+    Token:    ${await firebase.getCurrentPushToken()}
+    \n`);
+
+    this._Identity.identity.fcmToken = await firebase.getCurrentPushToken();
+
+    // messaging.registerForPushNotifications({
+    //   onPushTokenReceivedCallback: (token: string): void => {
+    //     console.log("1Firebase plugin received a push token: " + token);
+    //   },
+
+    //   onMessageReceivedCallback: (message: Message) => {
+    //     console.log("1Push message received in push-view-model: " + JSON.stringify(message, getCircularReplacer()));
+    //   },
+
+    //   // Whether you want this plugin to automatically display the notifications or just notify the callback. Currently used on iOS only. Default true.
+    //   // showNotifications: true,
+
+    //   // Whether you want this plugin to always handle the notifications when the app is in foreground.
+    //   // Currently used on iOS only. Default false.
+    //   // When false, you can still force showing it when the app is in the foreground by adding 'showWhenInForeground' to the notification as mentioned in the readme.
+    //   // showNotificationsWhenInForeground: true
+    // }).then(() => console.log("Registered for push"));
+
+    messaging.addOnPushTokenReceivedCallback(
+      token => {
+        // you can use this token to send to your own backend server,
+        // so you can send notifications to this specific device
+        console.log("2Firebase plugin received a push token: " + token);
+        // var pasteboard = utils.ios.getter(UIPasteboard, UIPasteboard.generalPasteboard);
+        // pasteboard.setValueForPasteboardType(token, kUTTypePlainText);
+      }
+    );
+
+    messaging.addOnMessageReceivedCallback(
+      message => {
+        console.log("Notification message received in push-view-model: " + JSON.stringify(message, getCircularReplacer()));
+        return true;
+      }
+    ).then(() => {
+      console.log("Added addOnMessageReceivedCallback");
+    }, err => {
+      console.log("Failed to add addOnMessageReceivedCallback: " + err);
+    });
 
     // stopMonitoring();
     // startMonitoring(this.setNetworkState);
@@ -285,6 +376,32 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  cbParseTextAndUrl(argIntent) {
+    var Intent_1 = android.content.Intent;
+
+    var Patterns = android.util.Patterns;
+    //let Matcher = java.util.regex.Matcher;
+    var ListUrl = [];
+    var text = argIntent.getStringExtra(Intent_1.EXTRA_TEXT);
+    if (new String().valueOf() !== "null") {
+        var Matcher = Patterns.WEB_URL.matcher(text);
+        while (Matcher.find()) {
+            var url = Matcher.group();
+            ListUrl.push(url);
+        }
+        return { "text": text, "listUrl": ListUrl };
+    }
+  }
+
+  cbParseImageUrl(argIntent) {
+    var Intent_1 = android.content.Intent;
+    var imageUri = argIntent.getParcelableExtra(Intent_1.EXTRA_STREAM);
+    if (imageUri != null) {
+        // Update UI to reflect image being shared
+        return imageUri;
+    }
+  }
+
   private createPlatformListeners() {
     if (!hasListeners(launchEvent)) applicationOn(launchEvent, this.onApplicationLaunch, this);
     if (!hasListeners(displayedEvent)) applicationOn(displayedEvent, this.onApplicationReady, this);
@@ -296,6 +413,36 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       
       applicationOn(AndroidApplication.activityCreatedEvent, (args) => {
         console.log('[App] ANDROID onCreated');
+      });
+
+      applicationOn(AndroidApplication.activityResumedEvent, (args) => {
+        console.log('[App] ANDROID onResumed');
+
+        console.log("Event: " + args.eventName + ", Activity: " + args.activity);
+        var a = args.activity;
+        try {
+            var Intent_1 = android.content.Intent;
+            var actionSend = Intent_1.ACTION_SEND;
+            var actionSendMultiple = Intent_1.ACTION_SEND_MULTIPLE;
+            var argIntent = a.getIntent();
+            var argIntentAction = argIntent.getAction();
+            var argIntentType = argIntent.getType();
+            console.log(" ~~~~ Intent is ~~~~ :" + new String(argIntent.getAction()).valueOf());
+            String.prototype.startsWith = function (str) {
+                return this.substring(0, str.length) === str;
+            };
+            if (new String(argIntentAction).valueOf() === new String(Intent_1.ACTION_SEND).valueOf()) {
+                if (new String(argIntentType).valueOf() === new String("text/plain").valueOf()) {
+                    console.dir(this.cbParseTextAndUrl(argIntent));
+                }
+                else if (argIntentType.startsWith("image/")) {
+                    console.log(this.cbParseImageUrl(argIntent));
+                }
+            }
+        }
+        catch (e) {
+            console.log(e);
+        }
       });
 
       applicationOn(AndroidApplication.activityDestroyedEvent, (args) => {
@@ -347,6 +494,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onApplicationSuspend(args: ApplicationEventData) {
     console.log('[App] Event: onApplicationSuspend');
+
+    // setTimeout(() => {
+    //   console.log('hey');
+    //   // 
+    //   request({
+    //     url: 'http://cc94a0a8.ngrok.io/foo',
+    //     method: 'GET'
+    //   })
+    //   .then(res => {
+    //     console.log('got response');
+    //     console.log(res);
+    //   })
+    //   .catch(console.log);
+    // }, 5000);
 
     // if (this._pingServer) {
     //   clearInterval(this._pingServer);

@@ -144,7 +144,7 @@
       </ContentView>
 
       <StackLayout class="actions">
-        <Button class="btn btn-primary" text="Register" (tap)="onRegisterAccount()"></Button>
+        <Button [class.disabled]="busyRegistering" class="btn btn-primary" text="Register" (tap)="onRegisterAccount()"></Button>
       </StackLayout>
 
       <StackLayout class="agreements-wrap">

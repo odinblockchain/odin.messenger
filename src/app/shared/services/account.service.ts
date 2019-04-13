@@ -8,6 +8,7 @@ import { OSMClientService } from '../osm-client.service';
 import { Client } from '../models/messenger/client.model';
 import { PreferencesService } from '../preferences.service';
 import { LogService } from './log.service';
+import { Identity } from '../models/identity/identity.model';
 
 /**
  * Manages many `Accounts`. Will load `Accounts` from the database on initialization (`init()`)
@@ -167,7 +168,7 @@ export class AccountService extends StorageService {
    * 
    * @param account The account to register
    */
-  public async registerAccount(account: Account, client: Client): Promise<any> {
+  public async registerAccount(identity: Identity, account: Account, client: Client): Promise<any> {
     this.log(`Attempt to register ${account.username}`);
     this.emit('onRegisterNewAccount');
 
@@ -190,7 +191,12 @@ export class AccountService extends StorageService {
       // .catch(reject);
 
       try {
-        let registeredKeys = await this.osmClient.registerClient(client.signalClient.exportRegistrationObj());
+        const registrationBundle = {
+          ...client.signalClient.exportRegistrationObj(),
+          fcmToken: identity.fcmToken
+        };
+
+        let registeredKeys = await this.osmClient.registerClient(registrationBundle);
         if (registeredKeys.count) {
           account.registered = true;
           client.remote_key_total = Number(registeredKeys.count);
@@ -218,10 +224,11 @@ export class AccountService extends StorageService {
         } else {
           this.log(`Account [${account.username}] failed to register`);
           console.log(err);
-          alert('Your account coult not be registered at this time. Please try again later.');
+          alert('Your account could not be registered at this time. Please try again later.');
 
           account.emit('registrationFailed');
           this.emit('registerNewAccountFailed');
+          return reject(err);
         }
       }
     });

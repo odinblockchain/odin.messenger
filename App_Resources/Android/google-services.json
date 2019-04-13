@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "138392321396",
+    "firebase_url": "https://odin-chat.firebaseio.com",
+    "project_id": "odin-chat",
+    "storage_bucket": "odin-chat.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:138392321396:android:6999ddb23e7123a1",
+        "android_client_info": {
+          "package_name": "org.odinblockchain.chat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgCW2p3Hw3Fst2FBqT_mxr37qNf9wxxCA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "138392321396-tp0cvp6ilmens6bhu1hsf4osntb7etld.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

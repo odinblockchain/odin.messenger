@@ -14,6 +14,8 @@ import { Identity } from '../shared/models/identity/identity.model';
 import { Account } from '../shared/models/identity';
 import { Client } from '../shared/models/messenger/client.model';
 import { ClientService } from '../shared/services/client.service';
+import { messaging, Message } from "nativescript-plugin-firebase/messaging";
+
 
 @Component({
 	moduleId: module.id,
@@ -39,6 +41,8 @@ export class CreateAccountComponent implements OnInit {
   public primaryAccount: Account;
   public primaryClient: Client;
 
+  public busyRegistering: boolean;
+
   // public user;
 
 	constructor(
@@ -54,6 +58,7 @@ export class CreateAccountComponent implements OnInit {
     this.hasVerifiedBackup = false;
     this.activeStep = 1;
     this.page.actionBarHidden = true;
+    this.busyRegistering = false;
 
     this.identity       = this.IdentityServ.identity;
     this.primaryAccount = new Account();
@@ -64,6 +69,9 @@ export class CreateAccountComponent implements OnInit {
   }
 
 	ngOnInit(): void {
+
+    console.log(`Notifications enabled? ${messaging.areNotificationsEnabled()}`);
+
     console.log(this.primaryAccount.registered);
     console.log('CHECK USERMODEL FOR SAVEDATA', this.identity);
 
@@ -167,9 +175,16 @@ export class CreateAccountComponent implements OnInit {
   }
 
   public onRegisterAccount() {
-    this.AccountServ.registerAccount(this.primaryAccount, this.primaryClient)
+    if (this.busyRegistering === true) return;
+
+    this.busyRegistering = true;
+    this.AccountServ.registerAccount(this.identity, this.primaryAccount, this.primaryClient)
     .then()
-    .catch(console.log);
+    .catch((err) => {
+      console.log('Registration Faied');
+      console.log(err.message ? err.message : err);
+      this.busyRegistering = false;
+    });
   }
 
   public onSkipVerifyMnemonic() {
