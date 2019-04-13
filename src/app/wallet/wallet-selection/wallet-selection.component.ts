@@ -6,6 +6,7 @@ import { ObservableArray } from 'tns-core-modules/data/observable-array/observab
 // import { Wallet } from '~/app/shared/models/wallet';
 // import { Subscription, BehaviorSubject } from 'rxjs';
 import { Observable } from 'tns-core-modules/ui/page/page';
+import { Wallet } from '~/app/shared/models/wallet';
 // import { fromObject } from 'tns-core-modules/data/observable/observable';
 
 @Component({
@@ -19,7 +20,7 @@ export class WalletSelectionComponent implements OnInit {
   @Input() selectedWallet: number;
   @Output() walletSelected: EventEmitter<any> = new EventEmitter();
 
-  public wallets: ObservableArray<Observable>;
+  public wallets: ObservableArray<Wallet>;
 	constructor(
     private _WalletServ: WalletService
   ) {
