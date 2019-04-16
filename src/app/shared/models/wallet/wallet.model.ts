@@ -165,6 +165,7 @@ export class Wallet extends Database {
         ]);
 
         if (!updated) this.log(`failed to update unspent: ${unspent.txid}`);
+        else this.log(`updated unspent ${unspent.txid}`);
         return unspent;
       } else {
         const unspentId = await this.db.execSQL(`INSERT INTO unspent (wallet_id, address_id, address, txid, height, txid_pos, value) values (?, ?, ?, ?, ?, ?, ?)`, [
@@ -178,6 +179,8 @@ export class Wallet extends Database {
         ]);
 
         unspent.id = unspentId;
+        this.log(`inserted unspent @${unspentId} ${unspent.txid}`);
+
         return unspent;
       }
     } catch (err) {
@@ -212,6 +215,7 @@ export class Wallet extends Database {
       this.transactionTableIds.push(transaction.id);
     }
 
+    this.log('LoadedTransactions');
     this.log(`loaded transactions for wallet#${this.id}`);
     return this;
   }
@@ -224,7 +228,28 @@ export class Wallet extends Database {
 
     // return await this.db.all(`SELECT messages.account_bip44, messages.id, key, name, contact_username, owner_username, message, timestamp, messages.unread, favorite, delivered, status FROM messages INNER JOIN contacts ON messages.contact_username = contacts.username WHERE contacts.username = ?`, this.username);
 
-    return await this.db.all(`SELECT transactions.address_id, transactions.type, transactions.txid, transactions.height, transactions.vin_addresses, transactions.vout_addresses, transactions.value, transactions.timestamp FROM transactions INNER JOIN wallets ON transactions.wallet_id = wallets.id WHERE transactions.wallet_id = ? ORDER BY transactions.timestamp DESC`, this.id);
+    return await this.db.all(`SELECT transactions.address_id, transactions.type, transactions.txid, transactions.height, transactions.vin_addresses, transactions.vout_addresses, transactions.value, transactions.timestamp
+    FROM transactions INNER JOIN wallets ON transactions.wallet_id = wallets.id WHERE transactions.wallet_id = ?
+    ORDER BY (
+      CASE transactions.type
+        WHEN 'pending'
+        THEN 1
+
+        WHEN 'received'
+        THEN 2
+
+        WHEN 'sent'
+        THEN 2
+
+        WHEN 'self'
+        THEN 2
+
+        WHEN 'unknown'
+        THEN 3
+
+      END
+    ) ASC,
+    transactions.timestamp DESC`, this.id);
   }
 
   public async getUnspent() {
@@ -253,27 +278,20 @@ export class Wallet extends Database {
       this.unspentTableIds.push(unspent.id);
     }
 
+    this.emit('LoadedUnspent');
     this.log(`loaded unspent for wallet#${this.id}`);
     return this;
   }
 
-  public async removeUnspent(ids: number[]) {
+  public async removeUnspent(id: number) {
     if (!await this.dbReady()) {
-      this.log(`failed to remove unspent ids for wallet#${this.id} – db not active`);
+      this.log(`failed to remove unspent id#${id} for wallet#${this.id} – db not active`);
       return false;
     }
 
-    if (!ids || !ids.length) {
-      return true;
-    }
-
-    while (ids.length) {
-      const unspentId = ids.shift();
-      await this.db.execSQL(`DELETE FROM unspent WHERE id=?`, unspentId);
-      console.log(`...deleted unspent#${unspentId}`);
-    }
-
-    return true;
+    const deleted = await this.db.execSQL(`DELETE FROM unspent WHERE id=?`, id);
+    this.log(`Deleted Unspent ID#${id} (${deleted})`);
+    return deleted;
   }
 
   public async loadAddresses() {
@@ -292,6 +310,7 @@ export class Wallet extends Database {
       this.addressIds.push(address.address);
     }
 
+    this.emit('LoadedAddresses');
     this.log(`loaded addresses for wallet#${this.id}`);
     return this;
   }
@@ -385,8 +404,12 @@ export class Wallet extends Database {
       address = address.trim();
       ODIN.address.toOutputScript(address);
     } catch (e) {
+      this.emit('TransactionFailed');
       throw new InvalidAddress('failed to build script');
     }
+
+    // make sure known spendables are loaded
+    await this.loadUnspent();
 
     const fee     = (Wallet.TX_FEE * 1e8);
     const value   = parseInt((amount * 1e8).toFixed(0));
@@ -407,6 +430,7 @@ export class Wallet extends Database {
     inputs.forEach(input => console.log('Input:', JSON.stringify(input)));
 
     if (inputSum < valueTotal) {
+      this.emit('TransactionFailed');
       throw new BalanceLow(`Wallet balance does not cover total amount to send, balance is short ${(valueTotal- inputSum)/1e8}`);
     }
 
@@ -445,10 +469,11 @@ export class Wallet extends Database {
     console.dir(signedTx.substr(0, 1024));
     console.dir(signedTx.substr(1024, signedTx.length));
 
-    // const sent = await electrumXClient.blockchainTransaction_broadcast(signedTx);
-    const sent = '123456_0f5a686fb288c3352784501ec980be9386379fc98b34d91ea68b81ee0';
+    const sent = await electrumXClient.blockchainTransaction_broadcast(signedTx);
+    // const sent = '123456_0f5a686fb288c3352784501ec980be9386379fc98b34d91ea68b81ee0';
     if (sent && sent.length >= 64) {
       console.log(`Transaction ID: ${sent}`);
+      this.emit('TransactionSent');
 
       // Set new balance
       console.log('current balance:', this.balance_conf);
@@ -466,17 +491,39 @@ export class Wallet extends Database {
       console.log(`Before Transactions=${this.transactions$.length}`);
 
       await this.insertPendingTransaction(inputs[0].address_id, txid, (valueTotal / 1e8));
-      await this.removeUnspent(inputs.map(input => input.id));
+
+      while (inputs.length) {
+        const unspentInput = inputs.shift();
+        await this.removeUnspent(unspentInput.id);
+        const address = await Address.FindByAddress(unspentInput.address, this.id);
+        address.balance_conf -= unspentInput.value;
+        await address.save();
+        console.log(`updated address ${address.address} (${address.balance_conf})`);
+      }
+      
       await this.loadTransactions();
       await this.loadUnspent();
+      await this.loadAddresses();
 
       console.log(`After Unspent=${this.unspent$.length}`);
       console.log(`After Transactions=${this.transactions$.length}`);
+
+      this.addresses$.forEach(address => {
+        console.log(`loaded address (${address.address}) balance (${address.balance_conf})`);
+      });
+
+      return txid;
     } else {
       console.log('Transaction failed');
       console.log(sent);
+      this.emit('TransactionFailed');
       throw new TransactionFailed('Unable to deliver transaction');
     }
+  }
+
+  public refreshWallet() {
+    this.log('Refresh Wallet');
+    
   }
 
   /**
@@ -485,13 +532,16 @@ export class Wallet extends Database {
 
   /**
    * Used to sort an array of Unspent Transactions by their height from oldest
-   * to newest
+   * to newest first, and then by their value if they both are from the same height
    * @param txA 
    * @param txB 
    */
-  private sortByHeight(txA: Unspent, txB: Unspent) {
+  private unspentPreferredSort(txA: Unspent, txB: Unspent) {
     if (txA.height < txB.height) return -1;
     if (txA.height > txB.height) return 1;
+
+    if (txA.value > txB.value) return -1;
+    if (txA.value < txB.value) return 1;
     return 0;
   };
 
@@ -533,7 +583,7 @@ export class Wallet extends Database {
    */
   private findInputs = async (amount: number) => {
     return await Promise.all(this.unspent$.slice(0)
-                              .sort(this.sortByHeight)
+                              .sort(this.unspentPreferredSort)
                               .reduce((txArr: Unspent[], tx: Unspent) => {
                                 const sum = txArr.reduce(this.sumUnspentValue, 0);
                                 if (sum <= amount) txArr.push(tx);
