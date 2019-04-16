@@ -1,56 +1,58 @@
-<RadListView class="wallets" [items]="wallets" [itemTemplateSelector]="walletTemplateSelector">
-  <ng-template tkListItemTemplate let-item="item" let-i="index">
-    <Label [text]="item.coin_name"></Label>
-  </ng-template>
-  
-  <ng-template tkTemplateKey="wallet" let-item="item" let-i="index">
-    <StackLayout orientation="horizontal">
-      <AbsoluteLayout class="wallet" backgroundColor="#41C0D1" [class.active]="selectedWallet == i" (tap)="onSelectWallet(i)">
+<ContentView class="page">
+  <RadListView [items]="wallets" [itemTemplateSelector]="walletTemplateSelector" class="wallets">
+    <ng-template tkListItemTemplate let-item="item" let-i="index">
+      <Label [text]="item.coin_name"></Label>
+    </ng-template>
+    
+    <ng-template tkTemplateKey="wallet" let-item="item" let-i="index">
+      <StackLayout orientation="horizontal">
+        <AbsoluteLayout class="wallet" backgroundColor="#41C0D1" [class.active]="selectedWallet == i" (tap)="onSelectWallet(i)">
+          <ContentView class="wallet--accent" backgroundColor="#F9F7F3"></ContentView>
+
+          <ContentView class="wallet--logo">
+            <Image [src]="item.coin.icon_path" height="200"></Image>
+          </ContentView>
+
+          <StackLayout class="wallet--meta">
+            <Label class="wallet--label" textWrap="true" text="Default Wallet"></Label>
+            <Label class="wallet--balance">
+              <FormattedString>
+                <Span [text]="item.balance_conf | satoshiValueConverter"></Span>
+                <Span class="wallet--balance--symbol" text=" {{item.coin.label}}"></Span>
+              </FormattedString>
+            </Label>
+            <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
+            <Label class="wallet--last-transaction-time" [text]="item.last_tx_timestamp | relativeTime"></Label>
+          </StackLayout>
+        </AbsoluteLayout>
+
+        <AbsoluteLayout class="wallet wallet--add-new" backgroundColor="#41C0D1">
+          <FlexboxLayout flexDirection="column" justifyContent="space-between" height="100%">
+            <AbsoluteLayout>
+              <ContentView class="wallet--accent" backgroundColor="#F9F7F3"></ContentView>
+              <ContentView class="wallet--content">
+                <Label class="wallet--label" textWrap="true" text="Add New Wallet (+)"></Label>
+              </ContentView>
+            </AbsoluteLayout>
+          
+            <ContentView class="wallet--notice">
+              <Label class="wallet--label" textWrap="true" text="Feature Coming Soon"></Label>
+            </ContentView>
+          </FlexboxLayout>
+        </AbsoluteLayout>
+      </StackLayout>
+    </ng-template>
+
+    <ng-template tkTemplateKey="empty" let-item="item" let-i="index">
+      <AbsoluteLayout class="wallet wallet--add-new" backgroundColor="#41C0D1">
         <ContentView class="wallet--accent" backgroundColor="#F9F7F3"></ContentView>
 
-        <ContentView class="wallet--logo">
-          <Image [src]="item.coin.icon_path" height="200"></Image>
-        </ContentView>
-
         <StackLayout class="wallet--meta">
-          <Label class="wallet--label" textWrap="true" text="Default Wallet"></Label>
-          <Label class="wallet--balance">
-            <FormattedString>
-              <Span [text]="item.balance_conf | satoshiValueConverter"></Span>
-              <Span class="wallet--balance--symbol" text=" {{item.coin.label}}"></Span>
-            </FormattedString>
-          </Label>
-          <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
-          <Label class="wallet--last-transaction-time" [text]="item.last_tx_timestamp | relativeTime"></Label>
+          <Label class="wallet--label" textWrap="true" text="Add New Wallet"></Label>
         </StackLayout>
       </AbsoluteLayout>
+    </ng-template>
 
-      <AbsoluteLayout class="wallet wallet--add-new" backgroundColor="#41C0D1">
-        <FlexboxLayout flexDirection="column" justifyContent="space-between" height="100%">
-          <AbsoluteLayout>
-            <ContentView class="wallet--accent" backgroundColor="#F9F7F3"></ContentView>
-            <ContentView class="wallet--content">
-              <Label class="wallet--label" textWrap="true" text="Add New Wallet (+)"></Label>
-            </ContentView>
-          </AbsoluteLayout>
-        
-          <ContentView class="wallet--notice">
-            <Label class="wallet--label" textWrap="true" text="Feature Coming Soon"></Label>
-          </ContentView>
-        </FlexboxLayout>
-      </AbsoluteLayout>
-    </StackLayout>
-  </ng-template>
-
-  <ng-template tkTemplateKey="empty" let-item="item" let-i="index">
-    <AbsoluteLayout class="wallet wallet--add-new" backgroundColor="#41C0D1">
-      <ContentView class="wallet--accent" backgroundColor="#F9F7F3"></ContentView>
-
-      <StackLayout class="wallet--meta">
-        <Label class="wallet--label" textWrap="true" text="Add New Wallet"></Label>
-      </StackLayout>
-    </AbsoluteLayout>
-  </ng-template>
-
-  <ListViewLinearLayout tkListViewLayout scrollDirection="Horizontal"></ListViewLinearLayout>
-</RadListView>
+    <ListViewLinearLayout tkListViewLayout scrollDirection="Horizontal"></ListViewLinearLayout>
+  </RadListView>
+</ContentView>

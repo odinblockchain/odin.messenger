@@ -12,7 +12,7 @@ export class TxValueFormatter implements PipeTransform {
       if (Number(fixedNum[fixedNum.length - 1]) <= 5) {
         return `${Number(value.toFixed(7).replace(/\.0+$/,''))}`;
       }
-      return `${Number(value)}`;
+      return fixedNum;
     } catch (err) {
       console.log(`Failed formatting tx value [${value}]`);
       return `${value}`;

@@ -23,9 +23,7 @@ export class Transaction extends Database {
 
   constructor(props?: any) {
     super('Transaction');
-    this.id = -1;
-    this.wallet_id = -1;
-    this.address_id = -1;
+    
     this.type = '';
     this.txid = '';
     this.height = -1;
@@ -82,8 +80,8 @@ export class Transaction extends Database {
     }
 
     // this.log('ATTEMPTING TO SAVE');
-    // this.dir(this.serialize());
-    this.log(`saving ${this.txid}...`);
+    this.log(`saving id:[${this.id}] tx:[${this.txid}]...`);
+    this.dir(this.serialize());
 
     const updated = await this.db.execSQL(`UPDATE transactions SET wallet_id=?, address_id=?, type=?, txid=?, height=?, vin_addresses=?, vout_addresses=?, value=?, timestamp=? WHERE id=?`, [
       this.wallet_id,
@@ -103,7 +101,7 @@ export class Transaction extends Database {
       this.id
     ]);
 
-    this.log(`transaction [${this.txid}] updated (${updated})`);
+    this.log(`transaction id:[${this.id}] tx:[${this.txid}] – updated (${updated})`);
     return updated;
   }
 
@@ -140,6 +138,12 @@ export class Transaction extends Database {
     if (!matchingTransaction) return null;
 
     transaction.log(`Found match for [${matchingTransaction.txid}]`);
+    console.log(`Match ---
+    balance:    ${matchingTransaction.value}
+    timestamp:  ${matchingTransaction.timestamp}
+    walletId:   ${matchingTransaction.wallet_id}
+    addressId:  ${matchingTransaction.address_id}
+    `);
     transaction.deserialize(matchingTransaction);
     return transaction;
   }
@@ -176,6 +180,9 @@ export class Transaction extends Database {
     const matchingTransaction = await Transaction.Find(transaction.txid, transaction.address_id);
     if (matchingTransaction) {
       transaction.log(`[${transaction.txid}] already saved, merging`);
+      if (transaction.value < matchingTransaction.value) transaction.value = matchingTransaction.value;
+      if (transaction.timestamp < matchingTransaction.timestamp) transaction.timestamp = matchingTransaction.timestamp;
+
       matchingTransaction.deserialize(transaction);
       await matchingTransaction.save();
       return matchingTransaction;

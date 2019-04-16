@@ -14,6 +14,7 @@ import { Subscription, Observable as ObservableGeneric } from 'rxjs';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 import { Wallet, Transaction, Address } from '../shared/models/wallet';
 import { IdentityService } from '../shared/services/identity.service';
+import { SnackBar } from 'nativescript-snackbar';
 
 @Component({
 	moduleId: module.id,
@@ -30,6 +31,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   // private reconnectTimer: any;
   // private keepAliveTimer: any;
   private _keepAliveTimer: any;
+  private _walletServiceSub: Subscription;
   private _walletSub: Subscription;
   private _blockheightSub: Subscription;
   
@@ -53,17 +55,22 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   // public selectedWallet: Observable;
   public selectedWallet: Wallet;
 
+  public refreshingWallet: boolean;
+
 	constructor(
     private page: Page,
     // private _wallet: WalletModel,
     // private _change: ChangeDetectorRef,
     private _WalletServ: WalletService,
     private _IdentityServ: IdentityService,
-    private _zone: NgZone
+    private _zone: NgZone,
+    private _snack: SnackBar
   ) {
 
     this.tabSelectedIndex = 1;
     this.selectedWalletId = 0;
+
+    this.refreshingWallet = false;
 
     // this.walletData = this._wallet.walletData;
     // this.wallets = this._wallet.wallets;
@@ -135,22 +142,27 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case 'WalletService::ElectrumxListening':
+        if (this.refreshingWallet) return;
         this.notice('Establishing Connection');
         break;
 
       case 'WalletService::ElectrumxConnectionEstablished':
+        if (this.refreshingWallet) return;
         this.notice('Connection Established');
         break;
 
       case 'WalletService::WalletDiscovery':
+        if (this.refreshingWallet) return;
         this.notice('Loading Wallet Addresses');
         break;
 
       case 'WalletService::FinishDiscoverExternal':
+        if (this.refreshingWallet) return;
         this.notice('External Addresses Discovered');
         break;
 
       case 'WalletService::FinishDiscoverInternal':
+        if (this.refreshingWallet) return;
         this.notice('Internal Addresses Discovered');
         break;
 
@@ -163,7 +175,21 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case 'WalletService::NewBlockFound':
+        break;
 
+      case 'WalletService::RefreshWalletStart':
+        console.log('START REFRESH');
+        this.notice('Refreshing wallet');
+        break;
+
+      case 'WalletService::RefreshWalletEnd':
+        this.refreshingWallet = false;
+        console.log('END REFRESH');
+        this.notice('');
+        this.selectedWallet.loadTransactions()
+        .then(this.selectedWallet.loadAddresses)
+        .then(() => console.log('Addresses refreshed'));
+        break;
       
       default:
         console.log(`[Wallet Component] Event#${eventName}`);
@@ -187,7 +213,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     //   console.log('internal', this.activeWallet.internal.slice(0, 3));
       
     this._appWallets      = this._WalletServ.wallets$;
-    this._walletSub       = this._WalletServ.eventStream$.subscribe(this.onHandleWalletEvents);
+    this._walletServiceSub       = this._WalletServ.eventStream$.subscribe(this.onHandleWalletEvents);
     this._blockheightSub  = this._WalletServ.trackedBlockheight.subscribe(height => {
       this._zone.run(() => { 
         this.trackedBlockheight = height;
@@ -212,7 +238,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.page.on('navigatingFrom', async (data) => {
       console.log('[Wallet Component] @navigatingFrom');
-      if (this._walletSub) this._walletSub.unsubscribe();
+      if (this._walletServiceSub) this._walletServiceSub.unsubscribe();
       if (this._blockheightSub) this._blockheightSub.unsubscribe();
       clearInterval(this._keepAliveTimer);
     });
@@ -228,8 +254,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     console.log('[Wallet Component] @onDestroy');
-    if (this._walletSub) this._walletSub.unsubscribe();
+    if (this._walletServiceSub) this._walletServiceSub.unsubscribe();
     if (this._blockheightSub) this._blockheightSub.unsubscribe();
+    if (this._walletSub) this._walletSub.unsubscribe();
     clearInterval(this._keepAliveTimer);
   }
 
@@ -265,6 +292,16 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       this.selectedWallet = this._WalletServ.wallets$.getItem(this.selectedWalletId);
     }
 
+    this._walletSub = this.selectedWallet.eventStream$.subscribe((event) => {
+      console.log('WALLET SUB', event);
+      if (event === 'LoadedAddresses') {
+        this.walletAddresses = new ObservableArray();
+      } else if (event === 'TransactionSent') {
+        console.log('@@@@ SAVED @@@@');
+        this.tabSelectedIndex = 1;
+      } 
+    });
+
     this.walletTransactions = this.selectedWallet.transactions$;
     this.walletAddresses = this.selectedWallet.addresses$;
 
@@ -274,6 +311,10 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log(`Loaded transactions and addresses for wallet –
       Transactions Count: ${this.selectedWallet.transactions$.length}
       Addresses Count:    ${this.selectedWallet.addresses$.length}`);
+
+      this.selectedWallet.transactions$.forEach(tx => {
+        console.log(tx.serialize());
+      });
 
       if (this._WalletServ.electrumxConnected) {
         this.noticeDelay('Loading Wallet View')
@@ -346,6 +387,12 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public onRefreshWallet() {
     console.log('onRefreshWallet');
+    if (this.refreshingWallet) {
+      alert('Wallet is already refreshing');
+    } else {
+      this.refreshingWallet = true;
+      this._WalletServ.refreshWallet(this.selectedWallet);
+    }
     //, typeof this._wallet.refreshWalletDetails);
     // this._wallet.refreshWalletDetails()
     // .then(() => {
@@ -392,47 +439,24 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onSendTransaction({ address, amount }) {
-    console.log('onSendTransaction', address, amount);
-
     console.log(`Sending [${amount}] to [${address}]`);
 
-    this.selectedWallet.loadUnspent()
-    .then(() => {
-      console.log('loaded?', this.selectedWallet.unspent$.length);
-      return this.selectedWallet.sendTransaction(this._WalletServ.electrumxClient, address, amount);
+    this.selectedWallet.sendTransaction(this._WalletServ.electrumxClient, address, amount)
+    .then(txid => {
+      console.log('Assuming sent!', txid);
+      this._snack.simple('Transaction has been sent! Funds should be delivered within a few minutes.', '#ffffff', '#333333', 4, false);
     })
-    .then((sent) => {
-      console.log('sent?', sent);
-    })
-    .catch((err) => {
+    .catch(err => {
       if (err.name && err.name === 'InvalidAddress') {
         alert('Transaction failed, address was invalid. Please double check your input and make sure it is a correct ODIN address!');
+      } else if (err.name && err.name === 'BalanceLow') {
+        alert('Transaction failed, wallet balance insufficient to cover transaction! You must deposit more ODIN into a receiving address.');
+      } else if (err.name && err.name === 'TransactionFailed') {
+        alert('Transaction failed, an unexpected error occurred while attempting to send transaction. Please wait and try again later.');
+      } else {
+        console.log(err);
+        alert('Transaction failed to send');
       }
-
-      console.log(err)
     });
-  //   let unspent = this.currentWallet.unspent.slice(0).sort((tx1, tx2) => {
-  //     if (tx1['height'] < tx2['height']) return -1;
-  //     else if (tx1['height'] > tx2['height']) return 1;
-  //     return 0;
-  //   });
-
-  //   let coinControl = unspent.reduce((txArr, tx) => {
-  //     let sum = txArr.reduce((sum, _tx) => sum += _tx['value'], 0);
-  //     if (sum <= (amount * 1e8)) {
-  //       txArr.push(tx);
-  //     }
-
-  //     return txArr;
-  //   }, []);
-
-  //   this._wallet.sendTransaction(this.currentWallet, recipient, amount, coinControl, this.TX_FEE)
-  //   .then((txid) => {
-  //     alert(`Transaction Sent!\n\nTXID:\n${txid}\n\nPlease allow a few minutes for this transaction to appear in your mobile wallet.`);
-  //   })
-  //   .catch((err) => {
-  //     console.log('err', err);
-  //     alert('error');
-  //   })
   }
 }

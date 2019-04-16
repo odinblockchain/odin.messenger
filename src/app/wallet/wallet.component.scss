@@ -1,4 +1,4 @@
-@import "~/app-variables";
+@import "~/app-variables.scss";
 
 TabView {
   tab-text-color: #7edabb;
@@ -10,6 +10,10 @@ TabView {
 
 TabViewItem {
   opacity: 0.4;
+}
+
+.wallet-section--container {
+  background-color: $dark-02;
 }
 
 .tabviewitem {

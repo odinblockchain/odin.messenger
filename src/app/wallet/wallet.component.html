@@ -14,11 +14,11 @@
     <Label *ngIf="noticeActive" textWrap="true" [text]="noticeContent"></Label>
   </FlexboxLayout>
 
-  <StackLayout row="1" orientation="horizontal">
-    <WalletSelection row="1" [selectedWallet]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></WalletSelection>
+  <StackLayout row="1" orientation="horizontal" class="wallet-section--container">
+    <WalletSelection [selectedWallet]="selectedWalletId" (walletSelected)="onWalletSelected($event)" ></WalletSelection>
   </StackLayout>
 
-  <TabView row="2" class="tabView" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)" androidOffscreenTabLimit="2">
+  <TabView row="2" class="tabView" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)" androidOffscreenTabLimit="4">
     <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
       <Send [currentWallet]="selectedWallet"
             [selectedWalletId]="selectedWalletId"

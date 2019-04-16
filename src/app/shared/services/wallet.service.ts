@@ -322,6 +322,31 @@ export class WalletService extends StorageService {
     }
   }
 
+  public async refreshWallet(wallet: Wallet): Promise<any> {
+    this.log(`Refreshing wallet #${wallet.id}`);
+    this.emit(`RefreshWalletStart`);
+
+    const phrase = this._IdentityServ.identity.mnemonicPhrase;
+
+    if (wallet.coin.name === 'ODIN') {
+      let seed  = ODIN.bip39.mnemonicToSeed(phrase);
+      let sroot = ODIN.bip32.fromSeed(seed, ODIN.networks.bitcoin);
+      
+      await this.establishConnection(wallet);
+      this.log('Done with connection');
+      this.emit('ElectrumxConnectionEstablished');
+
+      await this.walletDiscovery(wallet, sroot, wallet.bip44_index);
+      this.emit('RefreshWalletEnd');
+      this.log('[Wallet Refresh Finished]');
+
+      return wallet;
+    } else {
+      this.emit('RefreshWalletEnd');
+      throw new Error(`Unable to refresh wallet #${wallet.id}`);
+    }
+  }
+
   /**
    * @todo cleanup
    * Discovers external and internal addresses associated to an `accountIndex`. Returns a full account
@@ -662,7 +687,7 @@ export class WalletService extends StorageService {
       const storedTransaction = await Transaction.Find(txMeta.tx_hash, address.id);
 
       if (storedTransaction && storedTransaction.type !== Transaction.TRANSACTION_PENDING) {
-        this.log(`Already saved tx [${storedTransaction.txid}] and not pending`);
+        this.log(`Already saved tx [${storedTransaction.txid}] and not pending (${storedTransaction.type})`);
         // completedTransactions.push(storedTransaction);
         continue;
       }
@@ -678,11 +703,26 @@ export class WalletService extends StorageService {
         const txDetails: InspectAPIFetchTransaction = res.content.toJSON();
         if (txDetails.status !== 'ok') throw new Error('TX not found');
 
-        const sent      = txDetails.tx.vin.find(vin => vin.addresses === txMeta.address);
         const received  = txDetails.tx.vout.find(vout => vout.addresses === txMeta.address);
+        const sent      = txDetails.tx.vin.find(vin => vin.addresses === txMeta.address);
+
+        if (sent && received) {
+          console.log(txDetails);
+
+          console.log(`SELFIE
+          received: ${sent.amount}
+                    ${Math.max(0, sent.amount)}
+
+          sent:     ${received.amount}
+                    ${Math.max(0, received.amount)}
+
+          diff:     ${sent.amount - received.amount}
+                    ${(sent.amount - received.amount).toFixed(8)}
+          `);
+        }
 
         const transaction = await Transaction.Create({
-          wallet_id: wallet.id,
+          wallet_id:  wallet.id,
           address_id: address.id,
           type: (sent && received)
                   ? Transaction.TRANSACTION_SELF
@@ -698,11 +738,11 @@ export class WalletService extends StorageService {
           // in the case that this transaction had both a VIN and VOUT with a matching address,
           // calculate the "net" value (received - sent)
           value: (sent && received)
-                  ? (Math.max(0, received ? received.amount : 0) - Math.max(0, sent ? sent.amount : 0))
+                  ? Number((Math.max(0, sent.amount) - Math.max(0, received.amount)).toFixed(8))
                   : (sent)
-                      ? sent.amount
+                      ? Number(sent.amount.toFixed(8))
                       : (received)
-                          ? received.amount
+                          ? Number(received.amount.toFixed(8))
                           : 0,
           timestamp: txDetails.tx.timestamp
         });
@@ -713,13 +753,13 @@ export class WalletService extends StorageService {
         console.log(err.message ? err.message : err);
 
         const transaction = await Transaction.Create({
-          wallet_id: wallet.id,
+          wallet_id:  wallet.id,
           address_id: address.id,
-          type: Transaction.TRANSACTION_PENDING,
-          txid: txMeta.tx_hash,
-          height: txMeta.height,
-          value: 0,
-          timestamp: 0
+          type:       Transaction.TRANSACTION_PENDING,
+          txid:       txMeta.tx_hash,
+          height:     txMeta.height,
+          value:      0,
+          timestamp:  0
         });
 
         completedTransactions.push(transaction);

@@ -1,9 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, AfterContentChecked, NgZone } from '@angular/core';
 import { WalletModel } from '~/app/shared/wallet.model';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
-import { Address } from '~/app/shared/models/wallet';
+import { Address, Wallet } from '~/app/shared/models/wallet';
 import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
+import { WalletService } from '~/app/shared/services';
+import { timestamp } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
 	moduleId: module.id,
@@ -13,21 +16,24 @@ import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 })
 
 export class ReceiveComponent implements OnInit, OnChanges {
-  // @Input() selectedWalletId: number;
-  @Input() currentWallet: any;
+  @Input() selectedWalletId: number;
+  @Input() currentWallet: Wallet;
   @Input() addresses: ObservableArray<Address>;
   // @Output() walletSelected: EventEmitter<any> = new EventEmitter();
 
   public usedExternalAddresses: Array<any>;
   public unusedAddress: any;
+  public selectedWallet: Wallet;
 
   private _snackBar: SnackBar;
+  private _walletSub: Subscription;
 
   public freshAddress: Address;
   public usedAddresses: ObservableArray<Address>;
 
 	constructor(
     private _wallet: WalletModel,
+    private _WalletServ: WalletService,
     private _zone: NgZone
   ) {
     this._snackBar = new SnackBar();
@@ -36,9 +42,14 @@ export class ReceiveComponent implements OnInit, OnChanges {
   }
 
 	ngOnInit() {
+    this.selectedWallet = this._WalletServ.wallets$.getItem(this.selectedWalletId);
   }
 
   ngOnChanges() {
+    console.log('RECEIVE ON CHANGE', this.addresses);
+    console.log(this.selectedWalletId, this.selectedWallet);
+    console.log(this.currentWallet);
+
     if (!this.addresses) return;
 
     this._zone.run(() => {

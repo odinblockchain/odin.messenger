@@ -16,7 +16,7 @@
         <StackLayout class="card-content">
           <Label class="h2" textWrap="true" text="Amount to send"></Label>
           <Label class="body help" textWrap="true" text="Enter the amount of ODIN to send to the above address."></Label>
-          <TextField textWrap="true" [(ngModel)]="transactionDetails.amount" returnKeyType="done" (returnPress)="onReturnPress($event)" class="input input-border" hint="ODIN Amount..." keyboardType="number"></TextField>
+          <TextField textWrap="true" [(ngModel)]="transactionDetails.amount" returnKeyType="done" (returnPress)="onReturnPress($event)" (focus)="onAmountFocus()" class="input input-border" hint="ODIN Amount..." keyboardType="number"></TextField>
         </StackLayout>
       </ContentView>
 

@@ -45,7 +45,7 @@
           <Label class="header--help-content" textWrap="true" text="These are addresses you have used in the past and may continue to use if you wish."></Label>
         </StackLayout>
 
-        <RadListView [items]="addresses">
+        <RadListView [items]="currentWallet?.addresses$">
           <ng-template tkListItemTemplate let-item="item" let-i="index">
             <ContentView></ContentView>
             <!-- <StackLayout>
@@ -59,7 +59,7 @@
           </ng-template>
         </RadListView>
 
-        <RadListView [items]="addresses" [filteringFunction]="usedAddressFilter">
+        <RadListView [items]="currentWallet?.addresses$" [filteringFunction]="usedAddressFilter">
           <ng-template tkListItemTemplate let-item="item" let-i="index">
             <StackLayout class="address" (tap)="onCopyText(item.address)">
 

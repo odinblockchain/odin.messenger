@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy } from '@angular/core';
 import { alert, confirm } from "tns-core-modules/ui/dialogs";
 import { Wallet } from '~/app/shared/models/wallet';
 import { WalletModel } from '~/app/shared/wallet.model';
+import { Subscription } from 'rxjs';
 
 interface TransactionDetails {
   amount: number,
@@ -14,7 +15,7 @@ interface TransactionDetails {
 	templateUrl: './send.component.html',
 	styleUrls: ['./send.component.css']
 })
-export class SendComponent implements OnInit {
+export class SendComponent implements OnInit, OnChanges, OnDestroy {
   // @Input() selectedWalletId: number;
   @Input() currentWallet: Wallet;
   @Input() sendTransactionFn: any;
@@ -22,6 +23,8 @@ export class SendComponent implements OnInit {
 
   public transactionDetails: TransactionDetails;
   public TX_FEE = 0.0001;
+
+  private _walletSub: Subscription;
 
 	constructor(
     private _wallet: WalletModel
@@ -32,13 +35,33 @@ export class SendComponent implements OnInit {
     };
 
     this.onReturnPress = this.onReturnPress.bind(this);
-    // this.processTransaction = this.processTransaction.bind(this);
+    this.onWalletEvent = this.onWalletEvent.bind(this);
+  }
+
+  onWalletEvent(eventName) {
+    if (eventName === 'TransactionSent') {
+      console.log('@@@ SEND ON TRANSACTION SENT @@@');
+      this.transactionDetails.address = '';
+      this.transactionDetails.amount  = 0;
+    }
   }
 
   ngOnInit() { }
 
-  private formatBalance(amount: number): number {
-    return Number((amount / 1e8).toFixed(8));
+  ngOnChanges() {
+    if (this.currentWallet && !this._walletSub) {
+      this._walletSub = this.currentWallet.eventStream$.subscribe(this.onWalletEvent);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this._walletSub) this._walletSub.unsubscribe();
+  }
+
+  public onAmountFocus(event): any {
+    if (this.transactionDetails.amount === 0) {
+      this.transactionDetails.amount = null;
+    }
   }
   
   public onReturnPress(event): any {
@@ -57,15 +80,14 @@ export class SendComponent implements OnInit {
       return alert('You must enter a valid amount of ODIN to send.');
     }
 
-    const sendAmount = (this.TX_FEE + Number(this.transactionDetails.amount)) * 1e8;
+    const amount  = Wallet.TX_FEE + Number(this.transactionDetails.amount);
+    const value   = parseInt((amount * 1e8).toFixed(0));
 
-    
-
-    if (this.currentWallet.balance_conf < sendAmount) {
+    if (this.currentWallet.balance_conf < value) {
       return alert('Transaction failed!\n\n'
       +`Wallet Balance:     ${this.formatBalance(this.currentWallet.balance_conf)} Ø\n\n`
       +`Transaction Fee:    ${this.TX_FEE} Ø\n\n`
-      +`Transaction Total:  ${this.formatBalance(sendAmount)}`);
+      +`Transaction Total:  ${this.formatBalance(value)}`);
     }
     
     confirm({
@@ -83,34 +105,7 @@ export class SendComponent implements OnInit {
     });
   }
 
-  // private processTransaction({ address, amount }) {
-  //   console.log(`Sending [${amount}] to [${address}]`);
-  //   let unspent = this.currentWallet.unspent.slice(0).sort((tx1, tx2) => {
-  //     if (tx1['height'] < tx2['height']) return -1;
-  //     else if (tx1['height'] > tx2['height']) return 1;
-  //     return 0;
-  //   });
-
-  //   let coinControl = unspent.reduce((txArr, tx) => {
-  //     let sum = txArr.reduce((sum, _tx) => sum += _tx['value'], 0);
-  //     if (sum <= (amount * 1e8)) {
-  //       txArr.push(tx);
-  //     }
-
-  //     return txArr;
-  //   }, []);
-
-  //   this._wallet.sendTransaction(this.currentWallet, address, amount, coinControl, this.TX_FEE)
-  //   .then((txid) => {
-  //     alert(`Transaction Sent!\n\nTXID:\n${txid}\n\nPlease allow a few minutes for this transaction to appear in your mobile wallet.`);
-  //   })
-  //   .catch((err) => {
-  //     console.log('err', err);
-  //     alert('error');
-  //   })
-  // }
-
-  // public proxyWalletSelection(selectedWalletId: number) {
-  //   this.walletSelected.next(selectedWalletId);
-  // }
+  private formatBalance(amount: number): number {
+    return Number((amount / 1e8).toFixed(8));
+  }
 }

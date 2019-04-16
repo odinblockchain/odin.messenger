@@ -1,4 +1,4 @@
-@import "~/app-variables";
+@import "~/app-variables.scss";
 
 @keyframes placeHolderShimmer{
   0% {
@@ -97,6 +97,10 @@
   }
 
   &.sent {
+    background-color: $odin-red;
+  }
+
+  &.self {
     background-color: $odin-red;
   }
 
