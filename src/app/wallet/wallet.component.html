@@ -21,7 +21,6 @@
   <TabView row="2" class="tabView" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)" androidOffscreenTabLimit="4">
     <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
       <Send [currentWallet]="selectedWallet"
-            [selectedWalletId]="selectedWalletId"
             [sendTransactionFn]="onSendTransaction">
       </Send>
     </ContentView>
@@ -29,15 +28,13 @@
     <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
       <Overview [transactions]="selectedWallet?.transactions$"
                 [blockheight]="trackedBlockheight"
-                [currentWallet]="selectedWallet"
-                [selectedWalletId]="selectedWalletId">
+                [currentWallet]="selectedWallet">
       </Overview>
     </ContentView>
 
     <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
       <Receive  [addresses]="selectedWallet?.addresses$"
-                [currentWallet]="selectedWallet"
-                [selectedWalletId]="selectedWalletId">
+                (requestNewAddress)="handleRequestNewAddress($event)">
       </Receive>
     </ContentView>
   </TabView>

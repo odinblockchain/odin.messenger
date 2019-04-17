@@ -59,8 +59,6 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	constructor(
     private page: Page,
-    // private _wallet: WalletModel,
-    // private _change: ChangeDetectorRef,
     private _WalletServ: WalletService,
     private _IdentityServ: IdentityService,
     private _zone: NgZone,
@@ -220,17 +218,14 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     });
 
-    this._keepAliveTimer = setInterval(() => {
-      if (this._WalletServ.electrumxConnected) {
-        console.log('[Wallet Component] @keepAlive');
-        this._WalletServ.keepAlive();
-      }
-    }, (5 * 60 * 1000));
-
-    // this._wallet.on('TransactionSent', (event: EventData) => {
-    //   console.log(`[Wallet Module] TransactionSent --`);
-    //   this.onRefreshWallet();
-    // });
+    if (!this._keepAliveTimer) {
+      this._keepAliveTimer = setInterval(() => {
+        if (this._WalletServ.electrumxConnected) {
+          console.log('[Wallet Component] @keepAlive');
+          this._WalletServ.keepAlive();
+        }
+      }, (5 * 60 * 1000));
+    }
   }
 
   ngOnInit() {
@@ -257,7 +252,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this._walletServiceSub) this._walletServiceSub.unsubscribe();
     if (this._blockheightSub) this._blockheightSub.unsubscribe();
     if (this._walletSub) this._walletSub.unsubscribe();
-    clearInterval(this._keepAliveTimer);
+    // clearInterval(this._keepAliveTimer);
+  }
+
+  public handleRequestNewAddress(event) {
+    this._WalletServ.discoverNewAddress(this.selectedWallet);
   }
 
   /**
@@ -311,10 +310,6 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log(`Loaded transactions and addresses for wallet –
       Transactions Count: ${this.selectedWallet.transactions$.length}
       Addresses Count:    ${this.selectedWallet.addresses$.length}`);
-
-      this.selectedWallet.transactions$.forEach(tx => {
-        console.log(tx.serialize());
-      });
 
       if (this._WalletServ.electrumxConnected) {
         this.noticeDelay('Loading Wallet View')

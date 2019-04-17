@@ -4,12 +4,6 @@
 
     <GridLayout class="view" rows="auto, *, 10">
 
-      <!-- <ContentView row="0" class="card">
-        <StackLayout class="card-content">
-          <Label class="h2" textWrap="true" text="Fresh ODIN address"></Label>
-          <Label class="body help font-sm" textWrap="true" text="For optimal security, we will generate a new ODIN address after a previous address has been used. They are all still associated with your Identity seed and aren't lost."></Label>
-        </StackLayout>
-      </ContentView> -->
       
       <StackLayout row="0" class="addresses">
         <StackLayout class="header header--help" [class.active]="freshAddressHelp" (tap)="freshAddressHelp = !freshAddressHelp">
@@ -20,7 +14,7 @@
           <Label class="header--help-content" textWrap="true" text="For optimal security, we will generate a new ODIN address after a previous address has been used. They are all still associated with your Identity seed and aren't lost."></Label>
         </StackLayout>
 
-        <StackLayout class="address" (tap)="onCopyText(freshAddress?.address)">
+        <StackLayout *ngIf="freshAddress" class="address" (tap)="onCopyText(freshAddress?.address)">
           <Label textWrap="true" class="address--hash" [text]="freshAddress?.address"></Label>
 
           <GridLayout cols="auto,*">
@@ -34,6 +28,10 @@
             </ContentView>
           </GridLayout>
         </StackLayout>
+
+        <StackLayout *ngIf="!freshAddress" class="address">
+          <Label textWrap="true" class="address--hash" text="No fresh address available"></Label>
+        </StackLayout>
       </StackLayout>
 
       <StackLayout row="1" class="addresses">
@@ -45,21 +43,7 @@
           <Label class="header--help-content" textWrap="true" text="These are addresses you have used in the past and may continue to use if you wish."></Label>
         </StackLayout>
 
-        <RadListView [items]="currentWallet?.addresses$">
-          <ng-template tkListItemTemplate let-item="item" let-i="index">
-            <ContentView></ContentView>
-            <!-- <StackLayout>
-              <Label>
-                <FormattedString>
-                  <Span text="Address:"></Span>
-                  <Span [text]="item.address"></Span>
-                </FormattedString>
-              </Label>
-            </StackLayout> -->
-          </ng-template>
-        </RadListView>
-
-        <RadListView [items]="currentWallet?.addresses$" [filteringFunction]="usedAddressFilter">
+        <RadListView [items]="addresses" [filteringFunction]="usedAddressFilter">
           <ng-template tkListItemTemplate let-item="item" let-i="index">
             <StackLayout class="address" (tap)="onCopyText(item.address)">
 

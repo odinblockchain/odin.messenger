@@ -1,6 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-// import { WalletModel } from '~/app/shared/wallet.model';
-// import { EventData } from 'tns-core-modules/ui/page/page';
+import { Component, OnInit, Input } from '@angular/core';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 import { Transaction, Wallet } from '~/app/shared/models/wallet';
 import { confirm } from "tns-core-modules/ui/dialogs";
@@ -14,11 +12,9 @@ import * as utilityModule from "utils/utils";
 })
 
 export class OverviewComponent implements OnInit {
-  // @Input() selectedWalletId: number;
   @Input() currentWallet: Wallet;
   @Input() blockheight: number;
   @Input() transactions: ObservableArray<Transaction>;
-  // @Output() walletSelected: EventEmitter<any> = new EventEmitter();
 
   constructor() { }
   
@@ -46,8 +42,4 @@ export class OverviewComponent implements OnInit {
     if (this.blockheight <= 0) return ` | Block #${item.height}`;
     else return ` | ${this.blockheight - item.height} conf.`;
   }
-
-  // public proxyWalletSelection(selectedWalletId: number) {
-  //   this.walletSelected.next(selectedWalletId);
-  // }
 }

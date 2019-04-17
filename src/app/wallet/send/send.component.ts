@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy } from '@angular/core';
 import { alert, confirm } from "tns-core-modules/ui/dialogs";
 import { Wallet } from '~/app/shared/models/wallet';
-import { WalletModel } from '~/app/shared/wallet.model';
 import { Subscription } from 'rxjs';
 
 interface TransactionDetails {
@@ -16,19 +15,15 @@ interface TransactionDetails {
 	styleUrls: ['./send.component.css']
 })
 export class SendComponent implements OnInit, OnChanges, OnDestroy {
-  // @Input() selectedWalletId: number;
   @Input() currentWallet: Wallet;
   @Input() sendTransactionFn: any;
-  // @Output() walletSelected: EventEmitter<any> = new EventEmitter();
 
   public transactionDetails: TransactionDetails;
   public TX_FEE = 0.0001;
 
   private _walletSub: Subscription;
 
-	constructor(
-    private _wallet: WalletModel
-  ) {
+	constructor() {
     this.transactionDetails = {
       amount: null,
       address: null
@@ -40,7 +35,6 @@ export class SendComponent implements OnInit, OnChanges, OnDestroy {
 
   onWalletEvent(eventName) {
     if (eventName === 'TransactionSent') {
-      console.log('@@@ SEND ON TRANSACTION SENT @@@');
       this.transactionDetails.address = '';
       this.transactionDetails.amount  = 0;
     }
@@ -67,10 +61,6 @@ export class SendComponent implements OnInit, OnChanges, OnDestroy {
   public onReturnPress(event): any {
 
     if (!this.sendTransactionFn) return;
-
-    // console.log('send', this.currentWallet.balance);
-    console.log('BALANCE', this.currentWallet.balance_conf);
-    console.log('MIN', (this.TX_FEE + Number(this.transactionDetails.amount)) * 1e8);
 
     if (!this.transactionDetails.address || this.transactionDetails.address.length === 0) {
       return alert('You must enter a valid ODIN Address to send ODIN too.');
