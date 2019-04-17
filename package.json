@@ -44,9 +44,9 @@
     "remove.android": "tns platform remove android",
     "lint": "tslint \"src/**/*.ts\"",
     "clean": "rm -rf hooks/ node_modules/ platforms/",
-    "run.android.prod": "tns run android --bundle --env.environment=prod",
-    "run.android.dev": "tns run android --bundle --env.environment=dev",
-    "run.android.reg": "tns run android --bundle --env.environment=reg" 
+    "android.run.prod": "tns run android --bundle --env.environment=prod",
+    "android.run.dev": "tns run android --bundle --env.environment=dev",
+    "android.run.reg": "tns run android --bundle --env.environment=reg" 
   },
   "dependencies": {
     "@angular/animations": "~7.0.0",
