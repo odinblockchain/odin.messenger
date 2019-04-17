@@ -13,6 +13,7 @@ import { RouterExtensions } from "nativescript-angular/router";
 // import { AccountService } from '../shared/services';
 import { IdentityService } from '../shared/services/identity.service';
 import { Contact, Message } from '../shared/models/messenger';
+import { SnackBar } from 'nativescript-snackbar';
 // import { StorageService } from '../shared';
 // import { PreferencesService } from '../shared/preferences.service';
 
@@ -33,12 +34,15 @@ export class MessengerComponent implements OnInit {
     // private _user: UserModel,
     // private Account: AccountService,
     private IdentityServ: IdentityService,
+    private _snack: SnackBar
     // private Storage: StorageService,
     // private Preferences: PreferencesService
   ) {
     this.friends = [];
 
     this.onFetchMessages = this.onFetchMessages.bind(this);
+
+    console.log('ENV NAME?', global['ENV_NAME']);
   }
 
   ngOnInit() {
@@ -116,13 +120,17 @@ export class MessengerComponent implements OnInit {
 
   onFetchMessages() {
     if (this.IdentityServ.getActiveAccount()) {
+      this._snack.simple('Fetching new messages', '#ffffff', '#333333', 3, false);
       this.IdentityServ.getActiveAccount().fetchRemoteMessages()
-      .then(x => {
-        console.log('DONE')
-      })
-      .catch(console.log);
+      .then(() => {
+        console.log('All messages have been fetched');
+        this._snack.simple('All new messages fetched', '#ffffff', '#333333', 3, false);
+      }).catch((err) => {
+        console.log('Fetch messages error', err.message ? err.message : err);
+        this._snack.simple('Failed to fetch messages', '#ffffff', '#333333', 3, false);
+      });
     } else {
-      console.log('NO ACTIVE ACCOUNT - UNABLE TO FETCH');
+      console.log('NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
     }
   }
 }

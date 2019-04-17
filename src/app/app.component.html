@@ -70,6 +70,13 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
       </FormattedString>
     </Label>
 
+    <Label class="no-connection" *ngIf="osmServerError">
+      <FormattedString>
+        <Span class="fa" text="&#xf12a;&nbsp;&nbsp;"></Span>
+        <Span text="LIMITED MESSAGE CONNECTION"></Span>
+      </FormattedString>
+    </Label>
+
     <page-router-outlet class="app-view"></page-router-outlet>
   </StackLayout>
 </RadSideDrawer>

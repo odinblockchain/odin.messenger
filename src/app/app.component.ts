@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { RouterExtensions } from 'nativescript-angular/router';
 import { registerElement } from 'nativescript-angular/element-registry';
@@ -10,7 +10,7 @@ import { isAndroid, isIOS, device, screen } from 'tns-core-modules/platform';
 import { DrawerTransitionBase, RadSideDrawer, SlideInOnTopTransition } from 'nativescript-ui-sidedrawer';
 import { filter } from 'rxjs/operators';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
+import { SnackBar } from "nativescript-snackbar";
 
 import { UserModel } from '~/app/shared/user.model';
 import { PreferencesService } from '~/app/shared/preferences.service';
@@ -49,7 +49,6 @@ import {
 } from 'tns-core-modules/application';
 import { StorageService } from './shared';
 import { AccountService, ContactService, CoinService, WalletService, AddressService } from './shared/services';
-import { Identity } from './shared/models/identity/identity.model';
 import { IdentityService } from './shared/services/identity.service';
 import { ClientService } from './shared/services/client.service';
 import { LogService } from './shared/services/log.service';
@@ -59,10 +58,14 @@ import {
   startMonitoring,
   stopMonitoring
 } from 'tns-core-modules/connectivity';
-import { alert } from 'tns-core-modules/ui/dialogs/dialogs';
-import { request } from 'tns-core-modules/http/http';
 
 declare var android: any;
+
+// seconds
+const MESSENGER_REFRESH_DELAY = 15;
+
+// minutes
+const WALLET_REFRESH_DELAY = 5;
 
 @Component({
   moduleId: module.id,
@@ -72,7 +75,8 @@ declare var android: any;
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private _activatedUrl: string;
   private _sideDrawerTransition: DrawerTransitionBase;
-  private _pingServer: any;
+  private _fetchMessages: any;
+  private _fetchWallet: any;
   public initAttempts: number;
   private _loading: boolean;
   private _ready: boolean;
@@ -82,6 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public connected: boolean;
   public isWalletView: boolean;
   public networkState: string;
+  public osmServerError: boolean;
 
   constructor(
     private router: Router,
@@ -97,7 +102,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private _Wallet: WalletService,
     private _Address: AddressService,
     private _Preferences: PreferencesService,
-    private _Log: LogService
+    private _Log: LogService,
+    private _zone: NgZone,
+    private _snack: SnackBar
   ) {
     this._sb          = new SnackBar();
     this._loading     = false;
@@ -300,6 +307,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     messaging.addOnMessageReceivedCallback(
       message => {
         console.log("Notification message received in push-view-model: " + JSON.stringify(message, getCircularReplacer()));
+        console.log(message);
+        console.log('url', this.router.url);
+
+        if ( (this.router.url.match(new RegExp('messenger/message','ig'))) ) {
+          console.log('NOPE');
+          this._snack.simple(`${message.title} – ${message.body}`, '#ffffff', '#333333', 3, false);
+        } else {
+          console.log('YEP');
+        }
+        
         return true;
       }
     ).then(() => {
@@ -308,8 +325,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log("Failed to add addOnMessageReceivedCallback: " + err);
     });
 
-    // stopMonitoring();
-    // startMonitoring(this.setNetworkState);
+    this.fetchRemoteMessages();
   }
 
   private createEventListeners() {
@@ -330,9 +346,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log(`[App] (UserModel) Event:${eventData.eventName}`);
       // _this.userAccount = eventData.object['saveData'];
 
-      // if (_this._pingServer) {
-      //   clearInterval(_this._pingServer);
-      //   _this._pingServer = false;
+      // if (_this._fetchMessages) {
+      //   clearInterval(_this._fetchMessages);
+      //   _this._fetchMessages = false;
       // }
     });
 
@@ -348,16 +364,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.userModel.on('IdentityRegistered', function(eventData) {
       console.log(`[App] (UserModel) Event:${eventData.eventName}`);
-
-      // if (!_this._pingServer) {
-      //   clearInterval(this._pingServer);
-        // _this._pingServer = setInterval(() => {
-        //   if (_this.userModel.osmConnected) {
-        //     console.log(`[App] Ping Server...`);
-        //     _this.userModel.fetchMessages();
-        //   }
-        // }, (15 * 1000));
-      // }
     });
 
     this.userModel.on('ContactsRestored', function(eventData) {
@@ -367,7 +373,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userModel.on('NoConnection', function(eventData) {
       console.log(`[App] (UserModel) Event:${eventData.eventName}`);
       // _this.connected = false;
-      // clearInterval(_this._pingServer);
+      // clearInterval(_this._fetchMessages);
     });
 
     this.userModel.on('Connected', function(eventData) {
@@ -403,14 +409,27 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private createPlatformListeners() {
-    if (!hasListeners(launchEvent)) applicationOn(launchEvent, this.onApplicationLaunch, this);
-    if (!hasListeners(displayedEvent)) applicationOn(displayedEvent, this.onApplicationReady, this);
-    if (!hasListeners(suspendEvent)) applicationOn(suspendEvent, this.onApplicationSuspend, this);
-    if (!hasListeners(resumeEvent)) applicationOn(resumeEvent, this.onApplicationResume, this);
-    if (!hasListeners(uncaughtErrorEvent)) applicationOn(uncaughtErrorEvent, this.onApplicationError, this);
+    if (hasListeners(launchEvent)) applicationOff(launchEvent, this.onApplicationLaunch, this);
+    if (hasListeners(displayedEvent)) applicationOff(displayedEvent, this.onApplicationLaunch, this);
+    if (hasListeners(suspendEvent)) applicationOff(suspendEvent, this.onApplicationSuspend, this);
+    if (hasListeners(resumeEvent)) applicationOff(resumeEvent, this.onApplicationResume, this);
+    if (hasListeners(uncaughtErrorEvent)) applicationOff(uncaughtErrorEvent, this.onApplicationError, this);
+
+    console.log('@!@ CHECK LISTENERS?', `
+      launch: ${hasListeners(launchEvent)}
+      displayed: ${hasListeners(displayedEvent)}
+      suspent: ${hasListeners(suspendEvent)}
+      resume: ${hasListeners(resumeEvent)}
+      error: ${hasListeners(uncaughtErrorEvent)}
+    `)
+
+    applicationOn(launchEvent, this.onApplicationLaunch, this);
+    applicationOn(displayedEvent, this.onApplicationReady, this);
+    applicationOn(suspendEvent, this.onApplicationSuspend, this);
+    applicationOn(resumeEvent, this.onApplicationResume, this);
+    applicationOn(uncaughtErrorEvent, this.onApplicationError, this);
     
     if (isAndroid) {
-      
       applicationOn(AndroidApplication.activityCreatedEvent, (args) => {
         console.log('[App] ANDROID onCreated');
       });
@@ -418,31 +437,31 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       applicationOn(AndroidApplication.activityResumedEvent, (args) => {
         console.log('[App] ANDROID onResumed');
 
-        console.log("Event: " + args.eventName + ", Activity: " + args.activity);
-        var a = args.activity;
-        try {
-            var Intent_1 = android.content.Intent;
-            var actionSend = Intent_1.ACTION_SEND;
-            var actionSendMultiple = Intent_1.ACTION_SEND_MULTIPLE;
-            var argIntent = a.getIntent();
-            var argIntentAction = argIntent.getAction();
-            var argIntentType = argIntent.getType();
-            console.log(" ~~~~ Intent is ~~~~ :" + new String(argIntent.getAction()).valueOf());
-            String.prototype.startsWith = function (str) {
-                return this.substring(0, str.length) === str;
-            };
-            if (new String(argIntentAction).valueOf() === new String(Intent_1.ACTION_SEND).valueOf()) {
-                if (new String(argIntentType).valueOf() === new String("text/plain").valueOf()) {
-                    console.dir(this.cbParseTextAndUrl(argIntent));
-                }
-                else if (argIntentType.startsWith("image/")) {
-                    console.log(this.cbParseImageUrl(argIntent));
-                }
-            }
-        }
-        catch (e) {
-            console.log(e);
-        }
+        // console.log("Event: " + args.eventName + ", Activity: " + args.activity);
+        // var a = args.activity;
+        // try {
+        //   var Intent_1 = android.content.Intent;
+        //   var actionSend = Intent_1.ACTION_SEND;
+        //   var actionSendMultiple = Intent_1.ACTION_SEND_MULTIPLE;
+        //   var argIntent = a.getIntent();
+        //   var argIntentAction = argIntent.getAction();
+        //   var argIntentType = argIntent.getType();
+        //   console.log(" ~~~~ Intent is ~~~~ :" + new String(argIntent.getAction()).valueOf());
+        //   String.prototype.startsWith = function (str) {
+        //       return this.substring(0, str.length) === str;
+        //   };
+        //   if (new String(argIntentAction).valueOf() === new String(Intent_1.ACTION_SEND).valueOf()) {
+        //     if (new String(argIntentType).valueOf() === new String("text/plain").valueOf()) {
+        //       console.dir(this.cbParseTextAndUrl(argIntent));
+        //     }
+        //     else if (argIntentType.startsWith("image/")) {
+        //       console.log(this.cbParseImageUrl(argIntent));
+        //     }
+        //   }
+        // }
+        // catch (e) {
+        //   console.log(e);
+        // }
       });
 
       applicationOn(AndroidApplication.activityDestroyedEvent, (args) => {
@@ -462,57 +481,55 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onApplicationLaunch(args: ApplicationEventData) {
-    console.log('[App] Event: onApplicationLaunch');
+    console.log('[App] Event: onApplicationLaunch @!@');
   }
 
   onApplicationError(args: ApplicationEventData) {
-    console.log('[App] Event: onApplicationError');
+    console.log('[App] Event: onApplicationError @!@');
     console.log(args);
   }
 
   onApplicationReady(args: ApplicationEventData) {
-    console.log('[App] Event: onApplicationReady');
+    console.log('[App] Event: onApplicationReady @!@');
   }
 
   onApplicationExit(args: ApplicationEventData) {
-    console.log('[App] Event: onApplicationExit');
+    console.log('[App] Event: onApplicationExit @!@');
   }
 
   onApplicationResume(args: ApplicationEventData) {
-    console.log('[App] Event: onApplicationResume');
+    console.log('[App] Event: onApplicationResume @!@');
 
-    // if (!this._pingServer) {
-      // clearInterval(this._pingServer);
-      // this._pingServer = setInterval(() => {
-      //   if (this.userModel.osmConnected) {
-      //     console.log(`[App] Ping Server...`);
-      //     this.userModel.fetchMessages();
-      //   }
-      // }, (15 * 1000));
-    // }
+    if (!this._fetchMessages) {
+      console.log('@!@ setup ping server');
+      clearInterval(this._fetchMessages);
+
+      this._fetchMessages = setInterval(() => {
+        console.log('@!@ make server ping');
+        this.fetchRemoteMessages();
+      }, (MESSENGER_REFRESH_DELAY * 1000));
+
+      this._fetchWallet = setInterval(() => {
+        console.log('@!@ make wallet ping');
+        this.fetchRemoteWallet();
+      }, (WALLET_REFRESH_DELAY * 60 * 1000));
+    }
   }
 
   onApplicationSuspend(args: ApplicationEventData) {
-    console.log('[App] Event: onApplicationSuspend');
+    console.log('[App] Event: onApplicationSuspend @!@');
 
-    // setTimeout(() => {
-    //   console.log('hey');
-    //   // 
-    //   request({
-    //     url: 'http://cc94a0a8.ngrok.io/foo',
-    //     method: 'GET'
-    //   })
-    //   .then(res => {
-    //     console.log('got response');
-    //     console.log(res);
-    //   })
-    //   .catch(console.log);
-    // }, 5000);
+    if (this._fetchMessages) {
+      clearInterval(this._fetchMessages);
+      this._fetchMessages = null;
+      console.log('@!@ clear ping server');
+    }
 
-    // if (this._pingServer) {
-    //   clearInterval(this._pingServer);
-    //   this._pingServer = false;
-    // }
+    if (this._fetchWallet) {
+      clearInterval(this._fetchWallet);
+      this._fetchWallet = null;
+      console.log('@!@ clear ping wallet');
+    }
   }
 
   adjustStatusBar() {
@@ -593,5 +610,32 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('Unable to copy to clipboard');
       }
     });
+  }
+
+  private fetchRemoteWallet() {
+    if (!this._Wallet.electrumxConnected) {
+      console.log('@!@ IGNORE WALLET REFRESH');
+    } else {
+      console.log('@!@ REFRESHING');
+      const wallet = this._Wallet.wallets$.getItem(0);
+      this._Wallet.refreshWallet(wallet);
+    }
+  }
+
+  private fetchRemoteMessages() {
+    if (this._Identity.getActiveAccount()) {
+      this._zone.run(() => {
+        this._Identity.getActiveAccount().fetchRemoteMessages()
+        .then(() => {
+          console.log('All messages have been fetched');
+          this.osmServerError = false;
+        }).catch((err) => {
+          console.log('Fetch messages error', err.message ? err.message : err);
+          this.osmServerError = true;
+        });
+      });
+    } else {
+      console.log('NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
+    }
   }
 }

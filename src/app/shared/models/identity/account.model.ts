@@ -283,30 +283,36 @@ export class Account extends Database {
   public async fetchRemoteMessages(): Promise<any> {
     return new Promise(async (resolve, reject) => {
       this.log('Fetching remote messages');
-      
-      const res: HttpResponse = await request({
-        url: `${this.preferences.api_url}/messages?deviceId=${this.client.device_id}&registrationId=${this.client.registration_id}`,
-        method: "GET",
-      });
 
-      if (res.statusCode !== 200) {
-        this.logger(`Unable to fetch messages d[${this.client.device_id}] r[${this.client.registration_id}] statusCode: ${res.statusCode}`);
-        return resolve(false);
-      }
+      try {
+        const res: HttpResponse = await request({
+          url: `${this.preferences.api_url}/messages?deviceId=${this.client.device_id}&registrationId=${this.client.registration_id}`,
+          method: "GET",
+        });
 
-      const content: RemoteMessages = res.content.toJSON();
-      if (res.statusCode === 200 && content.status === 'ok') {
-        while (content.messages.length > 0) {
-          await this.handleRemoteMessage(content.messages.shift());
+        if (res.statusCode === 200) {
+          const content: RemoteMessages = res.content.toJSON();
+
+          if (content.status !== 'ok') {
+            this.logger(`Invalid remote message fetch d[${this.client.device_id}] r[${this.client.registration_id}]`);
+            return reject(`Remote message response not ok ${res.statusCode}`);
+          }
+
+          while (content.messages.length > 0) {
+            await this.handleRemoteMessage(content.messages.shift());
+          }
+
+          console.log('STORED MESSAGES');
+          console.log(await this.getMessages());
+
+          return resolve(true);
+        } else {
+          this.logger(`Unable to fetch messages d[${this.client.device_id}] r[${this.client.registration_id}] statusCode: ${res.statusCode}`);
+          return reject(`Bad status code ${res.statusCode}`);
         }
-
-        console.log('STORED MESSAGES');
-        console.log(await this.getMessages());
-
-        return resolve(true);
+      } catch (err) {
+        return reject(err);
       }
-
-      return resolve(false);
     });
   }
 

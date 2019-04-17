@@ -12,6 +12,8 @@ import { Subscription, Observable as ObservableGeneric } from 'rxjs';
 import { Wallet } from '../shared/models/wallet';
 import { SnackBar } from 'nativescript-snackbar';
 
+const KEEP_ALIVE_DELAY = 2;
+
 @Component({
 	moduleId: module.id,
 	selector: 'wallet',
@@ -154,15 +156,20 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case 'WalletService::RefreshWalletStart':
+        this.refreshingWallet = true;
         this.notice('Refreshing wallet');
         break;
 
       case 'WalletService::RefreshWalletEnd':
-        this.refreshingWallet = false;
-        this.notice('');
-        this.selectedWallet.loadTransactions()
-        .then(this.selectedWallet.loadAddresses)
-        .then(() => console.log('Addresses refreshed'));
+        this._zone.run(() => {
+          this.refreshingWallet = false;
+          this.selectedWallet.loadTransactions()
+          .then(this.selectedWallet.loadAddresses)
+          .then(() => {
+            this.notice('');
+            this.warning('');
+          });
+        });
         break;
       
       default:
@@ -186,7 +193,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log('[Wallet Component] @keepAlive');
           this._WalletServ.keepAlive();
         }
-      }, (5 * 60 * 1000));
+      }, (KEEP_ALIVE_DELAY * 60 * 1000));
+
+      console.log('[Wallet Component] KeepAlive Started');
     }
   }
 
@@ -337,11 +346,30 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   public onRefreshWallet() {
     if (this.refreshingWallet) {
       console.log('Unable to refresh wallet');
-      alert('Wallet is already refreshing');
+      this._snack.simple('Wallet is already refreshing', '#ffffff', '#333333', 4, false);
     } else {
       console.log('Refreshing wallet');
       this.refreshingWallet = true;
-      this._WalletServ.refreshWallet(this.selectedWallet);
+      this.notice('');
+      this.warning('');
+
+      if (!this._WalletServ.electrumxConnected) {
+        this._snack.simple('Reconnecting to server', '#ffffff', '#333333', 4, false);
+        this._WalletServ.establishConnection(this.selectedWallet)
+        .then(() => this.noticeDelay('Loading Wallet View'))
+        .then(() => {
+          this._WalletServ.refreshWallet(this.selectedWallet);
+        }).catch((err) => {
+          console.log('Error reconnecting', err.message ? err.message : err);
+          if (!this.warningActive) {
+            this.warning('Unable to fetch the latest update for your wallet. Please try again later.');
+          }
+
+          this.refreshingWallet = false;
+        });
+      } else {
+        this._WalletServ.refreshWallet(this.selectedWallet);
+      }
     }
   }
 
