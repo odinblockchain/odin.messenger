@@ -1,13 +1,7 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-// import { WalletModel } from '~/app/shared/wallet.model';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { WalletService } from '~/app/shared/services';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
-// import { Observable } from 'tns-core-modules/ui/page/page';
-// import { Wallet } from '~/app/shared/models/wallet';
-// import { Subscription, BehaviorSubject } from 'rxjs';
-import { Observable } from 'tns-core-modules/ui/page/page';
 import { Wallet } from '~/app/shared/models/wallet';
-// import { fromObject } from 'tns-core-modules/data/observable/observable';
 
 @Component({
 	moduleId: module.id,
@@ -21,27 +15,21 @@ export class WalletSelectionComponent implements OnInit {
   @Output() walletSelected: EventEmitter<any> = new EventEmitter();
 
   public wallets: ObservableArray<Wallet>;
+
 	constructor(
     private _WalletServ: WalletService
-  ) {
-
-  }
+  ) { }
 
 	ngOnInit() {
-
     this.wallets = this._WalletServ.wallets$;
-    // this.wallets.push(fromObject({empty: true}));
   }
 
   public walletTemplateSelector(item: any, index: number, items: any): string {
-    if (item && item.empty === true) {
-      return 'empty';
-    }
+    if (item && item.empty === true) return 'empty';
     return 'wallet';
   }
 
   onSelectWallet(walletNumber: number) {
-    console.log('...on select', walletNumber);
     this.walletSelected.next(walletNumber);
   }
 }

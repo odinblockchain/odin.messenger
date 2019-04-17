@@ -1,19 +1,15 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
 import { TabView } from "tns-core-modules/ui/tab-view";
-import { Image } from "tns-core-modules/ui/image";
-import { isAndroid, isIOS, device } from "platform";
+import { isAndroid, isIOS } from "platform";
 import * as app from "tns-core-modules/application";
-import { EventData, Observable } from "tns-core-modules/data/observable";
+import { EventData } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import { Page } from "ui/page";
-import { WalletModel } from '~/app/shared/wallet.model';
-import { setTimeout, clearTimeout, setInterval, clearInterval } from 'tns-core-modules/timer/timer';
+import { setTimeout, setInterval, clearInterval } from 'tns-core-modules/timer/timer';
 import { WalletService } from '../shared/services';
 import { Subscription, Observable as ObservableGeneric } from 'rxjs';
-import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
-import { Wallet, Transaction, Address } from '../shared/models/wallet';
-import { IdentityService } from '../shared/services/identity.service';
+import { Wallet } from '../shared/models/wallet';
 import { SnackBar } from 'nativescript-snackbar';
 
 @Component({
@@ -24,12 +20,7 @@ import { SnackBar } from 'nativescript-snackbar';
 })
 export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("tabView") tabView: ElementRef;
-  // public walletData: any;
-  // public wallets: any[];
-  // public activeWallet: any;
 
-  // private reconnectTimer: any;
-  // private keepAliveTimer: any;
   private _keepAliveTimer: any;
   private _walletServiceSub: Subscription;
   private _walletSub: Subscription;
@@ -46,21 +37,15 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public trackedBlockheight: number;
 
-  private _appWallets: ObservableArray<Wallet>;
-  public walletTransactions: ObservableArray<Transaction>;
-  public walletAddresses: ObservableArray<Address>;
-  private creatingNewWallet: boolean;
-
   public walletReady: boolean;
-  // public selectedWallet: Observable;
   public selectedWallet: Wallet;
-
   public refreshingWallet: boolean;
+
+  private creatingNewWallet: boolean;
 
 	constructor(
     private page: Page,
     private _WalletServ: WalletService,
-    private _IdentityServ: IdentityService,
     private _zone: NgZone,
     private _snack: SnackBar
   ) {
@@ -69,13 +54,6 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedWalletId = 0;
 
     this.refreshingWallet = false;
-
-    // this.walletData = this._wallet.walletData;
-    // this.wallets = this._wallet.wallets;
-
-    // this.activeWallet = false;
-    // this.reconnectTimer = null;
-    // this.keepAliveTimer = null;
     this.creatingNewWallet = false;
     this.walletReady = false;
 
@@ -176,13 +154,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case 'WalletService::RefreshWalletStart':
-        console.log('START REFRESH');
         this.notice('Refreshing wallet');
         break;
 
       case 'WalletService::RefreshWalletEnd':
         this.refreshingWallet = false;
-        console.log('END REFRESH');
         this.notice('');
         this.selectedWallet.loadTransactions()
         .then(this.selectedWallet.loadAddresses)
@@ -196,23 +172,9 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setupSubscriptions() {
     console.log('[Wallet Component] @setupSubscription');
-    // this._wallet.on("WalletReady", (eventData) => {
-    //   this.activeWallet = this._wallet.wallets[this.selectedWalletId];
-
-    //   console.log(`[Wallet Module] Wallet is Active`);
-    //   console.log('--- --- [Wallet] --- ---');
-
-    //   console.log('index', this.activeWallet.accountIndex);
-    //   console.log('coin', this.activeWallet.coin);
-    //   console.log('balance', this.activeWallet.balance);
-    //   console.log('transactions', this.activeWallet.transactions.slice(0, 2));
-    //   console.log('unspent', this.activeWallet.unspent.slice(0, 2));
-    //   console.log('external', this.activeWallet.external.slice(0, 3));
-    //   console.log('internal', this.activeWallet.internal.slice(0, 3));
       
-    this._appWallets      = this._WalletServ.wallets$;
-    this._walletServiceSub       = this._WalletServ.eventStream$.subscribe(this.onHandleWalletEvents);
-    this._blockheightSub  = this._WalletServ.trackedBlockheight.subscribe(height => {
+    this._walletServiceSub  = this._WalletServ.eventStream$.subscribe(this.onHandleWalletEvents);
+    this._blockheightSub    = this._WalletServ.trackedBlockheight.subscribe(height => {
       this._zone.run(() => { 
         this.trackedBlockheight = height;
       });
@@ -252,7 +214,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this._walletServiceSub) this._walletServiceSub.unsubscribe();
     if (this._blockheightSub) this._blockheightSub.unsubscribe();
     if (this._walletSub) this._walletSub.unsubscribe();
-    // clearInterval(this._keepAliveTimer);
+    clearInterval(this._keepAliveTimer);
   }
 
   public handleRequestNewAddress(event) {
@@ -292,17 +254,10 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this._walletSub = this.selectedWallet.eventStream$.subscribe((event) => {
-      console.log('WALLET SUB', event);
-      if (event === 'LoadedAddresses') {
-        this.walletAddresses = new ObservableArray();
-      } else if (event === 'TransactionSent') {
-        console.log('@@@@ SAVED @@@@');
+      if (event === 'TransactionSent') {
         this.tabSelectedIndex = 1;
       } 
     });
-
-    this.walletTransactions = this.selectedWallet.transactions$;
-    this.walletAddresses = this.selectedWallet.addresses$;
 
     this.selectedWallet.loadTransactions()
     .then(this.selectedWallet.loadAddresses)
@@ -336,15 +291,14 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     this.creatingNewWallet = true;
     this._WalletServ.createDefaultWallet()
     .then((_defaultWallet: Wallet) => {
-      console.log('[Wallet Component] >> Default wallet created');
+      console.log('Default wallet created');
 
       this.creatingNewWallet = false;
       const wallet = this._WalletServ.wallets$.getItem(this.selectedWalletId);
       this.selectedWallet = wallet;
       this.loadWalletView();
     }).catch(err => {
-      console.log('$$$ GOT ERR');
-      console.log(err.message ? err.message : err);
+      console.log('Default wallet creation error', err.message ? err.message : err);
       this.warning('Unable to create wallet at this time');
     });
   }
@@ -381,26 +335,18 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public onRefreshWallet() {
-    console.log('onRefreshWallet');
     if (this.refreshingWallet) {
+      console.log('Unable to refresh wallet');
       alert('Wallet is already refreshing');
     } else {
+      console.log('Refreshing wallet');
       this.refreshingWallet = true;
       this._WalletServ.refreshWallet(this.selectedWallet);
     }
-    //, typeof this._wallet.refreshWalletDetails);
-    // this._wallet.refreshWalletDetails()
-    // .then(() => {
-    //   console.log('[Wallet] Completed refresh');
-    //   console.log('all wallets', this._wallet.wallets.map(wallet => wallet.balance.confirmed));
-
-    //   this.activeWallet = this._wallet.wallets[this.selectedWalletId];
-    // });
   }
 
   public onWalletSelected(walletSelectedId: number) {
     this.selectedWalletId = walletSelectedId;
-    console.log('SWITCH TO WALLET', this.selectedWalletId);
   }
 
   public onTabsLoaded(event: EventData): void {
@@ -429,7 +375,6 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public switchTabByIndex(index: number): void {
-    console.log('switch tab by index', index);
     this.tabSelectedIndex = index;
   }
 
