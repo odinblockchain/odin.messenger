@@ -324,6 +324,15 @@ export class Wallet extends Database {
     return await this.db.all(`SELECT addresses.id, addresses.wallet_id, addresses.bip44_index, addresses.address, addresses.hash, addresses.balance_conf, addresses.balance_unconf, addresses.external, addresses.used, addresses.last_updated, addresses.last_tx_timestamp FROM addresses INNER JOIN wallets ON addresses.wallet_id = wallets.id WHERE addresses.wallet_id = ?`, this.id);
   }
 
+  public async fetchLastAddress() {
+    if (!await this.dbReady()) {
+      this.log(`failed to pull transactions for wallet#${this.id} – db not active`);
+      return [];
+    }
+
+    return await this.db.get(`SELECT bip44_index FROM addresses WHERE wallet_id=? AND external=? ORDER BY addresses.bip44_index DESC LIMIT 1`, [this.id, true]);
+  }
+
   /**
    * Executes a SQL `UPDATE` on the current Wallet saving the current wallet state
    */

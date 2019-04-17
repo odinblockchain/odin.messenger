@@ -260,7 +260,31 @@ export class WalletService extends StorageService {
   }
 
   public keepAlive() {
-    this.log('--- KeepAlive');
+    this.log('KeepAlive Attempt');
+    return new Promise(async (resolve, reject) => {
+
+      if (!this.electrumxClient) {
+        this.log('--- ElectrumX Client Lost');
+        return resolve();
+      }
+      
+      this._electrumxTimer = setTimeout(this.validateSession, 1000 * 15);
+
+      await this.electrumxClient.server_ping()
+      .then(() => {
+        clearTimeout(this._electrumxTimer);
+        this.log('KeepAlive Success');
+        this.emit('KeepAliveSuccess');
+        return resolve(true);
+      })
+      .catch((err) => {
+        console.log('KeepAlive Error', err.message ? err.message : err);
+        clearTimeout(this._electrumxTimer);
+        this.log('KeepAlive Failure');
+        this.emit('KeepAliveFailure');
+        return resolve(false);
+      });
+    }); 
   }
 
   public async createDefaultWallet(): Promise<Wallet> {
@@ -347,6 +371,31 @@ export class WalletService extends StorageService {
     }
   }
 
+  public async discoverNewAddress(wallet: Wallet): Promise<any> {
+    this.log(`Discover new address for wallet #${wallet.id}`);
+    this.emit(`DiscoverNewAddressStart`);
+
+    const phrase = this._IdentityServ.identity.mnemonicPhrase;
+
+    if (wallet.coin.name === 'ODIN') {
+      let seed  = ODIN.bip39.mnemonicToSeed(phrase);
+      let sroot = ODIN.bip32.fromSeed(seed, ODIN.networks.bitcoin);
+
+      const { bip44_index } = await wallet.fetchLastAddress();
+
+      await this.walletDiscovery(wallet, sroot, wallet.bip44_index, bip44_index);
+      await wallet.loadAddresses();
+      
+      this.emit('DiscoverNewAddressEnd');
+      this.log('[Wallet Discover Address Finished]');
+
+      return wallet;
+    } else {
+      this.emit('DiscoverNewAddressEnd');
+      throw new Error(`Unable to discover new address for wallet #${wallet.id}`);
+    }
+  }
+
   /**
    * @todo cleanup
    * Discovers external and internal addresses associated to an `accountIndex`. Returns a full account
@@ -355,12 +404,12 @@ export class WalletService extends StorageService {
    * @param seed The primary seed hash of which all wallets, accounts, and addresses should exist from.
    * @param accountIndex The current account "wallet" to discover.
    */
-  private async walletDiscovery(wallet: Wallet, pathRoot: any, accountPath: any): Promise<Wallet> {
+  private async walletDiscovery(wallet: Wallet, pathRoot: any, accountPath: any, startIndex?: number): Promise<Wallet> {
     this.emit('StartWalletDiscovery');
     this.log('[Discover Wallet Start]');
 
     // discover external/internal addresses
-    let externalDiscovery = await this.externalAddressDiscovery(wallet, pathRoot, accountPath);
+    let externalDiscovery = await this.externalAddressDiscovery(wallet, pathRoot, accountPath, startIndex);
     let internalDiscovery = await this.internalAddressDiscovery(
       wallet, pathRoot, accountPath, externalDiscovery.addresses.filter(this.usedAddress)
     );
@@ -561,12 +610,12 @@ export class WalletService extends StorageService {
    * @param seed The primary seed hash of which all wallets, accounts, and addresses should exist from.
    * @param accountIndex The current account "wallet" to discover.
    */
-  private async externalAddressDiscovery(wallet: Wallet, seed: any, accountIndex: number): Promise<AddressDiscovery> {
+  private async externalAddressDiscovery(wallet: Wallet, seed: any, accountIndex: number, startIndex?: number): Promise<AddressDiscovery> {
     this.emit('StartDiscoverExternal');
     this.log('[Discover External]');
     
     // path for address, starts at 0
-    let addressIndex: number = 0;
+    let addressIndex: number = startIndex ? startIndex : 0;
 
     // number of "gaps" to establish end of discovery, excludes starting index of 0
     let addressGapCounter: number = 2;
