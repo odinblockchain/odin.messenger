@@ -1,4 +1,4 @@
-# ODIN Messenger Native
+# ODIN Chat Native
 
 ###### v0.3.x
 
