@@ -1,5 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
-import { WalletModel } from '~/app/shared/wallet.model';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, AfterContentChecked, NgZone } from '@angular/core';
+import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
+import { Address } from '~/app/shared/models/wallet';
+import * as Clipboard from 'nativescript-clipboard';
+import { SnackBar } from "nativescript-snackbar";
 
 @Component({
 	moduleId: module.id,
@@ -9,52 +12,46 @@ import { WalletModel } from '~/app/shared/wallet.model';
 })
 
 export class ReceiveComponent implements OnInit, OnChanges {
-  @Input() selectedWalletId: number;
-  @Input() currentWallet: any;
-  @Output() walletSelected: EventEmitter<any> = new EventEmitter();
+  @Input() addresses: ObservableArray<Address>;
+  @Output() requestNewAddress = new EventEmitter();
 
-  public usedExternalAddresses: Array<any>;
-  public unusedAddress: any;
+  public freshAddress: Address;
 
-	constructor(
-    private _wallet: WalletModel
-  ) {
-    this.usedExternalAddresses = [];
-    this.unusedAddress = {};
+  private _snackBar: SnackBar;
+
+	constructor() {
+    this._snackBar = new SnackBar();
   }
 
 	ngOnInit() { }
 
-  ngOnChanges(simpleChanges: any) {
-    console.log('[Wallet >> Receive] onChanges');
-    // console.dir(simpleChanges);
+  ngOnChanges() {
+    if (!this.addresses || !this.addresses.length) return;
 
-    try {
-      if (this.currentWallet.external.length) {
-        this.usedExternalAddresses = this.currentWallet.external.filter(address => {
-          if (address.balance.confirmed > 0 || address.balance.unconfirmed > 0) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-  
-        this.unusedAddress = this.currentWallet.external.find(address => {
-          if (address.balance.confirmed === 0 && address.balance.unconfirmed === 0) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-      } else {
-        this.usedExternalAddresses = [];
-      }
-    } catch(err) {
-      console.log('[Wallet Receive] Current Wallet not loaded yet');
+    const copy = this.addresses.slice(0);
+    this.freshAddress = copy.find(address => {
+      return !!(address.external && !address.used);
+    });
+
+    if (!this.freshAddress) {
+      this.requestNewAddress.emit();
     }
   }
 
-  public proxyWalletSelection(selectedWalletId: number) {
-    this.walletSelected.next(selectedWalletId);
+  public usedAddressFilter(item: Address): boolean {
+    return !!(item.external === true &&
+              item.used === true);
+  }
+
+  public onCopyText(text: string) {
+    Clipboard.setText(text)
+    .then(async () => {
+      try {
+        await this._snackBar.simple('Copied address to clipboard!', '#ffffff', '#333333', 3, false);
+      } catch (err) {
+        console.log('Unable to copy address to clipboard');
+        console.log(err);
+      }
+    });
   }
 }

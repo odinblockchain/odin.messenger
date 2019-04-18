@@ -1,4 +1,6 @@
 // import CryptoJS from "crypto-js";
+//import { screen, device } from 'tns-core-modules/platform';
+//import * as shajs from 'sha.js'
 
 /*!
 * Random number generator with ArcFour PRNG
@@ -37,48 +39,62 @@ export default class SecureRandom {
 
     console.log('\t SecureRandom created');
 
+    /** TODO provide initial entropy based on unique features/information on each device
     // entropy
-    // let entropyStr = "";
+    let entropyStr = "";
+
+    // console.log(device.manufacturer);
+    // console.log(device.model)
+    // console.log(device.osVersion);
+    // console.log(device.uuid);
+    // console.log(device.language);
+    // console.log(screen.mainScreen.heightDIPs);
+    // console.log(screen.mainScreen.heightPixels);
+    // console.log(screen.mainScreen.scale);
+    // console.log(screen.mainScreen.widthDIPs);
+    // console.log(screen.mainScreen.widthPixels);
 
     // screen size and color depth: ~4.8 to ~5.4 bits
-    // entropyStr += (window.screen.height * window.screen.width * window.screen.colorDepth);
-    // entropyStr += (window.screen.availHeight * window.screen.availWidth * window.screen.pixelDepth);
+    entropyStr += (window.screen.height * window.screen.width * window.screen.colorDepth);
+    entropyStr += (window.screen.availHeight * window.screen.availWidth * window.screen.pixelDepth);
 
     // time zone offset: ~4 bits
-    // let dateObj = new Date();
-    // let timeZoneOffset = dateObj.getTimezoneOffset();
+    let dateObj = new Date();
+    let timeZoneOffset = dateObj.getTimezoneOffset();
     
-    // entropyStr += timeZoneOffset;
+    entropyStr += timeZoneOffset;
 
     // user agent: ~8.3 to ~11.6 bits
-    // entropyStr += navigator.userAgent;
+    entropyStr += navigator.userAgent;
 
     // browser plugin details: ~16.2 to ~21.8 bits
-    // var pluginsStr = "";
-    // for (var i = 0; i < navigator.plugins.length; i++) {
-    //   pluginsStr += navigator.plugins[i].name + " " + navigator.plugins[i].filename + " " + navigator.plugins[i].description + " " + navigator.plugins[i].version + ", ";
-    // }
-    // var mimeTypesStr = "";
-    // for (var i = 0; i < navigator.mimeTypes.length; i++) {
-    //   mimeTypesStr += navigator.mimeTypes[i].description + " " + navigator.mimeTypes[i].type + " " + navigator.mimeTypes[i].suffixes + ", ";
-    // }
-    // entropyStr += pluginsStr + mimeTypesStr;
+    var pluginsStr = "";
+    for (var i = 0; i < navigator.plugins.length; i++) {
+      pluginsStr += navigator.plugins[i].name + " " + navigator.plugins[i].filename + " " + navigator.plugins[i].description + " " + navigator.plugins[i].version + ", ";
+    }
+    var mimeTypesStr = "";
+    for (var i = 0; i < navigator.mimeTypes.length; i++) {
+      mimeTypesStr += navigator.mimeTypes[i].description + " " + navigator.mimeTypes[i].type + " " + navigator.mimeTypes[i].suffixes + ", ";
+    }
+    entropyStr += pluginsStr + mimeTypesStr;
 
     // cookies and storage: 1 bit
-    // entropyStr += navigator.cookieEnabled + typeof (sessionStorage) + typeof (localStorage);
+    entropyStr += navigator.cookieEnabled + typeof (sessionStorage) + typeof (localStorage);
 
     // language: ~7 bit
-    // entropyStr += navigator.language;
+    entropyStr += navigator.language;
+    
     // history: ~2 bit
+    entropyStr += window.history.length;
 
-    // entropyStr += window.history.length;
     // location
-    // entropyStr += window.location;
+    entropyStr += window.location;
 
-    // let entropyBytes = Crypto.SHA256(entropyStr, { asBytes: true });
-    // for (var i = 0 ; i < entropyBytes.length ; i++) {
-    //   this.seedInt8(entropyBytes[i]);
-    // }
+    let entropyBytes = Crypto.SHA256(entropyStr, { asBytes: true });
+    for (var i = 0 ; i < entropyBytes.length ; i++) {
+      this.seedInt8(entropyBytes[i]);
+    }
+    */
   }
 
   // Mix in the current time (w/milliseconds) into the pool

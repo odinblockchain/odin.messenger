@@ -139,6 +139,7 @@ export class OSMClientService {
         console.log('Error occurred');
         console.log(e.message ? e.message : e);
         console.dir(e);
+        return reject(e.message ? e.message : e);
       });
     });
   }

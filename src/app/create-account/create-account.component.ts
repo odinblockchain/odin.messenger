@@ -1,13 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Observable, Page, PropertyChangeData } from "tns-core-modules/ui/page/page";
-import Seeder from '~/app/Seeder'
-import SecureRandom from '~/app/SecureRandom'
+import Seeder from '~/app/lib/Seeder'
+import SecureRandom from '~/app/lib/SecureRandom'
 import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { confirm } from "tns-core-modules/ui/dialogs";
 import * as utilityModule from "utils/utils";
-import { UserModel } from '~/app/shared/user.model';
+// import { UserModel } from '~/app/shared/user.model';
 import { GestureTypes, TouchGestureEventData } from "tns-core-modules/ui/gestures";
+import { IdentityService } from '../shared/services/identity.service';
+import { AccountService } from '../shared/services';
+import { Identity } from '../shared/models/identity/identity.model';
+import { Account } from '../shared/models/identity';
+import { Client } from '../shared/models/messenger/client.model';
+import { ClientService } from '../shared/services/client.service';
+import { messaging, Message } from "nativescript-plugin-firebase/messaging";
+
 
 @Component({
 	moduleId: module.id,
@@ -15,11 +23,11 @@ import { GestureTypes, TouchGestureEventData } from "tns-core-modules/ui/gesture
 	templateUrl: './create-account.component.html',
 	styleUrls: ['./create-account.component.css']
 })
-
 export class CreateAccountComponent implements OnInit {
-  public seeder : Seeder;
-  public secureRandom = new SecureRandom();
+  @ViewChild('scrollViewGenerate') scrollViewGenerate: ElementRef;
 
+  public seeder: Seeder;
+  public secureRandom: SecureRandom;
   public activeStep: number;
 
   private _sb: any;
@@ -28,37 +36,59 @@ export class CreateAccountComponent implements OnInit {
   public verifyBackupPhrase: string;
 
   public mnemonicSaved: boolean;
-  
-  public user;
+
+  public identity: Identity;
+  public primaryAccount: Account;
+  public primaryClient: Client;
+
+  public busyRegistering: boolean;
+
+  // public user;
 
 	constructor(
     private page: Page,
-    private userModel: UserModel) {
-    this.page.actionBarHidden = true;
-  }
-
-	ngOnInit(): void {
-    // clear();
-
+    // private userModel: UserModel,
+    private IdentityServ: IdentityService,
+    private AccountServ: AccountService,
+    private ClientServ: ClientService
+  ) {
     this._sb = new SnackBar();
     this.verifyBackupPhrase = '';
     this.mnemonicSaved = false;
     this.hasVerifiedBackup = false;
     this.activeStep = 1;
+    this.page.actionBarHidden = true;
+    this.busyRegistering = false;
 
-    this.user = this.userModel;
-    this.user.addEventListener(Observable.propertyChangeEvent, this.onAccountUpdate);
+    this.identity       = this.IdentityServ.identity;
+    this.primaryAccount = new Account();
+    this.primaryClient  = new Client();
 
-    this.seeder = new Seeder();
+    this.useSeed = this.useSeed.bind(this);
+    this.onAdvanceStep = this.onAdvanceStep.bind(this);
+  }
 
-    console.log('CHECK USERMODEL FOR SAVEDATA');
+	ngOnInit(): void {
 
-    if (this.user.saveData.mnemonicPhrase != '') {
-      console.log('>> USING SAVEDATA');
-      this.seeder.poolFilled = true;
-      this.seeder.complete();
-      this.activeStep = 2;
+    console.log(`Notifications enabled? ${messaging.areNotificationsEnabled()}`);
+
+    console.log(this.primaryAccount.registered);
+    console.log('CHECK USERMODEL FOR SAVEDATA', this.identity);
+
+    // if (this.user.saveData.mnemonicPhrase != '') {
+    if (this.identity.mnemonicPhrase != '') {
+      this.primaryAccount = this.AccountServ.accounts[0];
+      this.primaryClient  = this.ClientServ.findClientById(this.primaryAccount.client_id);
+      console.log('PRIMARY', this.primaryAccount.serialize());
+      console.log('CLIENT', this.primaryClient.serialize());
+
+      this.onAdvanceStep(2);
     } else {
+      this.secureRandom   = new SecureRandom();
+      this.seeder         = new Seeder(25);
+
+      console.log('>> USING SEEDER');
+      this.seeder.poolFilled = false;
       this.seeder.on('complete', (eventData) => {
         console.log('>> Master seed generation complete');
         this.useSeed(this.seeder.sha256Seed());
@@ -66,17 +96,65 @@ export class CreateAccountComponent implements OnInit {
     }
   }
 
-  useSeed = async function(seedHex?: string) {
-    await this.user.onSaveMasterSeed(seedHex);
-    this.mnemonicSaved = true;
+  /**
+   * Use the provided `seedHex` that was generated with random entropy provided by the user
+   * to initialize the app in stages:
+   * 
+   * > Create primary identity (appStorage) for app (identities can have multiple accounts)
+   * > Create primary account (db) based on `mnemonicPhrase` and starting `bip44_index`
+   * > Create signal client (db) based on account details
+   * > Update primary account to link signal client
+   * 
+   * Move to Step #2 (Display mnemonic phrase)
+   * 
+   * @param seedHex 
+   */
+  private async useSeed(seedHex?: string) {
+    this.IdentityServ.saveMasterseed(seedHex)
+    .then((id: Identity) => this.AccountServ.createAccountFromMnemonic(id.mnemonicPhrase, 0))
+    .then((account: Account) => {
+      this.primaryAccount = account;
+      return this.ClientServ.createClient(new Client({ account_username: account.username }))
+    })
+    .then((client: Client) => {
+      this.primaryClient = client;
+      this.primaryAccount.client_id = client.id;
+      return this.primaryAccount.save();
+    })
+    .then(() => {
+      this.mnemonicSaved = true;
+    })
+    .catch(console.log);
+  }
+
+  private onVerifyBackup = async function(): Promise<boolean> {
+    const phraseInput = this.verifyBackupPhrase && this.verifyBackupPhrase.length
+                          ? this.verifyBackupPhrase.toLowerCase()
+                          : '';
+
+    console.log('ON RETURN PRESS', phraseInput, this.identity.mnemonicPhrase);
+
+    if (phraseInput === this.identity.mnemonicPhrase.toLowerCase()) {
+      this.hasVerifiedBackup = true;
+      this._sb.simple('You have verified your mnemonic phrase!', '#ffffff', '#333333', 3, false);
+      return true;
+    } else {
+      this.hasVerifiedBackup = false;
+      this._sb.simple('The mnemonic phrase entered was incorrect! Please check spelling and word placement.', '#ffffff', '#333333', 3, false);
+      return false;
+    }
   }
 
   /**
    * View Actions
    */
 
-  onAdvanceStep = async function(stepNumber: number) {
+  public onAdvanceStep = async function(stepNumber: number): Promise<void> {
     console.log(`advance::${stepNumber}`);
+    if (stepNumber === 2) {
+      delete this.seeder;
+      delete this.secureRandom;
+    }
 
     if (stepNumber === 4) {
       console.log('entered phrase:', this.verifyBackupPhrase);
@@ -90,47 +168,26 @@ export class CreateAccountComponent implements OnInit {
     }
   }
 
-  onRegisterAccount() {
-    this.user.onRegisterUser();
+  public onTouchEntropy(args: TouchGestureEventData) {
+    if (!this.seeder.poolFilled) {
+      this.seeder.seed(args.getX(), args.getY())
+    }
   }
 
-  onAccountUpdate(args: PropertyChangeData) {
-    console.dir(this);
-    // args is of type PropertyChangeData
-    if (args.eventName === 'propertyChange') {
-      if (args.propertyName === 'mnemonicPhrase') {
-        console.log('SET STEP2');
-        // this.activeStep = 2;
-      }
-    }
+  public onRegisterAccount() {
+    if (this.busyRegistering === true) return;
 
-    console.log('onAccountModelUpdate', {
-      eventName: args.eventName,
-      propertyName: args.propertyName,
-      newValue: args.value,
-      oldValue: args.oldValue
+    this.busyRegistering = true;
+    this.AccountServ.registerAccount(this.identity, this.primaryAccount, this.primaryClient)
+    .then()
+    .catch((err) => {
+      console.log('Registration Faied');
+      console.log(err.message ? err.message : err);
+      this.busyRegistering = false;
     });
   }
 
-  onTouch(args: TouchGestureEventData) {
-    if (!this.seeder.poolFilled)
-      this.seeder.seed(args.getX(), args.getY())
-  }
-
-  onVerifyBackup = async function() {
-    console.log('ON RETURN PRESS');
-    if (this.verifyBackupPhrase.toLowerCase() === this.user.saveData.mnemonicPhrase.toLowerCase()) {
-      this.hasVerifiedBackup = true;
-      this._sb.simple('You have verified your mnemonic phrase!', '#ffffff', '#333333', 3, false);
-      return true;
-    } else {
-      this.hasVerifiedBackup = false;
-      this._sb.simple('The mnemonic phrase entered was incorrect! Please check spelling and word placement.', '#ffffff', '#333333', 3, false);
-      return false;
-    }
-  }
-
-  onSkipVerifyMnemonic() {
+  public onSkipVerifyMnemonic() {
     confirm({
       title: "Skip Backup Verification?",
       message: "While we are unable to restore your account whether you verify or not, this ensures you have the correct mnemonic phrase backed up. Are you sure you wish to skip?",
@@ -146,7 +203,7 @@ export class CreateAccountComponent implements OnInit {
     });
   }
 
-  onCopyText(text: string) {
+  public onCopyText(text: string) {
     let sb = this._sb;
     Clipboard.setText(text)
     .then(async function() {
@@ -159,11 +216,11 @@ export class CreateAccountComponent implements OnInit {
     });
   }
 
-  openTos() {
+  public openTos() {
     utilityModule.openUrl('https://odinblockchain.org/messenger-terms-of-service');
   }
 
-  openPrivacy() {
+  public openPrivacy() {
     utilityModule.openUrl('https://odinblockchain.org/messenger-privacy-policy');
   }
 }

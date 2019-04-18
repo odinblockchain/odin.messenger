@@ -1,7 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { Page } from "ui/page";
 import { RouterExtensions } from "nativescript-angular/router";
-import { UserModel } from "~/app/shared/user.model";
+// import { UserModel } from "~/app/shared/user.model";
+import { StorageService } from "../shared";
+import { AccountService } from "../shared/services";
+import { Account } from "../shared/models/identity";
 
 @Component({
     selector: "Splashscreen",
@@ -9,23 +12,39 @@ import { UserModel } from "~/app/shared/user.model";
     templateUrl: "./home.component.html",
     styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
+  public currentActivity: string;
+  private storageEventListener: any;
 
   constructor(
     private _page: Page,
     private _router: RouterExtensions,
-    private _user: UserModel) {
+    // private _user: UserModel,
+    private _storage: StorageService,
+    private Account: AccountService) {
     this._page.actionBarHidden = true;
   }
 
+  ngOnDestroy(): void {
+    this.storageEventListener && this.storageEventListener.unsubscribe();
+  }
+
   ngOnInit(): void {
-    if (this._user.saveData.registered) {
-      console.log('>> Session exists, redirect to messages home');
-      this._router.navigate(['/messenger'], { clearHistory: true });
-    } else {
-      console.log('>> No session exists, redirect to splashscreen');
-      this._router.navigate(['/splashscreen'], { clearHistory: true });
-    }
+    this.storageEventListener = this._storage.eventStream$.subscribe(data => {
+      this.currentActivity = data;
+
+      if (data === 'StorageService::Ready') {
+        const registeredAccount = this.Account.accounts.find((a: Account) => a.registered === true);
+      
+        if (registeredAccount) {
+          console.log('[Home] >> Session exists, redirect to messages home');
+          this._router.navigate(['/messenger'], { clearHistory: true });
+        } else {
+          console.log('[Home] >> No session exists, redirect to splashscreen');
+          this._router.navigate(['/splashscreen'], { clearHistory: true });
+        }
+      }
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import * as moment from "moment";
+import * as moment from 'moment';
 
 @Pipe({
   name: 'relativeTime',
@@ -11,6 +11,10 @@ export class RelativeTime implements PipeTransform {
 
   transform(blocktime: number): string {
     try {
+      if (blocktime === 0) {
+        return '—';
+      }
+
       let timeFormats = [
         'year',
         'month',

@@ -1,96 +1,75 @@
 <GridLayout class="page" rows="*" columns="*">
   
   <ScrollView row="1" class="overview">
-    <GridLayout rows="170, *">
 
-      <WalletSelection row="0" [selectedWallet]="selectedWalletId" (walletSelected)="proxyWalletSelection($event)"></WalletSelection>
-      <!-- <ScrollView row="0" orientation="horizontal">
-        <StackLayout class="wallets" orientation="horizontal">
+    <GridLayout class="view" rows="auto, *, 10">
 
-          <AbsoluteLayout class="wallet first" [class.active]="selectedWallet == 0" (tap)="selectedWallet = 0">
-            <ContentView class="wallet--accent"></ContentView>
-
-            <ContentView class="wallet--logo">
-              <Image src="res://icon" height="200"></Image>
-            </ContentView>
-
-            <StackLayout class="wallet--meta">
-              <Label class="wallet--label" textWrap="true" text="wallet name"></Label>
-              <Label class="wallet--balance">
-                <FormattedString>
-                  <Span text="1,950,124.12345678"></Span>
-                  <Span class="wallet--balance--symbol" text=" ODIN"></Span>
-                </FormattedString>
-              </Label>
-              <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
-              <Label class="wallet--last-transaction-time" text="5 hours ago"></Label>
-            </StackLayout>
-          </AbsoluteLayout>
-
-          <AbsoluteLayout class="wallet" [class.active]="selectedWallet == 1" (tap)="selectedWallet = 1">
-            <ContentView class="wallet--accent"></ContentView>
-
-            <ContentView class="wallet--logo">
-              <Image src="res://icon" height="200"></Image>
-            </ContentView>
-
-            <StackLayout class="wallet--meta">
-              <Label class="wallet--label" textWrap="true" text="wallet#2"></Label>
-              <Label class="wallet--balance">
-                <FormattedString>
-                  <Span text="950,124.12345678"></Span>
-                  <Span class="wallet--balance--symbol" text=" ODIN"></Span>
-                </FormattedString>
-              </Label>
-              <Label class="wallet--last-transaction-label" text="Latest Transaction"></Label>
-              <Label class="wallet--last-transaction-time" text="10 hours ago"></Label>
-            </StackLayout>
-          </AbsoluteLayout>
-
+      
+      <StackLayout row="0" class="addresses">
+        <StackLayout class="header header--help" [class.active]="freshAddressHelp" (tap)="freshAddressHelp = !freshAddressHelp">
+          <FlexboxLayout class="header--help-label">
+            <Label class="h2" text="Fresh address"></Label>
+            <Label class="fa icon" text="&#xf059;"></Label>
+          </FlexboxLayout>
+          <Label class="header--help-content" textWrap="true" text="For optimal security, we will generate a new ODIN address after a previous address has been used. They are all still associated with your Identity seed and aren't lost."></Label>
         </StackLayout>
-      </ScrollView> -->
 
-      <GridLayout row="1" class="view" rows="auto, *, 10">
+        <StackLayout *ngIf="freshAddress" class="address" (tap)="onCopyText(freshAddress?.address)">
+          <Label textWrap="true" class="address--hash" [text]="freshAddress?.address"></Label>
 
-        <ContentView row="0" class="card">
-          <StackLayout class="card-content">
-            <Label class="h2" textWrap="true" text="Fresh ODIN address"></Label>
-            <Label class="body help" textWrap="true" text="For optimal security, we will generate a new ODIN address after a previous address has been used. They are all still associated with your Identity seed and aren't lost."></Label>
-            <TextView textWrap="true" autocorrect="false" [text]="unusedAddress?.address" class="input input-border" hint=""></TextView>
-          </StackLayout>
-        </ContentView>
+          <GridLayout cols="auto,*">
+            <Label col="0" class="address--meta">
+              <FormattedString>
+                <Span class="address--last-used-label" text="Never used"></Span>
+              </FormattedString>
+            </Label>
+            <ContentView col="1" class="address--copy">
+              <Label text="&#xf24d;" class="fa u-text-align-right"></Label>
+            </ContentView>
+          </GridLayout>
+        </StackLayout>
 
-        <ContentView row="1" class="addresses">
-          <StackLayout>
+        <StackLayout *ngIf="!freshAddress" class="address">
+          <Label textWrap="true" class="address--hash" text="No fresh address available"></Label>
+        </StackLayout>
+      </StackLayout>
 
-            <StackLayout class="header">
-              <Label class="h2" textWrap="true" text="Used addresses"></Label>
-              <Label class="p" textWrap="true" text="These are addresses you have used in the past and may continue to use if you wish."></Label>
-            </StackLayout>
+      <StackLayout row="1" class="addresses">
+        <StackLayout class="header header--help" [class.active]="usedAddressHelp" (tap)="usedAddressHelp = !usedAddressHelp">
+          <FlexboxLayout class="header--help-label">
+            <Label class="h2" text="Used addresses"></Label>
+            <Label class="fa icon" text="&#xf059;"></Label>
+          </FlexboxLayout>
+          <Label class="header--help-content" textWrap="true" text="These are addresses you have used in the past and may continue to use if you wish."></Label>
+        </StackLayout>
 
-            <StackLayout class="address" *ngFor="let address of usedExternalAddresses; index as i;">
-              <Label textWrap="true" class="address--hash" [text]="address.address"></Label>
+        <RadListView [items]="addresses" [filteringFunction]="usedAddressFilter">
+          <ng-template tkListItemTemplate let-item="item" let-i="index">
+            <StackLayout class="address" (tap)="onCopyText(item.address)">
 
-              <GridLayout cols="auto,*">
-                <Label col="0" class="address--meta">
+              <FlexboxLayout class="address--hash-wrap">
+                <Label textWrap="true" class="address--hash" [text]="item.address"></Label>
+                <Label class="fa" text="&#xf24d;"></Label>
+              </FlexboxLayout>
+
+              <GridLayout cols="auto,*" rows="auto">
+                <Label col="0" row="0" class="address--meta">
                   <FormattedString>
                     <Span class="address--last-used-label" text="Last used"></Span>
-                    <Span class="address--last-used-time" text=" — "></Span>
+                    <Span class="address--last-used-label" text=" – "></Span>
+                    <Span class="address--last-used-time" [text]="item.last_tx_timestamp | relativeTime"></Span>
                   </FormattedString>
                 </Label>
-                <ContentView col="1" class="address--amount">
-                  <Label [text]="address.balance.confirmed | satoshiValueConverter"></Label>
+                <ContentView col="1" row="0" class="address--amount">
+                  <Label class="u-text-align-right" [text]="item.balance_conf | satoshiValueConverter"></Label>
                 </ContentView>
               </GridLayout>
             </StackLayout>
+          </ng-template>
+        </RadListView>
+      </StackLayout>
 
-          </StackLayout>
-        </ContentView>
-
-      </GridLayout>
-      
     </GridLayout>
   </ScrollView>
-    
-  </GridLayout>
-  
+      
+</GridLayout>

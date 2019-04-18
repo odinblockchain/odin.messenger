@@ -3,15 +3,15 @@ RadSideDrawer is a UI component part of the Progress NativeScript UI set of comp
 Learn more about the RadSideDrawer UI component and how it can be customized in this documentation article:
 http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawer/getting-started
 -->
-<RadSideDrawer [drawerTransition]="sideDrawerTransition" [gesturesEnabled]="userAccount.registered">
+<RadSideDrawer [drawerTransition]="sideDrawerTransition" [gesturesEnabled]="userAccount?.registered">
 
   <GridLayout tkDrawerContent rows="auto, *, 50" class="sidedrawer sidedrawer-left">
     <StackLayout row="0" class="sidedrawer-header">
       <FlexboxLayout class="client-name">
-        <Label class="innerLabel" text="{{ userAccount.hashAccount[0] }}"></Label>
+        <Label class="innerLabel" text="{{ userAccount?.username[0] }}"></Label>
       </FlexboxLayout>
       <!-- <Label class="innerLabel bold" text="ME"></Label> -->
-      <Label class="sidedrawer-header-text var" [text]="userAccount.hashAccount"></Label>
+      <Label class="sidedrawer-header-text var" [text]="userAccount?.username" (tap)="onCopyText(userAccount?.username)" (longPress)="onCopyText(userAccount?.username)"></Label>
     </StackLayout>
 
     <ScrollView row="1">
@@ -56,10 +56,24 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
   </GridLayout>
 
   <StackLayout tkMainContent class="app-view">
-    <Label *ngIf="userAccount.osmConnected" class="no-connection">
+    <Label class="no-connection" *ngIf="initAttempts >= 4">
       <FormattedString>
         <Span class="fa" text="&#xf12a;   "></Span>
-        <Span text="NOT CONNECTED"></Span>
+        <Span text="UNABLE TO BOOT"></Span>
+      </FormattedString>
+    </Label>
+
+    <Label class="no-connection" *ngIf="['unknown', 'none'].includes(networkState)">
+      <FormattedString>
+        <Span class="fa" text="&#xf12a;&nbsp;&nbsp;"></Span>
+        <Span text="LIMITED NETWORK DETECTED"></Span>
+      </FormattedString>
+    </Label>
+
+    <Label class="no-connection" *ngIf="osmServerError">
+      <FormattedString>
+        <Span class="fa" text="&#xf12a;&nbsp;&nbsp;"></Span>
+        <Span text="LIMITED MESSAGE CONNECTION"></Span>
       </FormattedString>
     </Label>
 

@@ -1,4 +1,4 @@
-@import '~/app-variables';
+@import "~/app-variables.scss";
 
 /**
   Wallet
@@ -30,6 +30,28 @@ $wallet--border-radius: 4;
   }
 }
 
+.wallet--add-new {
+  .wallet--content {
+    left: 15;
+    top: 30;
+
+    .wallet--label {
+      font-size: 16;
+    }
+  }
+
+  .wallet--notice {
+    background-color: $odin-green;
+    width: $wallet--width;
+    border-radius: 0 0 $wallet--border-radius $wallet--border-radius;
+    
+    .wallet--label {
+      font-size: 12;
+      padding: 5 10;
+    }
+  }
+}
+
 .wallet--meta {
   left: 15;
   top: 30;
@@ -40,6 +62,7 @@ $wallet--border-radius: 4;
   width: $wallet--width;
   height: 5;
   border-radius: $wallet--border-radius $wallet--border-radius 0 0;
+  opacity: 0.5;
 }
 
 .wallet--label {

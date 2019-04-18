@@ -8,7 +8,14 @@ import * as app from "tns-core-modules/application";
 import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { GridLayout } from "ui/layouts/grid-layout";
 import { RouterExtensions } from "nativescript-angular/router";
-import { UserModel, ISignalAddress } from '~/app/shared/user.model';
+// import { UserModel, ISignalAddress } from '~/app/shared/user.model';
+// import { SignalAddress } from '../shared/models/signal';
+// import { AccountService } from '../shared/services';
+import { IdentityService } from '../shared/services/identity.service';
+import { Contact, Message } from '../shared/models/messenger';
+import { SnackBar } from 'nativescript-snackbar';
+// import { StorageService } from '../shared';
+// import { PreferencesService } from '../shared/preferences.service';
 
 @Component({
 	moduleId: module.id,
@@ -18,23 +25,53 @@ import { UserModel, ISignalAddress } from '~/app/shared/user.model';
 })
 
 export class MessengerComponent implements OnInit {
-  public friends: ISignalAddress[];
+  // public friends: SignalAddress[];
+  public friends: Contact[];
 
 	constructor(
     private _page: Page,
     private _router: RouterExtensions,
-    private _user: UserModel) {
-    // this._page.actionBarHidden = true;
-    let _this = this;
-    this._user.on("ContactsRestored", function(eventData) {
-      console.log(`[UserModel Event] --- ${eventData.eventName}`);
-      _this.friends = eventData.object.get('friends');
-    });
+    // private _user: UserModel,
+    // private Account: AccountService,
+    private IdentityServ: IdentityService,
+    private _snack: SnackBar
+    // private Storage: StorageService,
+    // private Preferences: PreferencesService
+  ) {
+    this.friends = [];
+
+    this.onFetchMessages = this.onFetchMessages.bind(this);
+
+    console.log('ENV NAME?', global['ENV_NAME']);
   }
 
   ngOnInit() {
-    this.friends = this._user.friends;
-    console.log('friends?', this._user.friends);
+    console.log('view >> /messenger');
+    this.IdentityServ.getActiveAccount().loadContacts()
+    .then((contacts: Contact[]) => {
+      console.log('loaded contacts', contacts.map(c => `${c.username}`).join(','));
+      this.friends = contacts;
+    })
+    .catch(console.log);
+
+    // this.IdentityServ.activeAccount.fetchMessages(this.IdentityServ.activeAccount.client)
+    // .then((messages: any[]) => {
+    //   while(messages.length) {
+    //     const message = messages.shift();
+    //     console.log(`handle`, message.key);
+    //     this.IdentityServ.activeAccount.handleMessage(new Message({
+    //       key: message.key,
+    //       account_bip44: this.IdentityServ.activeAccount.bip44_index,
+    //       contact_username: message.value.accountHash,
+    //       owner_username: this.IdentityServ.activeAccount.username,
+    //       message: message.value.ciphertextMessage,
+    //       timestamp: message.value.timestamp
+    //     }));
+    //   }
+
+    //   console.log('done');
+    // })
+    // .catch(console.log);
   }
   
   onAddContact() {
@@ -47,6 +84,7 @@ export class MessengerComponent implements OnInit {
   }
 
   onViewMessages(contactIdentity: string) {
+    console.log('onViewMessage', contactIdentity);
     this._router.navigate(['/messenger/message', contactIdentity], {
       queryParams: {
         name: 'foobar',
@@ -81,6 +119,18 @@ export class MessengerComponent implements OnInit {
   }
 
   onFetchMessages() {
-    this._user.fetchMessages();
+    if (this.IdentityServ.getActiveAccount()) {
+      this._snack.simple('Fetching new messages', '#ffffff', '#333333', 3, false);
+      this.IdentityServ.getActiveAccount().fetchRemoteMessages()
+      .then(() => {
+        console.log('All messages have been fetched');
+        this._snack.simple('All new messages fetched', '#ffffff', '#333333', 3, false);
+      }).catch((err) => {
+        console.log('Fetch messages error', err.message ? err.message : err);
+        this._snack.simple('Failed to fetch messages', '#ffffff', '#333333', 3, false);
+      });
+    } else {
+      console.log('NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
+    }
   }
 }

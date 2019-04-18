@@ -1,8 +1,7 @@
 // Place any CSS rules you want to apply on both iOS and Android here.
 // This is where the vast majority of your CSS code goes.
 // Font icon class
-
-
+@import "~/app-variables.scss";
 
 /**
   Primary
@@ -160,6 +159,10 @@
       color: #ffffff;
     }
   }
+
+  &.disabled {
+    opacity: 0.5;
+  }
 }
 
 /**
@@ -203,6 +206,11 @@
     }
   }
 
+  &.card--accent {
+    border-color: $warning;
+    border-bottom-width: 2;
+  }
+
   .h2 {
     font-size: 24;
     margin-bottom: 10;
@@ -218,6 +226,48 @@
 
     &.last {
       padding-bottom: 10;
+    }
+  }
+}
+
+.header--help {
+  margin: 30 0;
+
+  .header--help-label {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10;
+
+    .h2 {
+      margin: 0;
+      padding: 0;
+      font-size: 20;
+    }
+
+    .icon {
+      font-size: 14;
+      margin-left: 10;
+      opacity: 0.7
+    }
+  }
+
+  .header--help-content {
+    font-size: 12;
+    margin: 0 15;
+    display: none;
+    height: 0;
+  }
+
+  &.active {
+    .header--help-label {
+      .icon {
+        opacity: 1;
+      }
+    }
+
+    .header--help-content {
+      height: auto;
     }
   }
 }
@@ -432,4 +482,19 @@ RadSideDrawer {
 
 .u-font-size-xl {
   font-size: 40;
+}
+
+.body,
+.p {
+  &.font-xs {
+    font-size: 10 !important;
+  }
+
+  &.font-sm {
+    font-size: 12 !important;
+  }
+
+  &.font-md {
+    font-size: 14 !important;
+  }
 }

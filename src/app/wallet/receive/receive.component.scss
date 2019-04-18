@@ -1,4 +1,4 @@
-@import '~/app-variables';
+@import "~/app-variables.scss";
 
 /**
   Addresses
@@ -8,22 +8,23 @@
 
   .header {
     margin-left: 10;
-    margin-bottom: 30;
+    margin-bottom: 15;
   }
 
   .h2 {
     font-size: 20;
   }
+
+  .p {
+    font-size: 12;
+  }
 }
 
 .address {
-  // background-color: rgba(255,255,255,0.3);
-  // padding: 10;
   padding: 0 0 20;
-  margin: 0 10 20;
+  margin: 0 0 20;
   border-color: $hr-light-color;
   border-bottom-width: 1;
-  // box-sizing: border-box;
 }
 
 .address--hash {
@@ -31,21 +32,21 @@
   margin-bottom: 10;
 }
 
+.address--hash-wrap {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
 .address--meta {
   font-size: 12;
   margin-right: 10;
 }
 
-.address--amount {
+.address--amount,
+.address--copy {
   font-size: 14;
   font-weight: bold;
-  // text-align: right;
-  // border-width: 1;
-  // border-color: #000000;
-  // margin-left: 10;
-  // margin-right: 33;
-
-  Label {
-    text-align: right;
-  }
 }

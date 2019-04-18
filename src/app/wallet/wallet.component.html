@@ -7,42 +7,52 @@
   <Label class="action-bar--title" text="Wallet"></Label>
 </ActionBar>
 
-<GridLayout rows="auto,*,auto">
-  <FlexboxLayout class="walletNoticeBar" row="0" [class.warning]="walletData.warning" [class.notice]="walletData.notice">
-    <ActivityIndicator *ngIf="!walletData.loaded || !activeWallet" class="activity-indicator" [busy]="!walletData.loaded || !activeWallet"></ActivityIndicator>
-    <Label *ngIf="walletData.warning" textWrap="true" [text]="walletData.warningText"></Label>
-    <Label *ngIf="walletData.notice" textWrap="true" [text]="walletData.noticeText"></Label>
+<GridLayout rows="auto, 170, *, auto">
+  <FlexboxLayout row="0" class="walletNoticeBar"[class.warning]="warningActive" [class.notice]="noticeActive">
+    <ActivityIndicator *ngIf="noticeActive" class="activity-indicator" [busy]="noticeActive"></ActivityIndicator>
+    <Label *ngIf="warningActive" textWrap="true" [text]="warningContent"></Label>
+    <Label *ngIf="noticeActive" textWrap="true" [text]="noticeContent"></Label>
   </FlexboxLayout>
 
-  <TabView class="tabView" row="1" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)">
-      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Send [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Send>
-      </ContentView>
+  <StackLayout row="1" orientation="horizontal" class="wallet-section--container">
+    <WalletSelection [selectedWallet]="selectedWalletId" (walletSelected)="onWalletSelected($event)" ></WalletSelection>
+  </StackLayout>
 
-      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Overview [blockheight]="blockheight" [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Overview>
-        <!-- <Button height="50" width="200" text="{{ lightBar ? 'dark' : 'light' }}" (tap)="switchView()"></Button> -->
-      </ContentView>
+  <TabView row="2" class="tabView" androidTabsPosition="bottom" [selectedIndex]="tabSelectedIndex" (loaded)="onTabsLoaded($event)" androidOffscreenTabLimit="4">
+    <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
+      <Send [currentWallet]="selectedWallet"
+            [sendTransactionFn]="onSendTransaction">
+      </Send>
+    </ContentView>
 
-      <ContentView class="tabItemView" [class.loading]="!walletData.loaded" *tabItem>
-        <Receive [currentWallet]="activeWallet" [selectedWalletId]="selectedWalletId" (walletSelected)="onWalletSelected($event)"></Receive>
-      </ContentView>
+    <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
+      <Overview [transactions]="selectedWallet?.transactions$"
+                [blockheight]="trackedBlockheight"
+                [currentWallet]="selectedWallet">
+      </Overview>
+    </ContentView>
+
+    <ContentView class="tabItemView" [class.loading]="!walletReady" *tabItem>
+      <Receive  [addresses]="selectedWallet?.addresses$"
+                (requestNewAddress)="handleRequestNewAddress($event)">
+      </Receive>
+    </ContentView>
   </TabView>
 
-  <GridLayout row="2" columns="*,*,*" class="tab-view">
-      <StackLayout col="0" class="tab--item" [class.active]="tabSelectedIndex === 0" (tap)="tabSelectedIndex = 0">
-        <Image class="tab--item--icon" src="res://send_white" height="24"></Image>
-        <Label class="tab--item--label" text="Send"></Label>
-      </StackLayout>
+  <GridLayout row="3" columns="*,*,*" class="tab-view">
+    <StackLayout col="0" class="tab--item" [class.active]="tabSelectedIndex === 0" (tap)="tabSelectedIndex = 0">
+      <Image class="tab--item--icon" src="res://send_white" height="24"></Image>
+      <Label class="tab--item--label" text="Send"></Label>
+    </StackLayout>
 
-      <StackLayout col="1" class="tab--item" [class.active]="tabSelectedIndex === 1" (tap)="tabSelectedIndex = 1">
-        <Image class="tab--item--icon" src="res://grid_white" height="24"></Image>
-        <Label class="tab--item--label" text="Home"></Label>
-      </StackLayout>
+    <StackLayout col="1" class="tab--item" [class.active]="tabSelectedIndex === 1" (tap)="tabSelectedIndex = 1">
+      <Image class="tab--item--icon" src="res://grid_white" height="24"></Image>
+      <Label class="tab--item--label" text="Home"></Label>
+    </StackLayout>
 
-      <StackLayout col="2" class="tab--item" [class.active]="tabSelectedIndex === 2" (tap)="tabSelectedIndex = 2">
-        <Image class="tab--item--icon" src="res://receive_white" height="24"></Image>
-        <Label class="tab--item--label" text="Receive"></Label>
-      </StackLayout>
+    <StackLayout col="2" class="tab--item" [class.active]="tabSelectedIndex === 2" (tap)="tabSelectedIndex = 2">
+      <Image class="tab--item--icon" src="res://receive_white" height="24"></Image>
+      <Label class="tab--item--label" text="Receive"></Label>
+    </StackLayout>
   </GridLayout>
 </GridLayout>

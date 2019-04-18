@@ -1,4 +1,4 @@
-@import '~/app-variables';
+@import "~/app-variables.scss";
 
 // .page {
 //   align-items: center;
@@ -20,11 +20,11 @@
 
 .bg-stars {
   opacity: 0.4;
-  animation-name: starExpansion;
-  animation-duration: 10s;
-  animation-fill-mode: both;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
+  // animation-name: starExpansion;
+  // animation-duration: 10s;
+  // animation-fill-mode: both;
+  // animation-iteration-count: infinite;
+  // animation-timing-function: linear;
 }
 
 .odin-logo {
