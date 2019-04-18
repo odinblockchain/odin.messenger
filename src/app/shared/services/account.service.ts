@@ -32,7 +32,6 @@ export class AccountService extends StorageService {
     // this.initDb = this.initDb.bind(this);
     this.createAccountFromMnemonic = this.createAccountFromMnemonic.bind(this);
     this.loadAccounts = this.loadAccounts.bind(this);
-    this.fetchMessages = this.fetchMessages.bind(this);
   }
 
   public async init() {
@@ -67,7 +66,6 @@ export class AccountService extends StorageService {
           registered:   ${account.registered}`);
 
           account = new Account(account);
-          account.fetchMessages = this.fetchMessages;
           account.db = this.odb;
           account.preferences = this._Preferences.preferences;
           account.logger = this._Log.logger;
@@ -177,19 +175,6 @@ export class AccountService extends StorageService {
     if (account.registered) return true;
 
     return new Promise(async (resolve, reject) => {
-      // account.registered = true;
-      // client.remote_key_total = 123;
-
-      // Fake a successful registration
-      // account.save()
-      // .then(client.save)
-      // .then(() => {
-      //   this.log('emitting....');
-      //   account.emit('registered');
-      //   return resolve(true)
-      // })
-      // .catch(reject);
-
       try {
         const registrationBundle = {
           ...client.signalClient.exportRegistrationObj(),
@@ -232,50 +217,5 @@ export class AccountService extends StorageService {
         }
       }
     });
-  }
-
-  public fetchMessages(client: Client) {
-    this.log(`Fetch messages for ${client.device_id} (DEPRECATED)`);
-
-    return new Promise((resolve, reject) => {
-      resolve(true);
-      // this.osmClient.getMessages(client.registration_id, client.device_id)
-      // .then((res: any) => {
-      //   if (res.status && res.status === 'ok') {
-      //     this.log(`total messages for user ${res.messages.length}`);
-      //     console.log(res.messages);
-      //     resolve(res.messages);
-      //   } else {
-      //     this.log('Bad response for pulling messages');
-      //     console.log(res);
-      //     resolve([]);
-      //   }
-      // })
-      // .catch(reject);
-    });
-
-    //   if (response.status && response.status === 'ok') {
-    //     console.log(`UserModel... FETCH Messages >> OK... Total:${response.messages.length}...`);
-    //     if (response.messages && response.messages.length > 0) {
-    //       try {
-    //         for (let message of response.messages) {
-    //           console.log(`WORK MESSAGE: ${message.key}`);
-    //           await this.handleNewMessage(message);
-    //         }
-    //       } catch (err) {
-    //         console.log('Unable to parse one message, will likely try again later');
-    //         console.log(err.message ? err.message : err);
-    //       }
-    //     }
-    //   } else {
-    //     alert('Unable to fetch messages from server. Please try again later.');
-    //   }
-    //   return response;
-    // } catch (err) {
-    //   console.log('Unable to pull messages');
-    //   console.log(err.message ? err.message : err);
-    //   alert('Unable to pull messages');
-    //   return false;
-    // }
   }
 }

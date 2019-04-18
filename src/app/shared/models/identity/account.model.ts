@@ -56,7 +56,6 @@ export class Account extends Database {
   // runtime
   contacts: Contact[];
   client: Client;
-  fetchMessages: any;
   preferences: any;
   logger: any;
 
@@ -180,26 +179,6 @@ export class Account extends Database {
     }
   }
 
-  // public async handleMessage(message: Message) {
-  //   if (!this.dbReady()) {
-  //     return false;
-  //   }
-
-  //   this.log(`SELECT * FROM messages WHERE contact_username=${message.contact_username} AND key=${message.key}`);
-  //   const exists = await this.db.get(`SELECT * FROM messages WHERE contact_username=? AND key=?`, [message.contact_username, message.key]);
-
-  //   console.log('exists?', exists);
-  //   console.log('or...', await this.db.all('SELECT * FROM messages'));
-    
-  //   if (!exists) {
-  //     const stored = await this.storeMessage(message);
-  //     console.log('saved?', stored);
-  //     return stored;
-  //   } else {
-  //     this.log(`Message [${message.key}] from ${message.contact_username} already saved`);
-  //   }
-  // }
-
   /**
    * Finds the local contact matching the provided `message` and sets `unread` to `true` and the
    * `last_contacted` to the message timestamp.
@@ -243,8 +222,17 @@ export class Account extends Database {
     ]);
   }
 
+  public async countTotalMessages() {
+    if (!await this.dbReady()) {
+      return 0;
+    }
+
+    const query = await this.db.get(`SELECT count(message) FROM messages WHERE account_bip44 = ?`, this.bip44_index);
+    return query["count(message)"];
+  }
+
   public async getMessages() {
-    if (!this.db || !this.db.isOpen()) {
+    if (!await this.dbReady()) {
       return [];
     }
     
@@ -302,9 +290,7 @@ export class Account extends Database {
             await this.handleRemoteMessage(content.messages.shift());
           }
 
-          console.log('STORED MESSAGES');
-          console.log(await this.getMessages());
-
+          this.log(`Total stored messages: ${await this.countTotalMessages()}`);
           return resolve(true);
         } else {
           this.logger(`Unable to fetch messages d[${this.client.device_id}] r[${this.client.registration_id}] statusCode: ${res.statusCode}`);

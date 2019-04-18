@@ -351,7 +351,6 @@ export class StorageService {
         explorer_url: 'https://inspect.odinblockchain.org/api'
       };
     }
-
     return this.preferences;
   }
 

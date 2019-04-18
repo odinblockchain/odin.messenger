@@ -69,7 +69,6 @@ export class CreateAccountComponent implements OnInit {
   }
 
 	ngOnInit(): void {
-
     console.log(`Notifications enabled? ${messaging.areNotificationsEnabled()}`);
 
     console.log(this.primaryAccount.registered);

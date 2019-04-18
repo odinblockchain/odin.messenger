@@ -96,8 +96,9 @@ export class ClientService extends StorageService {
         client.device_id        = 100001;
         client.registration_id  = 100001;
       } else {
-        client.registration_id  = Number(LibsignalProtocol.KeyHelper.generateRegistrationId());
-        client.device_id        = Math.abs(Number(`${LibsignalProtocol.KeyHelper.generateRegistrationId()}${device.uuid.replace(/\D/g,'')}`));
+        const deviceNumeric = device.uuid.replace(/\D/g,'');
+        client.registration_id  = Math.abs(Number(LibsignalProtocol.KeyHelper.generateRegistrationId()));
+        client.device_id = parseInt(`${deviceNumeric}`.substr(0,10)); // limit to 10 digits
       }
 
       this.odb.execSQL(`INSERT INTO clients (account_username, registration_id, device_id, identity_key_pair, signed_pre_key, pre_keys) values (?, ?, ?, ?, ?, ?)`, [

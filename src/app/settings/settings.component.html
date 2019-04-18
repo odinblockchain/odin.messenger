@@ -11,7 +11,7 @@
 
       <Label text="ODIN-Server" class="heading"></Label>
       <Label text="This is the current ODIN-Server instance you are communicating with." class="hint" textWrap="true"></Label>
-      <TextField [(ngModel)]="preferences.api_url" hint="ODIN-Server URL..." class="input input-border"></TextField>
+      <TextField [(ngModel)]="preferences?.api_url" hint="ODIN-Server URL..." class="input input-border"></TextField>
       <StackLayout orientation="horizontal" horizontalAlignment="center">
         <Button text="Update" (tap)="onUpdate()" class="btn btn-primary"></Button>
       </StackLayout>

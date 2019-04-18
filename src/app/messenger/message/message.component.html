@@ -1,8 +1,6 @@
 <ActionBar class="action-bar">
   <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
-  <ActionItem text="Edit Contact" ios.position="popup" android.position="popup" (tap)="onEditContact()"></ActionItem>
-  <ActionItem text="Delete Contact" ios.position="popup" android.position="popup" (tap)="onDeleteContact()"></ActionItem>
-  <ActionItem text="Fetch Messages" ios.position="popup" android.position="popup" (tap)="onFetchMessages()"></ActionItem>
+  <ActionItem text="Refresh" ios.position="popup" android.position="popup" (tap)="onFetchMessages()"></ActionItem>
   <Label class="action-bar--title" [text]="contactIdentity"></Label>
 </ActionBar>
 

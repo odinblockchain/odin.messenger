@@ -41,8 +41,6 @@ export class MessengerComponent implements OnInit {
     this.friends = [];
 
     this.onFetchMessages = this.onFetchMessages.bind(this);
-
-    console.log('ENV NAME?', global['ENV_NAME']);
   }
 
   ngOnInit() {
@@ -53,25 +51,6 @@ export class MessengerComponent implements OnInit {
       this.friends = contacts;
     })
     .catch(console.log);
-
-    // this.IdentityServ.activeAccount.fetchMessages(this.IdentityServ.activeAccount.client)
-    // .then((messages: any[]) => {
-    //   while(messages.length) {
-    //     const message = messages.shift();
-    //     console.log(`handle`, message.key);
-    //     this.IdentityServ.activeAccount.handleMessage(new Message({
-    //       key: message.key,
-    //       account_bip44: this.IdentityServ.activeAccount.bip44_index,
-    //       contact_username: message.value.accountHash,
-    //       owner_username: this.IdentityServ.activeAccount.username,
-    //       message: message.value.ciphertextMessage,
-    //       timestamp: message.value.timestamp
-    //     }));
-    //   }
-
-    //   console.log('done');
-    // })
-    // .catch(console.log);
   }
   
   onAddContact() {
