@@ -43,8 +43,6 @@ export class CreateAccountComponent implements OnInit {
 
   public busyRegistering: boolean;
 
-  // public user;
-
 	constructor(
     private page: Page,
     // private userModel: UserModel,

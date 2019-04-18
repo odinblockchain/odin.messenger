@@ -51,7 +51,7 @@ export class AccountService extends StorageService {
    * Attempts to load all accounts available from the table `accounts`
    * and creates an internal list of active accounts.
    */
-  private async loadAccounts() {
+  public async loadAccounts() {
     if (!await this.dbReady()) {
       return new Error('db_not_open');
     }
@@ -65,10 +65,10 @@ export class AccountService extends StorageService {
           client_id:    ${account.client_id}
           registered:   ${account.registered}`);
 
-          account = new Account(account);
-          account.db = this.odb;
+          account             = new Account(account);
+          account.db          = this.odb;
           account.preferences = this._Preferences.preferences;
-          account.logger = this._Log.logger;
+          account.logger      = this._Log.logger;
           return account;
         });
 

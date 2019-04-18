@@ -87,6 +87,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public isWalletView: boolean;
   public networkState: string;
   public osmServerError: boolean;
+  public packageVersion: string;
 
   constructor(
     private router: Router,
@@ -114,6 +115,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.postInit = this.postInit.bind(this);
     this.setNetworkState = this.setNetworkState.bind(this);
+    this.packageVersion = global.version ? global.version : '0.3.x';
 
     this.setNetworkState(getConnectionType());
     startMonitoring(this.setNetworkState);
@@ -203,7 +205,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this._Account.eventStream$.subscribe(event => {
       console.log('Account Event', event)
       if (event === 'AccountService::registerNewAccountSuccess') {
-        console.log('GOT registered!');
+        console.log('Handle onRegister');
         if (!this.userAccount) {
           this.postInit();
         }
@@ -218,9 +220,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private buildServices(): void {
     if (this.initAttempts >= 4) {
       console.log('[App] MAX ATTEMPTS to build services... Abort...');
-      this._loading = false;
-      this._ready = false;
+      this._loading     = false;
+      this._ready       = false;
       this.initAttempts = 0;
+
       this._storage.listAllTables()
       .then(tables => {
         console.log('[App] DEBUG Current Tables:');
@@ -231,7 +234,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this._loading = true;
     this.initAttempts++;
-    this._storage.loadStorage(false)
+    this._storage.loadStorage(true)
     .then(this._Preferences.loadPreferences)
     .then(this._Preferences.savePreferences)
     .then(this._Identity.init)
@@ -259,20 +262,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private async postInit() {
     // set local useraccount to the activeAccount of Identity
     this.initAttempts = 0;
-    this._loading = false;
-    this._ready = true;
-    this.userAccount = this._Identity.getActiveAccount();
+    this._loading     = false;
+    this._ready       = true;
+    this.userAccount  = this._Identity.getActiveAccount();
 
     if (this.userAccount) {
       this.userAccount.client = this._Client.findClientById(this.userAccount.client_id);
-      console.log('set client');
-      console.dir(this.userAccount);
     }
 
-    console.log(`Notifications Check --
+    console.log(`Notifications check --
     Enabled:  ${messaging.areNotificationsEnabled()}
     Token:    ${await firebase.getCurrentPushToken()}
     \n`);
+
+    await this._Preferences.loadPreferences();
+    console.log(`Initial preferences check --
+    Preferences:  ${JSON.stringify(this._Preferences.preferences)}`);
 
     this._Identity.identity.fcmToken = await firebase.getCurrentPushToken();
 
@@ -308,13 +313,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       message => {
         console.log("Notification message received in push-view-model: " + JSON.stringify(message, getCircularReplacer()));
         console.log(message);
-        console.log('url', this.router.url);
 
+        // display snack notification if already within app AND not in a message view
         if ( (this.router.url.match(new RegExp('messenger/message','ig'))) ) {
-          console.log('NOPE');
           this._snack.simple(`${message.title} – ${message.body}`, '#ffffff', '#333333', 3, false);
-        } else {
-          console.log('YEP');
         }
         
         return true;
@@ -505,6 +507,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       clearInterval(this._fetchMessages);
 
       this._fetchMessages = setInterval(() => {
+
         console.log('@!@ make server ping');
         this.fetchRemoteMessages();
       }, (MESSENGER_REFRESH_DELAY * 1000));
@@ -613,10 +616,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private fetchRemoteWallet() {
+    const identity = this._Identity.getActiveAccount();
+    if (!identity.registered) return;
+    
     if (!this._Wallet.electrumxConnected) {
-      console.log('@!@ IGNORE WALLET REFRESH');
+      console.log('[App] Ignore wallet refresh, not connected');
     } else {
-      console.log('@!@ REFRESHING');
+      console.log('[App] Begin wallet refresh');
       const wallet = this._Wallet.wallets$.getItem(0);
       this._Wallet.refreshWallet(wallet);
     }
@@ -625,14 +631,25 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private fetchRemoteMessages() {
     if (this._Identity.getActiveAccount()) {
       this._zone.run(() => {
-        this._Identity.getActiveAccount().fetchRemoteMessages()
-        .then(() => {
-          console.log('All messages have been fetched');
-          this.osmServerError = false;
-        }).catch((err) => {
-          console.log('Fetch messages error', err.message ? err.message : err);
-          this.osmServerError = true;
-        });
+        const identity = this._Identity.getActiveAccount();
+        if (identity.registered) {
+          
+          /**
+           * @todo Bug: New identity not receiving preferences
+           */
+          if (!identity.preferences) {
+            identity.preferences = this._Preferences.preferences;
+          }
+
+          identity.fetchRemoteMessages()
+          .then(() => {
+            console.log('[App] Messages up to date');
+            this.osmServerError = false;
+          }).catch((err) => {
+            console.log('[App] Fetch messages error', err.message ? err.message : err);
+            this.osmServerError = true;
+          });
+        }
       });
     } else {
       console.log('NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');

@@ -46,8 +46,8 @@ export class Identity extends Observable {
       fcmToken:           this.fcmToken
     });
   
-    this.log(`[Identity] Integrity check — saved?${hasKey('identity')}`);
-    this.log(this.fetch());
+    this.log(`Integrity check — saved:${hasKey('identity')}`);
+    this.log(JSON.stringify(this.fetch()));
   }
 
   serialize() {

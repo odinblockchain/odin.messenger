@@ -11,12 +11,12 @@
 
       <Label text="ODIN-Server" class="heading"></Label>
       <Label text="This is the current ODIN-Server instance you are communicating with." class="hint" textWrap="true"></Label>
-      <TextField [(ngModel)]="preferences?.api_url" hint="ODIN-Server URL..." class="input input-border"></TextField>
+      <TextField [(ngModel)]="preferences.api_url" hint="ODIN-Server URL..." class="input input-border"></TextField>
       <StackLayout orientation="horizontal" horizontalAlignment="center">
         <Button text="Update" (tap)="onUpdate()" class="btn btn-primary"></Button>
       </StackLayout>
 
-      <StackLayout class="hr-light"></StackLayout>
+      <!-- <StackLayout class="hr-light"></StackLayout>
 
       <Label text="Remote Tokens" class="heading"></Label>
       <Label text="These are one-time use public tokens stored on the ODIN-Server that others can use to communicate with you." class="hint" textWrap="true"></Label>
@@ -30,7 +30,7 @@
       <StackLayout class="hr-light"></StackLayout>
 
       <Label text="Wipe your local ODIN Session. ODIN Session importing is currently not supported yet, use at your own risk." class="hint" textWrap="true"></Label>
-      <Button text="Clear ODIN Session" (tap)="onClearSession()" class="btn btn-primary"></Button>
+      <Button text="Clear ODIN Session" (tap)="onClearSession()" class="btn btn-primary"></Button> -->
     </StackLayout>
   </ScrollView>
 </GridLayout>

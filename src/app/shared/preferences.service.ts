@@ -42,10 +42,13 @@ export class PreferencesService {
   public async loadPreferences(): Promise<any> {
     try {
       this.preferences = JSON.parse(getString('preferences'));
-      if (typeof this.preferences !== 'object') {
+      if (!this.preferences ||
+          typeof this.preferences !== 'object' ||
+          !this.preferences.api_url ||
+          this.preferences.api_url === ''
+      ) {
         this.preferences = this.defaultPreferences;
       }
-
     } catch (err) {
       this.log('Trouble loading preferences, applying default...');
       this.preferences = this.defaultPreferences;

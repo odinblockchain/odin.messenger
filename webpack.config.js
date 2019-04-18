@@ -52,9 +52,6 @@ module.exports = env => {
   const appFullPath = resolve(projectRoot, appPath);
   const appResourcesFullPath = resolve(projectRoot, appResourcesPath);
 
-  console.log('ROOT', projectRoot);
-  console.log('APP PATH', appFullPath);
-
   const entryModule = `${nsWebpack.getEntryModule(appFullPath)}.ts`;
   const entryPath = `.${sep}${entryModule}`;
 
@@ -212,6 +209,7 @@ module.exports = env => {
       new webpack.DefinePlugin({
         "global.TNS_WEBPACK": "true",
         "process": undefined,
+        "global.version": JSON.stringify(require(resolve(projectRoot, 'package.json')).version),
         "global.env": {
           environment: (env && Object.prototype.hasOwnProperty.call(env, 'environment')) ? JSON.stringify(env.environment) : undefined
         }

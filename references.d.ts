@@ -3,5 +3,6 @@
 declare namespace NodeJS {
   interface Global {
     env: any;
+    version: string;
   }
 }

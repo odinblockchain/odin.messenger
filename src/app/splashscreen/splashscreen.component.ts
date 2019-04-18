@@ -11,8 +11,11 @@ import { alert } from "tns-core-modules/ui/dialogs";
 export class SplashscreenComponent implements OnInit {
   @ViewChild("createAccountBtn") createAccountBtnRef: ElementRef;
 
+  public packageVersion: string;
+
   constructor(page: Page) {
     page.actionBarHidden = true;
+    this.packageVersion = global.version ? global.version : '0.3.x';
   }
   
   ngOnInit(): void {

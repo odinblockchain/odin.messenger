@@ -618,7 +618,7 @@ export class WalletService extends StorageService {
     let addressIndex: number = startIndex ? startIndex : 0;
 
     // number of "gaps" to establish end of discovery, excludes starting index of 0
-    let addressGapCounter: number = 2;
+    let addressGapCounter: number = 19;
 
     let externalAddresses: Address[]  = [];
     let transactions: Transaction[]   = [];
