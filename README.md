@@ -1,6 +1,6 @@
 # ODIN Messenger Native
 
-###### ALPHA v0.2.x
+###### ALPHA v0.3.x
 
 This is the official ODIN Messenger Github. ODIN Messenger is a free, peer-to-peer and end-to-end encrypted messenger based on the Obsidian Platform OSM. It utilizes the well known and respected Signal Protocol developed by Open Whisper Systems and used by other known secure messengers such as Signal, WhatsApp, and Google Allo.
 
