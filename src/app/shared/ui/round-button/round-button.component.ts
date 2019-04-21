@@ -27,7 +27,10 @@ export class RoundButtonComponent implements OnInit, AfterViewInit {
   private ctaBtn: any;
 
   constructor() {
-    if (!this.theme) this.theme = 'blue';
+    if (typeof this.text === undefined) this.text = 'Button';
+    if (typeof this.theme === undefined) this.theme = 'blue';
+    if (typeof this.busy === undefined) this.busy = false;
+    if (typeof this.disabled === undefined) this.disabled = false;
   }
 
   ngOnInit(): void {

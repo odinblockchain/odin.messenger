@@ -9,5 +9,5 @@
     <Button class="shadow"></Button>
     <Button class="overlay" [text]="text" (tap)="onTap($event)"></Button>
   </StackLayout>
-  <ActivityIndicator class="activity-indicator" rowSpan="3" busy="true" *ngIf="busy"></ActivityIndicator>
+  <ActivityIndicator class="activity-indicator" rowSpan="3" [busy]="true" *ngIf="busy"></ActivityIndicator>
 </GridLayout>

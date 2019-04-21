@@ -6,16 +6,16 @@ import { CreateConversationScreenComponent } from "./conversation/conversation.c
 import { WalletConversationScreenComponent } from "./wallet/wallet.component";
 import { ShieldConversationScreenComponent } from "./shield/shield.component";
 import { GenerateScreenComponent } from "./generate/generate.component";
-import { RoundButtonComponent } from "~/app/shared/ui/round-button/round-button.component";
 import { IndexComponent } from "./index/index.component";
+import { UIModule } from "~/app/shared/ui/ui.module";
 
 @NgModule({
   imports: [
+    UIModule,
     NativeScriptCommonModule,
     CreateAccountRoutingModule
   ],
   declarations: [
-    RoundButtonComponent,
     CreateConversationScreenComponent,
     WalletConversationScreenComponent,
     ShieldConversationScreenComponent,
