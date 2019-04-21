@@ -6,7 +6,7 @@
 
       
       <StackLayout row="0" class="addresses">
-        <StackLayout class="header header--help" [class.active]="freshAddressHelp" (tap)="freshAddressHelp = !freshAddressHelp">
+        <StackLayout class="header header--help" [class.active]="freshAddressHelp" (tap)="toggleFreshAddressHelp()">
           <FlexboxLayout class="header--help-label">
             <Label class="h2" text="Fresh address"></Label>
             <Label class="fa icon" text="&#xf059;"></Label>
@@ -35,7 +35,7 @@
       </StackLayout>
 
       <StackLayout row="1" class="addresses">
-        <StackLayout class="header header--help" [class.active]="usedAddressHelp" (tap)="usedAddressHelp = !usedAddressHelp">
+        <StackLayout class="header header--help" [class.active]="usedAddressHelp" (tap)="toggleUsedAddressHelp()">
           <FlexboxLayout class="header--help-label">
             <Label class="h2" text="Used addresses"></Label>
             <Label class="fa icon" text="&#xf059;"></Label>

@@ -16,11 +16,15 @@ export class ReceiveComponent implements OnInit, OnChanges {
   @Output() requestNewAddress = new EventEmitter();
 
   public freshAddress: Address;
+  public freshAddressHelp: boolean;
+  public usedAddressHelp: boolean;
 
   private _snackBar: SnackBar;
 
 	constructor() {
     this._snackBar = new SnackBar();
+    this.freshAddressHelp = false;
+    this.usedAddressHelp = false;
   }
 
 	ngOnInit() { }
@@ -36,6 +40,14 @@ export class ReceiveComponent implements OnInit, OnChanges {
     if (!this.freshAddress) {
       this.requestNewAddress.emit();
     }
+  }
+
+  public toggleFreshAddressHelp() {
+    this.freshAddressHelp = !this.freshAddressHelp;
+  }
+
+  public toggleUsedAddressHelp() {
+    this.usedAddressHelp = !this.usedAddressHelp;
   }
 
   public usedAddressFilter(item: Address): boolean {

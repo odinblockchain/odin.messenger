@@ -52,7 +52,7 @@ export class SendComponent implements OnInit, OnChanges, OnDestroy {
     if (this._walletSub) this._walletSub.unsubscribe();
   }
 
-  public onAmountFocus(event): any {
+  public onAmountFocus(): any {
     if (this.transactionDetails.amount === 0) {
       this.transactionDetails.amount = null;
     }
