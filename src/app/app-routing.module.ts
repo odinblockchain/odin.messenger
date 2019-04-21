@@ -7,12 +7,11 @@ const routes: Routes = [
 
   // pages
   { path: 'home', loadChildren: '~/app/home/home.module#HomeModule' },
-  { path: 'splashscreen', loadChildren: '~/app/splashscreen/splashscreen.module#SplashscreenModule' },
+  { path: 'create', loadChildren: '~/app/create-account/create-account.module#CreateAccountModule' },
   { path: 'settings', loadChildren: '~/app/settings/settings.module#SettingsModule' },
   { path: 'help', loadChildren: '~/app/help/help.module#HelpModule' },
 
   // contacts
-  { path: 'create', loadChildren: '~/app/create-account/create-account.module#CreateAccountModule' },
   { path: 'contact-add', loadChildren: '~/app/contact-add/contact-add.module#ContactAddModule' },
 
   // messenger - module

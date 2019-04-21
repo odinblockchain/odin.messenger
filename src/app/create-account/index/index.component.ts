@@ -11,12 +11,12 @@ import { RouterExtensions } from "nativescript-angular/router";
 declare var android: any;
 
 @Component({
-  selector: "Splashscreen",
+  selector: "CreateAccountIndex",
   moduleId: module.id,
-  templateUrl: "./splashscreen.component.html",
-  styleUrls: ['./splashscreen.component.css']
+  templateUrl: "./index.component.html",
+  styleUrls: ['./index.component.css']
 })
-export class SplashscreenComponent implements OnInit, AfterViewInit {
+export class IndexComponent implements OnInit, AfterViewInit {
   @ViewChild('slideContent') slideElement: ElementRef;
 
   public currentSlideIndex: number;
