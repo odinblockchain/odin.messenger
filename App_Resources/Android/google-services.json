@@ -8,12 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:138392321396:android:6999ddb23e7123a1",
+        "mobilesdk_app_id": "1:138392321396:android:eb38fc410c8dbccd",
         "android_client_info": {
-          "package_name": "org.odinblockchain.chat"
+          "package_name": "org.odinblockchain.messenger"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "138392321396-tp0cvp6ilmens6bhu1hsf4osntb7etld.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDgCW2p3Hw3Fst2FBqT_mxr37qNf9wxxCA"
