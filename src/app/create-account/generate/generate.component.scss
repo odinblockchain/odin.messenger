@@ -1,0 +1,92 @@
+@import "~/app-variables.scss";
+@import "../carousel-grid.scss";
+
+@keyframes hover {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -5, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.welcome {
+  background-color: $odin-dark;
+
+  .header {
+    background-color: $odin-dark;
+  }
+
+  .screen {
+    border-radius: 25% 25% 0 0;
+    background-color: $odin-beige;
+  }
+
+  .friend {
+    width: 100%;
+
+    &.one {
+      // background-color: yellow;
+      transform: translate3d(30, 0, 0) scale(0.9);
+      opacity: 0.8;
+    }
+
+    &.two {
+      transform: translate3d(0, 30, 0);
+      opacity: 1;
+      // background-color: orange;
+    }
+
+    &.three {
+      transform: translate3d(-30, 0, 0) scale(0.9);
+      opacity: 0.8;
+      // background-color: green;
+    }
+  }
+  // background: linear-gradient(to bottom, $odin-dark 60%, $odin-white 100%);
+}
+
+.progress {
+  height: 30;
+  width: 80%;
+  margin-top: 20;
+  background-color: transparent;
+  // background-color: orange;
+
+  &.complete {
+    animation-name: hover;
+    animation-duration: 4s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  StackLayout {
+    padding-top: 5;
+  }
+
+  .shadow,
+  .overlay {
+    border-radius: 50%;
+    height: 20;
+  }
+
+  .shadow {
+    background-color: $odin-beige;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .overlay {
+    background-color: $odin-blue-light;
+    transform: translate3d(0, -20, 0);
+    width: 20%;
+    transition: width ease-in-out;
+  }
+
+  .complete {
+    width: 20;
+  }
+}

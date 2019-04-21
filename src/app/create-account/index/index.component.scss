@@ -1,0 +1,36 @@
+@import "~/app-variables.scss";
+ 
+/**
+ * ODIN Features Base
+ */
+.welcome-page-background {
+  background: $odin-white;
+}
+
+.skip-intro {
+  width: 45%;
+  border-width: 6;
+  border-color:#FFC526;
+  color:#0C7DA7;
+  border-radius: 4;
+  padding: 9 17;
+}
+.carousel-status {
+  margin-top: 30;
+  margin-bottom: 30;
+
+  .caro-item-dot {
+    background-image: url("~/app/images/pagination/next.png");
+    background-repeat: no-repeat;
+    height: 18;
+    width: 18;
+  
+    &.current {
+      background-image: url("~/app/images/pagination/current.png");
+    }
+
+    &.complete {
+      background-image: url("~/app/images/pagination/complete.png");
+    }
+  }  
+}

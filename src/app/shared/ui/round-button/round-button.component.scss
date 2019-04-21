@@ -1,0 +1,55 @@
+@import "~/app-variables.scss";
+
+.round-button-wrap {
+  margin-top: 20;
+  height: 62;
+
+  .cta {
+    width: 70%;
+    padding-top: 5;
+    align-self: flex-end;
+
+    .shadow {
+      background-color: $odin-blue;
+      width: 100%;
+      height: 50;
+      border-radius: 50%;
+      transform: translate3d(0, 2, 0);
+    }
+
+    .overlay {
+      background-color: $odin-blue-light;
+      color: $odin-white;
+      font-size: 18;
+      border-radius: 50%;
+      width: 100%;
+      height: 50;
+      transform: translate3d(0, -50, 0);
+    }
+  }
+
+  &.busy {
+    .cta {
+      width: 52;
+
+      .shadow,
+      .overlay {
+        color: transparent;
+      }
+    }
+  }
+
+  &.disabled {
+    .cta {
+      opacity: 0.4;
+    }
+  }
+
+  .activity-indicator {
+    width: 40;
+    height: 40;
+    transform: translate3d(0, -22, 10);
+    z-index: 5;
+    color: $odin-white;
+  }
+}

@@ -10,7 +10,7 @@ import { PreferencesService } from './shared/preferences.service';
 import { UserModel } from './shared/user.model';
 import { WalletModel } from './shared/wallet.model';
 import { OSMClientService } from './shared/osm-client.service';
-import { SnackBar, SnackBarOptions } from 'nativescript-snackbar';
+import { SnackBar } from 'nativescript-snackbar';
 import { WalletClientService } from './shared/wallet-client.service';
 
 @NgModule({

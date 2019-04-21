@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { Page } from "ui/page";
 import { RouterExtensions } from "nativescript-angular/router";
-// import { UserModel } from "~/app/shared/user.model";
 import { StorageService } from "../shared";
 import { AccountService } from "../shared/services";
 import { Account } from "../shared/models/identity";
@@ -41,7 +40,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this._router.navigate(['/messenger'], { clearHistory: true });
         } else {
           console.log('[Home] >> No session exists, redirect to splashscreen');
-          this._router.navigate(['/splashscreen'], { clearHistory: true });
+          this._router.navigate(['/create'], { clearHistory: true });
         }
       }
     });

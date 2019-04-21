@@ -1,0 +1,114 @@
+@import "~/app-variables.scss";
+@import "../carousel-grid.scss";
+
+@keyframes chatBubbleRight {
+  0% {
+    transform: translate3d(-15, -55, 0) scale(0.2);
+  }
+  15% {
+    transform: translate3d(-35, -75, 0) scale(0.8);
+  }
+  30% {
+    transform: translate3d(-35, -75, 0) scale(0.8);
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(-35, -85, 0) scale(0.8);
+    opacity: 0;
+  }
+  90% {
+    transform: translate3d(-15, -55, 0) scale(0.2);
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
+@keyframes chatBubbleLeft {
+  0% {
+    transform: translate3d(20, -50, 0) scale(0.2);
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(40, -80, 0) scale(0.8);
+  }
+  30% {
+    transform: translate3d(40, -80, 0) scale(0.8);
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(40, -90, 0) scale(0.8);
+    opacity: 0;
+  }
+  90% {
+    transform: translate3d(20, -50, 0) scale(0.2);
+  }
+  99% {
+    opacity: 1;;
+  }
+}
+
+.odin-viking-guy,
+.odin-viking-girl {
+
+  .viking {
+    height: 110;
+  }
+
+  .chat-bubble {
+    height: 70;
+  }
+
+  .shadow {
+    height: 3;
+  }
+}
+
+.odin-viking-guy {
+  transform: translate3d(65, 10, 0);
+
+  .chat-bubble {
+    transform: translate3d(-15, -55, 0) scale(0.2);
+  }
+
+  .shadow {
+    transform: translate3d(120%, 55, 0);
+  }
+}
+
+.odin-viking-girl {
+  transform: translate3d(-55, 25, 0);
+
+  .chat-bubble {
+    transform: translate3d(20, -50, 0) scale(0.2);
+    // transform: translate3d(40, -80, 0) scale(0.8);
+    opacity: 0.2;
+  }
+
+  .shadow {
+    transform: translate3d(-120%, 55, 0);
+  }
+}
+
+.active .odin-viking-guy {
+  .chat-bubble {
+    animation-name: chatBubbleRight;
+    animation-delay: 500ms;
+    animation-duration: 10s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
+  }
+}
+
+.active .odin-viking-girl {
+  .chat-bubble {
+
+    animation-name: chatBubbleLeft;
+    animation-delay: 1.6s;
+    animation-duration: 10s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
+  }
+}

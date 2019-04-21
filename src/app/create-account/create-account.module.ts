@@ -1,19 +1,26 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptCommonModule } from "nativescript-angular/common";
-import { NativeScriptFormsModule } from "nativescript-angular/forms";
 
-import { CreateAccountRoutingModule } from "./create-account.routing.module";
-import { CreateAccountComponent } from "./create-account.component";
+import { CreateAccountRoutingModule } from "./create-account-routing.module";
+import { CreateConversationScreenComponent } from "./conversation/conversation.component";
+import { WalletConversationScreenComponent } from "./wallet/wallet.component";
+import { ShieldConversationScreenComponent } from "./shield/shield.component";
+import { GenerateScreenComponent } from "./generate/generate.component";
+import { RoundButtonComponent } from "../shared/ui/round-button/round-button.component";
+import { IndexComponent } from "./index/index.component";
 
 @NgModule({
-  providers: [],
   imports: [
     NativeScriptCommonModule,
-    CreateAccountRoutingModule,
-    NativeScriptFormsModule
+    CreateAccountRoutingModule
   ],
   declarations: [
-    CreateAccountComponent
+    RoundButtonComponent,
+    CreateConversationScreenComponent,
+    WalletConversationScreenComponent,
+    ShieldConversationScreenComponent,
+    GenerateScreenComponent,
+    IndexComponent
   ],
   schemas: [
     NO_ERRORS_SCHEMA
