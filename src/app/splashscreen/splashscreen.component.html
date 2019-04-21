@@ -45,15 +45,18 @@
       </StackLayout>
       </GridLayout>
 
-      <GridLayout #wrapper class="carousel-continue" row="1" rows="auto" horizontalAlignment="center">
-        <StackLayout *ngIf="currentSlideIndex < 3">
-          <Button class="shadow"></Button>
-          <Button class="overlay" text="Continue" (tap)="onNextSlide()"></Button> 
-        </StackLayout>
-        <StackLayout *ngIf="currentSlideIndex === 3">
-          <Button class="shadow"></Button>
-          <Button class="overlay" text="Let's Go!" (tap)="onNextSlide()"></Button> 
-        </StackLayout>
+      <GridLayout RoundButton
+                  row="1"
+                  text="Continue"
+                  (tap)="onNextSlide()"
+                  *ngIf="currentSlideIndex < 3">
+      </GridLayout>
+
+      <GridLayout RoundButton
+                  row="1"
+                  text="Let's Go!"
+                  (tap)="onNextSlide()"
+                  *ngIf="currentSlideIndex === 3">
       </GridLayout>
     </GridLayout>
 

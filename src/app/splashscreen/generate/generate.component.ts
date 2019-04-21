@@ -4,7 +4,6 @@ import { setOrientation, disableRotation } from "nativescript-orientation";
 import Seeder from '~/app/lib/Seeder';
 import SecureRandom from '~/app/lib/SecureRandom';
 import { TouchGestureEventData } from "tns-core-modules/ui/gestures/gestures";
-import { AnimationCurve } from "tns-core-modules/ui/enums/enums";
 import { IdentityService } from "~/app/shared/services/identity.service";
 import { Identity } from "~/app/shared/models/identity/identity.model";
 import { AccountService } from "~/app/shared/services";
@@ -23,7 +22,6 @@ import { SnackBar } from "nativescript-snackbar";
 })
 export class GenerateScreenComponent implements OnInit, OnDestroy {
   @ViewChild('generateLayout') generateLayout: ElementRef;
-  // @ViewChild('wrapper') ctaButton: ElementRef;
 
   public accountGenerated: boolean;
   public entropyCreated: boolean;

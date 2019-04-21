@@ -4,7 +4,7 @@
  * ODIN Features Base
  */
 .welcome-page-background {
-  background: #FCF9F1;
+  background: $odin-white;
 }
 
 .skip-intro {
@@ -15,35 +15,6 @@
   border-radius: 4;
   padding: 9 17;
 }
-
-.carousel-continue {
-  StackLayout {
-    width: 70%;
-    // height: 52;
-    padding-top: 5;
-    align-self: flex-end;
-
-    .shadow {
-      background-color: #00a8b6;
-      width: 100%;
-      height: 50;
-      border-radius: 50%;
-      transform: translate3d(0, 2, 0);
-    }
-
-    .overlay {
-      background-color: #41c0d1;
-      color: #f9f7f3;
-      font-size: 18;
-      border-radius: 50%;
-      width: 100%;
-      height: 50;
-      // transform: translate3d(0, -2, 0);
-      transform: translate3d(0, -50, 0);
-    }
-  }
-}
-
 .carousel-status {
   margin-top: 30;
   margin-bottom: 30;
@@ -62,10 +33,4 @@
       background-image: url("~/app/images/pagination/complete.png");
     }
   }  
-}
-
-.carousel-loading {
-  font-size: 20;
-  color: #FFFFFF;
-  text-align: center;    
 }

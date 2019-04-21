@@ -13,6 +13,42 @@
   }
 }
 
+.welcome {
+  background-color: $odin-dark;
+
+  .header {
+    background-color: $odin-dark;
+  }
+
+  .screen {
+    border-radius: 25% 25% 0 0;
+    background-color: $odin-beige;
+  }
+
+  .friend {
+    width: 100%;
+
+    &.one {
+      // background-color: yellow;
+      transform: translate3d(30, 0, 0) scale(0.9);
+      opacity: 0.8;
+    }
+
+    &.two {
+      transform: translate3d(0, 30, 0);
+      opacity: 1;
+      // background-color: orange;
+    }
+
+    &.three {
+      transform: translate3d(-30, 0, 0) scale(0.9);
+      opacity: 0.8;
+      // background-color: green;
+    }
+  }
+  // background: linear-gradient(to bottom, $odin-dark 60%, $odin-white 100%);
+}
+
 .progress {
   height: 30;
   width: 80%;

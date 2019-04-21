@@ -1,11 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from "@angular/core";
 import * as app from "tns-core-modules/application";
-import { Page, isAndroid, View, ContentView } from "tns-core-modules/ui/page/page";
+import { Page, isAndroid, View } from "tns-core-modules/ui/page/page";
 import { device, screen } from "tns-core-modules/platform/platform";
-import { AnimationCurve } from "tns-core-modules/ui/enums";
-import { Animation, AnimationDefinition } from "ui/animation";
+import { Animation } from "ui/animation";
 import { GridLayout } from "tns-core-modules/ui/layouts/grid-layout/grid-layout";
-import { SwipeGestureEventData, SwipeDirection } from "tns-core-modules/ui/gestures/gestures";
+import { SwipeDirection } from "tns-core-modules/ui/gestures/gestures";
 import { setOrientation, disableRotation } from "nativescript-orientation";
 import { RouterExtensions } from "nativescript-angular/router";
 
@@ -18,13 +17,11 @@ declare var android: any;
   styleUrls: ['./splashscreen.component.css']
 })
 export class SplashscreenComponent implements OnInit, AfterViewInit {
-  @ViewChild('wrapper') gridLayout: ElementRef;
   @ViewChild('slideContent') slideElement: ElementRef;
 
   public currentSlideIndex: number;
   public packageVersion: string;
 
-  private carouselContinueBtn;
   private slidesView: GridLayout;
 
   private slideCount: number;
@@ -65,7 +62,6 @@ export class SplashscreenComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.carouselContinueBtn = <GridLayout>this.gridLayout.nativeElement;
     this.slidesView = this.slideElement.nativeElement;
   }
 
@@ -83,20 +79,7 @@ export class SplashscreenComponent implements OnInit, AfterViewInit {
 
     if (this.validSwipe(SwipeDirection.left)) {
       this.isTransitioning = true;
-      this.carouselContinueBtn.animate({
-        scale: { x: 1.15, y: 1.15 },
-        duration: 150,
-        curve: AnimationCurve.easeIn
-      })
-      .then(() => {
-        this.changeSlide(SwipeDirection.left);
-
-        this.carouselContinueBtn.animate({
-          scale: { x: 1, y: 1 },
-          duration: 300,
-          curve: AnimationCurve.cubicBezier(.175, 0.885, 0.32, 1.275)
-        });
-      });
+      this.changeSlide(SwipeDirection.left);
     } else if (this.currentSlideIndex === this.slideCount) {
       this._router.navigate(['/splashscreen/generate'], { clearHistory: true });
     }
