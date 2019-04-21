@@ -8,8 +8,8 @@ import { NativeScriptUIListViewModule } from 'nativescript-ui-listview/angular';
 import { MessengerRoutingModule } from './messenger.routing.module';
 
 /* Components */
-import { MessengerComponent } from './messenger.component';
 import { MessageComponent } from "./message/message.component";
+import { IndexComponent } from "./index/index.component";
 
 @NgModule({
   imports: [
@@ -19,7 +19,7 @@ import { MessageComponent } from "./message/message.component";
     MessengerRoutingModule
   ],
   declarations: [
-    MessengerComponent,
+    IndexComponent,
     MessageComponent
   ],
   schemas: [
