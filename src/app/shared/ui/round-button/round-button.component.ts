@@ -12,13 +12,14 @@ import { AnimationCurve } from "tns-core-modules/ui/enums/enums";
   templateUrl: "./round-button.component.html",
   styleUrls: ['./round-button.component.css']
 })
-export class RoundButtonComponent implements OnInit {
+export class RoundButtonComponent implements OnInit, AfterViewInit {
   @Input() row: number;
   @Input() col: number;
 
   @Input()  disabled: boolean;
   @Input()  busy: boolean;// = false;
   @Input()  text: string;// = 'Button';
+  @Input()  theme: string;  
   @Output() tap = new EventEmitter();
 
   @ViewChild('roundButtonWrap') ctaButton: ElementRef;
@@ -26,10 +27,14 @@ export class RoundButtonComponent implements OnInit {
   private ctaBtn: any;
 
   constructor() {
+    if (!this.theme) this.theme = 'blue';
   }
 
   ngOnInit(): void {
     this.ctaBtn = this.ctaButton.nativeElement;
+  }
+
+  ngAfterViewInit(): void {
   }
 
   public onTap(event) {
