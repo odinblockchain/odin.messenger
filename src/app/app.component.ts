@@ -616,39 +616,49 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private fetchRemoteWallet() {
-    const identity = this._Identity.getActiveAccount();
-    if (!identity.registered) return;
-    
-    if (!this._Wallet.electrumxConnected) {
-      console.log('[App] Ignore wallet refresh, not connected');
-    } else {
-      console.log('[App] Begin wallet refresh');
-      const wallet = this._Wallet.wallets$.getItem(0);
-      this._Wallet.refreshWallet(wallet);
+    try {
+      const identity = this._Identity.getActiveAccount();
+      if (!identity || !identity.registered) return;
+      
+      if (!this._Wallet.electrumxConnected) {
+        console.log('[App] Ignore wallet refresh, not connected');
+      } else {
+        console.log('[App] Begin wallet refresh');
+        const wallet = this._Wallet.wallets$.getItem(0);
+        this._Wallet.refreshWallet(wallet);
+      }
+    } catch (err) {
+      console.log('[App] Unable to pull refresh wallet');
+      console.log(err.message ? err.message : err);
     }
   }
 
   private fetchRemoteMessages() {
     if (this._Identity.getActiveAccount()) {
       this._zone.run(() => {
-        const identity = this._Identity.getActiveAccount();
-        if (identity.registered) {
-          
-          /**
-           * @todo Bug: New identity not receiving preferences
-           */
-          if (!identity.preferences) {
-            identity.preferences = this._Preferences.preferences;
-          }
+        try {
+          const identity = this._Identity.getActiveAccount();
+          if (identity.registered) {
+            
+            /**
+             * @todo Bug: New identity not receiving preferences
+             */
+            if (!identity.preferences) {
+              identity.preferences = this._Preferences.preferences;
+            }
 
-          identity.fetchRemoteMessages()
-          .then(() => {
-            console.log('[App] Messages up to date');
-            this.osmServerError = false;
-          }).catch((err) => {
-            console.log('[App] Fetch messages error', err.message ? err.message : err);
-            this.osmServerError = true;
-          });
+            identity.fetchRemoteMessages()
+            .then(() => {
+              console.log('[App] Messages up to date');
+              this.osmServerError = false;
+            }).catch((err) => {
+              console.log('[App] Fetch messages error', err.message ? err.message : err);
+              this.osmServerError = true;
+            });
+          }
+        } catch (err) {
+          console.log('[App] Unable to pull remote messages');
+          console.log(err.message ? err.message : err);
         }
       });
     } else {
