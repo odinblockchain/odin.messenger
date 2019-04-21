@@ -1,0 +1,56 @@
+@import "~/app-variables.scss";
+@import "../carousel-grid.scss";
+
+@keyframes hover {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -5, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.progress {
+  height: 30;
+  width: 80%;
+  margin-top: 20;
+  background-color: transparent;
+  // background-color: orange;
+
+  &.complete {
+    animation-name: hover;
+    animation-duration: 4s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  StackLayout {
+    padding-top: 5;
+  }
+
+  .shadow,
+  .overlay {
+    border-radius: 50%;
+    height: 20;
+  }
+
+  .shadow {
+    background-color: $odin-beige;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .overlay {
+    background-color: $odin-blue-light;
+    transform: translate3d(0, -20, 0);
+    width: 20%;
+    transition: width ease-in-out;
+  }
+
+  .complete {
+    width: 20;
+  }
+}
