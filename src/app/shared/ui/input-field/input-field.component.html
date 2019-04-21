@@ -1,0 +1,10 @@
+<StackLayout class="input-field" [class.focused]="focused" [class.error]="hasError">
+  <Label class="body" textWrap="true">
+    <FormattedString>
+      <Span [text]="label"></Span>
+      <Span class="small" text=" {{labelSmall}}"></Span>
+    </FormattedString>
+  </Label>
+
+  <TextField [hint]="placeholder" class="input input-border regular" (focus)="onFocus()" (blur)="loseFocus()" [(ngModel)]="value"></TextField>
+</StackLayout>
