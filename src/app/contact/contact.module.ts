@@ -4,6 +4,9 @@ import { NativeScriptFormsModule } from "nativescript-angular/forms"
 
 import { ContactRoutingModule } from './contact.routing.module';
 import { AddComponent } from './add/add.component';
+import { EditComponent } from "./edit/edit.component";
+import { InputFieldComponent } from "~/app/shared/ui/input-field/input-field.component";
+import { RoundButtonComponent } from "~/app/shared/ui/round-button/round-button.component";
 
 @NgModule({
   imports: [
@@ -12,7 +15,10 @@ import { AddComponent } from './add/add.component';
     NativeScriptFormsModule
   ],
   declarations: [
-    AddComponent
+    InputFieldComponent,
+    RoundButtonComponent,
+    AddComponent,
+    EditComponent
   ],
   schemas: [
     NO_ERRORS_SCHEMA

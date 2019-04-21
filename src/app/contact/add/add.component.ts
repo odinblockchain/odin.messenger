@@ -4,9 +4,16 @@ import { RouterExtensions } from "nativescript-angular/router";
 import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { OSMClientService } from "~/app/shared/osm-client.service";
-// import { UserModel } from "~/app/shared/user.model";
+import * as app from "tns-core-modules/application";
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Account } from '~/app/shared/models/identity';
+import { isAndroid } from 'tns-core-modules/ui/page/page';
+import { device } from 'tns-core-modules/platform/platform';
+
+import * as frame from 'tns-core-modules/ui/frame';
+
+
+declare var android: any;
 
 export interface IAddContact {
   username: string;
@@ -22,6 +29,7 @@ export interface IAddContact {
 export class AddComponent implements OnInit {
   public contact: IAddContact;
   public processing: boolean;
+  public badUsername: boolean;
   private activeAccount: Account;
 
 	constructor(
@@ -29,21 +37,33 @@ export class AddComponent implements OnInit {
     private _sb: SnackBar,
     private _osmClient: OSMClientService,
     private Identity: IdentityService
-  ) { }
+  ) {
+    if (isAndroid && device.sdkVersion >= '21') {
+      const activity = app.android.startActivity;
+      const win = activity.getWindow();
+      win.clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+    }
+  }
 
   ngOnInit() {
-    this.activeAccount = this.Identity.getActiveAccount();
-    this.processing = false;
+    this.activeAccount  = this.Identity.getActiveAccount();
+    this.processing     = false;
+    this.badUsername    = false;
+
     this.contact = {
       displayName: '',
       username: ''
     };
   }
 
-  async onAddContact(contact: IAddContact) {
+  async onAddContact() {
+    this.badUsername    = false;
+
     if (this.contact.username === '') {
+      this.badUsername = true;
       return alert("An ODIN Identity is required to add another user.");
     } else if (this.contact.username.indexOf('@') < 0) {
+      this.badUsername = true;
       return alert("Usernames should include '@', please check and try again.");
     }
     

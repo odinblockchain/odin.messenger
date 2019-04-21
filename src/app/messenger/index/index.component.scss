@@ -1,0 +1,71 @@
+@import "~/app-variables.scss";
+
+.backbtn {
+  // background-image: url('https://via.placeholder.com/50');
+  // background-size: contain;
+  // background-repeat: no-repeat;
+  z-index: 99;
+
+  background: rgb(255,89,162);
+  background: linear-gradient(to right, rgb(255,89,162) 0%,rgb(255,233,123) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff59a2', endColorstr='#ffe97b',GradientType=1 );
+}
+
+.contact {
+  padding: 0 15;
+
+  .contact--wrap {
+    border-bottom-width: 2;
+    border-bottom-color: $hr-light-color;
+    border-bottom-style: solid;
+    padding-bottom: 15;
+    padding-top: 15;
+  }
+
+  .contact--flex {
+    background-color: $primary;
+    color: #ffffff;
+    width: 45;
+    height: 45;
+    margin-right: 15;
+    border-radius: 5;
+
+    Label {
+      vertical-align: center;
+      horizontal-align: center;
+    }
+  }
+
+  .contact--image {
+    width: 45;
+    height: 45;
+    margin-right: 15;
+    border-radius: 5;
+  }
+
+  .contact--name {
+    color: $app-text-color;
+    font-size: 16;
+    margin-bottom: 5;
+  }
+
+  .contact--meta {
+    color: darken($app-text-color, 10);
+    opacity: 0.6;
+  }
+
+  .contact--action {
+    color: #333333;
+    font-size: 20;
+    padding-left: 15;
+    vertical-align: center;
+  }
+
+  &.-last {
+    border-bottom-width: 0;
+  }
+
+  &.-active {
+    background-color: $dark-03;
+  }
+}
