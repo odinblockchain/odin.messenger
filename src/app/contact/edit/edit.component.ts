@@ -5,8 +5,8 @@ import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { OSMClientService } from "~/app/shared/osm-client.service";
 // import { UserModel } from "~/app/shared/user.model";
-import { IdentityService } from '../shared/services/identity.service';
-import { Account } from '../shared/models/identity';
+import { IdentityService } from '~/app/shared/services/identity.service';
+import { Account } from '~/app/shared/models/identity';
 
 export interface IAddContact {
   username: string;
@@ -15,11 +15,11 @@ export interface IAddContact {
 
 @Component({
 	moduleId: module.id,
-	selector: 'contact-add',
-	templateUrl: './contact-add.component.html',
-	styleUrls: ['./contact-add.component.css']
+	selector: 'ContactEdit',
+	templateUrl: './edit.component.html',
+	styleUrls: ['./edit.component.css']
 })
-export class ContactAddComponent implements OnInit {
+export class EditComponent implements OnInit {
   public contact: IAddContact;
   public processing: boolean;
   private activeAccount: Account;
@@ -28,7 +28,6 @@ export class ContactAddComponent implements OnInit {
     private _router: RouterExtensions,
     private _sb: SnackBar,
     private _osmClient: OSMClientService,
-    // private _user: UserModel,
     private Identity: IdentityService
   ) { }
 

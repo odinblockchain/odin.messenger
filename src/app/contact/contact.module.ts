@@ -2,20 +2,20 @@ import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptCommonModule } from "nativescript-angular/common";
 import { NativeScriptFormsModule } from "nativescript-angular/forms"
 
-import { ContactAddRoutingModule } from './contact-add.routing.module';
-import { ContactAddComponent } from './contact-add.component';
+import { ContactRoutingModule } from './contact.routing.module';
+import { AddComponent } from './add/add.component';
 
 @NgModule({
   imports: [
     NativeScriptCommonModule,
-    ContactAddRoutingModule,
+    ContactRoutingModule,
     NativeScriptFormsModule
   ],
   declarations: [
-    ContactAddComponent
+    AddComponent
   ],
   schemas: [
     NO_ERRORS_SCHEMA
   ]
 })
-export class ContactAddModule { }
+export class ContactModule { }

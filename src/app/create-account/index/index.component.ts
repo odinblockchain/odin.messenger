@@ -81,7 +81,7 @@ export class IndexComponent implements OnInit, AfterViewInit {
       this.isTransitioning = true;
       this.changeSlide(SwipeDirection.left);
     } else if (this.currentSlideIndex === this.slideCount) {
-      this._router.navigate(['/splashscreen/generate'], { clearHistory: true });
+      this._router.navigate(['/create/generate'], { clearHistory: true });
     }
   }
 

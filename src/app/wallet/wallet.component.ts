@@ -7,9 +7,9 @@ import { alert } from "tns-core-modules/ui/dialogs";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import { Page } from "ui/page";
 import { setTimeout, setInterval, clearInterval } from 'tns-core-modules/timer/timer';
-import { WalletService } from '../shared/services';
+import { WalletService } from '~/app/shared/services';
 import { Subscription, Observable as ObservableGeneric } from 'rxjs';
-import { Wallet } from '../shared/models/wallet';
+import { Wallet } from '~/app/shared/models/wallet';
 import { SnackBar } from 'nativescript-snackbar';
 
 const KEEP_ALIVE_DELAY = 2;

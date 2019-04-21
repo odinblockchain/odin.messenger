@@ -1,0 +1,27 @@
+.page {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.red {
+  background-color: red;
+}
+
+.label {
+  margin-bottom: 10;
+}
+
+.input {
+  margin-bottom: 45;
+}
+
+.disabled {
+  .label {
+    opacity: 0.5;
+  }
+
+  :disabled {
+    opacity: 0.5;
+  }  
+}

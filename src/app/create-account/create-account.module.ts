@@ -6,7 +6,7 @@ import { CreateConversationScreenComponent } from "./conversation/conversation.c
 import { WalletConversationScreenComponent } from "./wallet/wallet.component";
 import { ShieldConversationScreenComponent } from "./shield/shield.component";
 import { GenerateScreenComponent } from "./generate/generate.component";
-import { RoundButtonComponent } from "../shared/ui/round-button/round-button.component";
+import { RoundButtonComponent } from "~/app/shared/ui/round-button/round-button.component";
 import { IndexComponent } from "./index/index.component";
 
 @NgModule({
