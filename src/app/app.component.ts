@@ -234,7 +234,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this._loading = true;
     this.initAttempts++;
-    this._storage.loadStorage(true)
+    this._storage.loadStorage(false)
     .then(this._Preferences.loadPreferences)
     .then(this._Preferences.savePreferences)
     .then(this._Identity.init)
