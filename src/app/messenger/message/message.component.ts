@@ -29,6 +29,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
   public contactIdentity: string;
   public contactName: string;
   public message: string;
+  public actionBoxActive: boolean;
 
   private _activeAccount: Account;
   private _contact: Contact;
@@ -42,6 +43,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
     private _snack: SnackBar,
     private IdentityServ: IdentityService
   ) {
+    this.actionBoxActive = false;
 
     this._route.params
     .subscribe(params => {
@@ -183,6 +185,23 @@ export class MessageComponent implements OnInit, AfterViewInit {
       return 'contact';
     } else {
       return 'me';
+    }
+  }
+
+  public onLongPressMessage(item: Message) {
+    console.log('[Message] onLongPressMessage', item);
+    if (item.message && item.message.length) {
+      this.actionBoxActive = !this.actionBoxActive;
+
+      Clipboard.setText(item.message)
+      .then(() => {
+        try {
+          this._snack.simple(`Copied message to clipboard!`, '#ffffff', '#333333', 3, false);
+        } catch (err) {
+          console.log(`[Message] FAILED copying item.message to clipboard`);
+          console.log(err.message ? err.message : err);
+        }
+      });
     }
   }
 
