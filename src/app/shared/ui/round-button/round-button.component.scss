@@ -28,6 +28,14 @@
     }
   }
 
+  .activity-indicator {
+    width: 40;
+    height: 40;
+    transform: translate3d(0, -22, 10);
+    z-index: 5;
+    color: $odin-white;
+  }
+
   &.busy {
     .cta {
       width: 52;
@@ -45,11 +53,15 @@
     }
   }
 
-  .activity-indicator {
-    width: 40;
-    height: 40;
-    transform: translate3d(0, -22, 10);
-    z-index: 5;
-    color: $odin-white;
+  &.btn-theme-green {
+    .cta {
+      .shadow {
+        background-color: $odin-green;
+      }
+      
+      .overlay {
+        background-color: $odin-green-light;
+      }
+    }
   }
 }

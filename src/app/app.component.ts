@@ -67,6 +67,9 @@ const MESSENGER_REFRESH_DELAY = 15;
 // minutes
 const WALLET_REFRESH_DELAY = 5;
 
+// force application storage purge
+const FORCE_PURGE = false;
+
 @Component({
   moduleId: module.id,
   selector: 'ns-app',
@@ -234,7 +237,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this._loading = true;
     this.initAttempts++;
-    this._storage.loadStorage(false)
+    this._storage.loadStorage(FORCE_PURGE)
     .then(this._Preferences.loadPreferences)
     .then(this._Preferences.savePreferences)
     .then(this._Identity.init)

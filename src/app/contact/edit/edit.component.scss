@@ -1,0 +1,20 @@
+@import "~/app-variables.scss";
+
+.view {
+  background-color: $odin-green;
+
+  .header {
+    background-color: $odin-green;
+  }
+
+  .screen {
+    border-radius: 0 50% 0 0;
+    background-color: $odin-dark;
+    padding: 0 20;
+  }
+
+  .friend {
+    width: 150;
+    transform: translate3d(0, -25, 0);
+  }
+}

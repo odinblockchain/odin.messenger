@@ -1,61 +1,58 @@
 import { Component, OnInit } from '@angular/core';
-import { Page } from "ui/page";
-// import { ScrollView, ScrollEventData } from 'tns-core-modules/ui/scroll-view';
-// import { EventData } from "tns-core-modules/data/observable";
-// import { View } from 'tns-core-modules/ui/core/view';
+import { Page, isAndroid } from "ui/page";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
 import * as app from "tns-core-modules/application";
 import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
 import { GridLayout } from "ui/layouts/grid-layout";
 import { RouterExtensions } from "nativescript-angular/router";
-// import { UserModel, ISignalAddress } from '~/app/shared/user.model';
-// import { SignalAddress } from '../shared/models/signal';
-// import { AccountService } from '../shared/services';
-import { IdentityService } from '../shared/services/identity.service';
-import { Contact, Message } from '../shared/models/messenger';
+import { IdentityService } from '~/app/shared/services/identity.service';
+import { Contact, Message } from '~/app/shared/models/messenger';
 import { SnackBar } from 'nativescript-snackbar';
-// import { StorageService } from '../shared';
-// import { PreferencesService } from '../shared/preferences.service';
+import { device } from 'tns-core-modules/platform/platform';
+
+declare var android: any;
 
 @Component({
 	moduleId: module.id,
-	selector: 'messenger',
-	templateUrl: './messenger.component.html',
-	styleUrls: ['./messenger.component.css']
+	selector: 'MessengerIndex',
+	templateUrl: './index.component.html',
+	styleUrls: ['./index.component.css']
 })
-
-export class MessengerComponent implements OnInit {
-  // public friends: SignalAddress[];
+export class IndexComponent implements OnInit {
   public friends: Contact[];
 
 	constructor(
     private _page: Page,
     private _router: RouterExtensions,
-    // private _user: UserModel,
-    // private Account: AccountService,
     private IdentityServ: IdentityService,
     private _snack: SnackBar
-    // private Storage: StorageService,
-    // private Preferences: PreferencesService
   ) {
     this.friends = [];
 
     this.onFetchMessages = this.onFetchMessages.bind(this);
+
+    // Span the background under status bar on Android
+    if (isAndroid && device.sdkVersion >= '21') {
+      const activity = app.android.startActivity;
+      const win = activity.getWindow();
+      win.clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+    }
   }
 
   ngOnInit() {
     console.log('view >> /messenger');
     this.IdentityServ.getActiveAccount().loadContacts()
     .then((contacts: Contact[]) => {
-      console.log('loaded contacts', contacts.map(c => `${c.username}`).join(','));
+      console.log('[Messenger Index] loaded contacts', contacts.map(c => `${c.username}`).join(','));
       this.friends = contacts;
-    })
-    .catch(console.log);
+    }).catch((err) => {
+      console.log('[Messenger Index] contact load error', err.message ? err.message : err);
+    });
   }
   
   onAddContact() {
     console.log('CTA::AddContact');
-    this._router.navigate(["/contact-add"], {
+    this._router.navigate(["/contact/add"], {
       transition: {
         name: "slideLeft"
       }

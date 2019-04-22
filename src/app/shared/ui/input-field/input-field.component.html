@@ -1,0 +1,22 @@
+<GridLayout columns="*" rows="*">
+  <StackLayout row="0" col="0" class="input-field" [class.focused]="focused" [class.error]="hasError" [class.disabled]="disabled">
+    <Label class="body" textWrap="true">
+      <FormattedString>
+        <Span [text]="label"></Span>
+        <Span class="small" text=" {{labelSmall}}"></Span>
+      </FormattedString>
+    </Label>
+
+    <TextField  class="input input-border regular"
+                [returnKeyType]="returnKeyType"
+                [hint]="placeholder"
+                [editable]="!disabled"
+                [(ngModel)]="value"
+                (focus)="onFocus()" (blur)="loseFocus()">
+    </TextField>
+  </StackLayout>
+
+  <ContentView row="0" col="0" class="copy-wrap" horizontalAlignment="right" verticalAlignment="bottom" *ngIf="allowCopy" (tap)="onTapCopy()">
+    <Label text="&#xf24d;" class="fa" verticalAlignment="center" horizontalAlignment="center"></Label>
+  </ContentView>
+</GridLayout>

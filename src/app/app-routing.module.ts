@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: 'help', loadChildren: '~/app/help/help.module#HelpModule' },
 
   // contacts
-  { path: 'contact-add', loadChildren: '~/app/contact-add/contact-add.module#ContactAddModule' },
+  { path: 'contact', loadChildren: '~/app/contact/contact.module#ContactModule' },
 
   // messenger - module
   { path: 'messenger', loadChildren: '~/app/messenger/messenger.module#MessengerModule' },
