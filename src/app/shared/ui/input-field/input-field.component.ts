@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, forwardRef, AfterViewInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ReturnKeyType } from "tns-core-modules/ui/editable-text-base/editable-text-base";
+import * as Clipboard from 'nativescript-clipboard';
+import { SnackBar } from "nativescript-snackbar";
 
 @Component({
   moduleId: module.id,
@@ -19,6 +21,7 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() placeholder: string;
   @Input() hasError: boolean;
   @Input() disabled: boolean;
+  @Input() allowCopy: boolean;
   @Input() returnKeyType: ReturnKeyType;
   @Input('value') _value: string;
 
@@ -27,11 +30,14 @@ export class InputFieldComponent implements ControlValueAccessor {
   onChange: any = () => { };
   onTouched: any = () => { };
 
-  constructor() {
+  constructor(
+    private _snack: SnackBar
+  ) {
     if (typeof this.returnKeyType === undefined) this.returnKeyType = 'next';
     if (typeof this.label === undefined) this.label = 'Label';
     if (typeof this.labelSmall === undefined) this.labelSmall = '';
     if (typeof this.placeholder === undefined) this.placeholder = '';
+    if (typeof this.allowCopy === undefined) this.allowCopy = false;
 
     this.focused    = false;
     this.onFocus    = this.onFocus.bind(this);
@@ -46,6 +52,18 @@ export class InputFieldComponent implements ControlValueAccessor {
     this._value = val;
     this.onChange(val);
     this.onTouched();
+  }
+
+  public onTapCopy() {
+    Clipboard.setText(this._value)
+    .then(async () => {
+      try {
+        await this._snack.simple(`Copied ${this._value} to clipboard!`, '#ffffff', '#333333', 3, false);
+      } catch (err) {
+        console.log(`[InputField] Failed to copy ${this._value} to clipboard`);
+        console.log(err.message ? err.message : err);
+      }
+    });
   }
 
   public writeValue(val: any) {
