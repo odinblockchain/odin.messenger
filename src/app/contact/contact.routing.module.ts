@@ -2,10 +2,13 @@ import { NgModule } from "@angular/core";
 import { Routes } from "@angular/router";
 import { NativeScriptRouterModule } from "nativescript-angular/router";
 
-import { ContactAddComponent } from './contact-add.component';
+
+import { AddComponent } from './add/add.component';
+import { EditComponent } from "./edit/edit.component";
 
 const routes: Routes = [
-  { path: "", component: ContactAddComponent }
+  { path: 'add', component: AddComponent },
+  { path: 'edit/:contactUsername', component: EditComponent, data: { noReuse: true } }
 ];
 
 @NgModule({
@@ -16,4 +19,4 @@ const routes: Routes = [
     NativeScriptRouterModule
   ]
 })
-export class ContactAddRoutingModule { }
+export class ContactRoutingModule { }

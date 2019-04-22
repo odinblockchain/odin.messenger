@@ -12,6 +12,8 @@ import { WalletModel } from './shared/wallet.model';
 import { OSMClientService } from './shared/osm-client.service';
 import { SnackBar } from 'nativescript-snackbar';
 import { WalletClientService } from './shared/wallet-client.service';
+import { RouteReuseStrategy } from '@angular/router';
+import { CustomRouteReuse } from './custom-route-reuse';
 
 @NgModule({
   // Bootstrap – Creates components in declarations and inserts into DOM
@@ -26,7 +28,8 @@ import { WalletClientService } from './shared/wallet-client.service';
     WalletClientService,
     UserModel,
     WalletModel,
-    SnackBar
+    SnackBar,
+    { provide: RouteReuseStrategy, useClass: CustomRouteReuse }
   ],
   // Imports – Other modules that this module needs to function properly
   imports: [

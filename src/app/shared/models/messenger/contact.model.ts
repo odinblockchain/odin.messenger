@@ -23,7 +23,7 @@ export class Contact extends Database {
   public msgs: any[];
   private msgKeys: any[];
 
-  constructor(props: any) {
+  constructor(props?: any) {
     super('Contact');
     this.unread = false;
     this.accepted = false;
@@ -36,7 +36,7 @@ export class Contact extends Database {
     this.deserialize(props);
   }
 
-  deserialize(input: any) {
+  deserialize(input?: any) {
     Object.assign(this, input);
     return this;
   }

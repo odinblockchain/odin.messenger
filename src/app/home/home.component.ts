@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import { Page } from "ui/page";
 import { RouterExtensions } from "nativescript-angular/router";
-import { StorageService } from "../shared";
-import { AccountService } from "../shared/services";
-import { Account } from "../shared/models/identity";
+import { StorageService } from "~/app/shared";
+import { AccountService } from "~/app/shared/services";
+import { Account } from "~/app/shared/models/identity";
 
 @Component({
     selector: "Splashscreen",
