@@ -1,6 +1,6 @@
 {
   "name": "odin.chat.client",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "ODIN Chat developed on NativeScript",
   "nativescript": {
     "id": "org.odinblockchain.messenger",
