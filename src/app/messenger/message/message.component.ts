@@ -47,6 +47,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
   // private contactMessageSub: Subscription;
 
   public contactIdentity: string;
+  public contactName: string;
   public message: string;
 
   private _activeAccount: Account;
@@ -129,6 +130,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
         // });
 
         this._dataItems = this._contact.oMessages$;
+        this.contactName = this._contact.name;
       } else {
         console.log('Unable to load contact');
         this._dataItems = new ObservableArray();
@@ -147,6 +149,14 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
 
   get dataItems(): ObservableArray<Message> {
     return this._dataItems;
+  }
+
+  public displayName(): string {
+    if (this.contactName && this.contactName.length) {
+      return this.contactName;
+    } else {
+      return this.contactIdentity;
+    }
   }
 
   /**
@@ -242,11 +252,24 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
    * Menu option methods
    */
   public onPreviousView() {
-    this._router.back();
+    if (this._router.canGoBack()) {
+      this._router.back();
+    } else {
+      this._router.navigate(['/messenger'], {
+        transition: {
+          name: 'slideRight'
+        },
+      });
+    }
   }
 
   public onEditContact() {
-    alert('This feature is not available yet!');
+    console.log('[Message] Edit contact');
+    this._router.navigate(['/contact/edit', this.contactIdentity], {
+      transition: {
+        name: 'slideLeft'
+      }
+    });
   }
 
   public onDeleteContact() {

@@ -1,7 +1,8 @@
 <ActionBar class="action-bar">
   <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
   <ActionItem text="Refresh" ios.position="popup" android.position="popup" (tap)="onFetchMessages()"></ActionItem>
-  <Label class="action-bar--title" [text]="contactIdentity"></Label>
+  <ActionItem text="Edit Contact" ios.position="popup" android.position="popup" (tap)="onEditContact()"></ActionItem>
+  <Label class="action-bar--title" [text]="displayName()"></Label>
 </ActionBar>
 
 <GridLayout class="message-view" rows="*, 60">

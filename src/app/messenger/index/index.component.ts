@@ -43,16 +43,11 @@ export class IndexComponent implements OnInit {
     console.log('view >> /messenger');
     this.IdentityServ.getActiveAccount().loadContacts()
     .then((contacts: Contact[]) => {
-      console.log('loaded contacts', contacts.map(c => `${c.username}`).join(','));
+      console.log('[Messenger Index] loaded contacts', contacts.map(c => `${c.username}`).join(','));
       this.friends = contacts;
-    })
-    .catch(console.log);
-
-    // this._router.navigate(["/contact/add"], {
-    //   transition: {
-    //     name: "slideLeft"
-    //   }
-    // });
+    }).catch((err) => {
+      console.log('[Messenger Index] contact load error', err.message ? err.message : err);
+    });
   }
   
   onAddContact() {

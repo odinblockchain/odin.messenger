@@ -1,4 +1,4 @@
-<StackLayout class="input-field" [class.focused]="focused" [class.error]="hasError">
+<StackLayout class="input-field" [class.focused]="focused" [class.error]="hasError" [class.disabled]="disabled">
   <Label class="body" textWrap="true">
     <FormattedString>
       <Span [text]="label"></Span>
@@ -6,5 +6,11 @@
     </FormattedString>
   </Label>
 
-  <TextField [hint]="placeholder" class="input input-border regular" (focus)="onFocus()" (blur)="loseFocus()" [(ngModel)]="value"></TextField>
+  <TextField  class="input input-border regular"
+              [returnKeyType]="returnKeyType"
+              [hint]="placeholder"
+              [editable]="!disabled"
+              [(ngModel)]="value"
+              (focus)="onFocus()" (blur)="loseFocus()">
+  </TextField>
 </StackLayout>

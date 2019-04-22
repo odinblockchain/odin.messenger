@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, forwardRef, AfterViewInit } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ReturnKeyType } from "tns-core-modules/ui/editable-text-base/editable-text-base";
 
 @Component({
   moduleId: module.id,
@@ -17,6 +18,8 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() labelSmall: string;
   @Input() placeholder: string;
   @Input() hasError: boolean;
+  @Input() disabled: boolean;
+  @Input() returnKeyType: ReturnKeyType;
   @Input('value') _value: string;
 
   public focused: boolean;
@@ -25,9 +28,14 @@ export class InputFieldComponent implements ControlValueAccessor {
   onTouched: any = () => { };
 
   constructor() {
-    this.focused = false;
-    this.onFocus = this.onFocus.bind(this);
-    this.loseFocus = this.loseFocus.bind(this);
+    if (typeof this.returnKeyType === undefined) this.returnKeyType = 'next';
+    if (typeof this.label === undefined) this.label = 'Label';
+    if (typeof this.labelSmall === undefined) this.labelSmall = '';
+    if (typeof this.placeholder === undefined) this.placeholder = '';
+
+    this.focused    = false;
+    this.onFocus    = this.onFocus.bind(this);
+    this.loseFocus  = this.loseFocus.bind(this);
   }
 
   get value() {

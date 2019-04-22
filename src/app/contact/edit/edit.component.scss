@@ -1,27 +1,33 @@
-.page {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
+@import "~/app-variables.scss";
 
-.red {
-  background-color: red;
-}
+.view {
+  background-color: $odin-green;
 
-.label {
-  margin-bottom: 10;
-}
-
-.input {
-  margin-bottom: 45;
-}
-
-.disabled {
-  .label {
-    opacity: 0.5;
+  .header {
+    background-color: $odin-green;
   }
 
-  :disabled {
-    opacity: 0.5;
-  }  
+  .screen {
+    border-radius: 0 50% 0 0;
+    background-color: $odin-dark;
+    padding: 0 20;
+  }
+
+  .friend {
+    width: 150;
+    transform: translate3d(0, -25, 0);
+  }
+
+  .saveBtn {
+    font-size: 14;
+    height: 40;
+    width: 80;
+    margin-right: 20;
+    margin-top: 10;
+    background-color: transparent;
+    border-color: $odin-white;
+    border-width: 1;
+    color: $odin-white;
+    border-radius: 4;
+  }
 }

@@ -1,29 +1,42 @@
 <ActionBar class="action-bar">
   <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
-  <ActionItem class="action-bar--item" android.systemIcon="ic_menu_save" (tap)="onAddContact(contact)"
-      android.position="right" >
-  </ActionItem>
   <Label class="action-bar--title" text="Edit Contact"></Label>
 </ActionBar>
 
-<FlexboxLayout [class.disabled]="processing" class="page page-content">
-  <StackLayout width="80%">
+<GridLayout class="view" rows="*, 2*">
+  <GridLayout class="header" row="0" rows="55, *" columns="*">
+    <!-- <ContentView row="0" col="0" width="100%">
+      <Button class="saveBtn" text="Save" horizontalAlignment="right" (tap)="onAddContact(contact)"></Button>
+    </ContentView> -->
+    <Image col="0" row="1" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
+  </GridLayout>
 
-    <StackLayout row="0" class="form input-field">
-      <Label text="ODIN Identity*" class="label bold u-font-size-md"></Label>
-      <TextField [isEnabled]="!processing" [(ngModel)]="contact.username" hint="XYZ123@ODIN..." class="input input-border regular"></TextField>
-    </StackLayout>
+  <GridLayout class="screen" row="1" rows="auto, auto, *">
 
-    <StackLayout row="1" class="form input-field">
-      <Label text="Display Name" class="label bold u-font-size-md"></Label>
-      <TextField [isEnabled]="!processing" [(ngModel)]="contact.displayName" hint="Optional display name..." class="input input-border regular"></TextField>
-    </StackLayout>
+    <ContentView  row="0"
+                  InputField
+                  label="Display Name"
+                  labelSmall="(optional)"
+                  placeholder="John Smith"
+                  returnKeyType="done"
+                  [(ngModel)]="contact.name">
+    </ContentView>
 
-    <Button [class.isEnabled]="!processing" row="2" text="Add Contact" (tap)="onAddContact(contact)" class="btn btn-primary"></Button>
+    <ContentView  row="1"
+                  InputField
+                  label="Contact Username"
+                  disabled="true"
+                  [value]="contact.username">
+    </ContentView>
 
-    <ActivityIndicator class="activity-indicator" [busy]="processing"></ActivityIndicator>
+    <GridLayout row="2"
+                RoundButton
+                theme="green"
+                text="Save Contact"
+                [busy]="processing"
+                (tap)="onSaveContact()">
+    </GridLayout>
 
-  </StackLayout>
-</FlexboxLayout>
-  
+  </GridLayout>
+</GridLayout>
   
