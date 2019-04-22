@@ -1,32 +1,17 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy  } from '@angular/core';
 import { PageRoute } from "nativescript-angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
-// import { switchMap } from "rxjs/operators";
 import { ActivatedRoute } from '@angular/router';
 import { alert } from "tns-core-modules/ui/dialogs";
-// import * as app from "application";
 import { ObservableArray } from "tns-core-modules/data/observable-array";
 
-// import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
-// import { ListView, ItemEventData } from 'ui/list-view';
+import * as Clipboard from 'nativescript-clipboard';
 import { TextField } from 'ui/text-field';
-// import { ScrollView } from 'ui/scroll-view';
-// import { Page } from "ui/page"
-// import { UserModel } from '~/app/shared/user.model';
-
-// import { displayedEvent, exitEvent, launchEvent, lowMemoryEvent, 
-//   orientationChangedEvent, resumeEvent, suspendEvent, uncaughtErrorEvent, 
-//   ApplicationEventData, LaunchEventData, OrientationChangedEventData, UnhandledErrorEventData,
-//   on as applicationOn, run as applicationRun } from "tns-core-modules/application";
-// import { ContactService } from '~/app/shared/services';
 import { Contact, Message } from '~/app/shared/models/messenger';
 import { IdentityService } from '~/app/shared/services/identity.service';
-// import { Subscription, Observable } from 'rxjs';
 import { Account } from '~/app/shared/models/identity';
 import { RadListView } from 'nativescript-ui-listview';
-// import { topmost } from 'tns-core-modules/ui/frame/frame';
-
-declare var android: any;
+import { SnackBar } from 'nativescript-snackbar';
 
 @Component({
 	moduleId: module.id,
@@ -34,17 +19,12 @@ declare var android: any;
 	templateUrl: './message.component.html',
 	styleUrls: ['./message.component.css']
 })
-export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, OnDestroy {
+export class MessageComponent implements OnInit, AfterViewInit {
   @ViewChild("listView") lv: ElementRef;
   @ViewChild("textfield") tf: ElementRef;
 
   list: RadListView;
   textfield: TextField;
-
-  // v1 message pulling leftovers
-  // public contactMessages: any;//ObservableArray<any>; //any[];
-  // public contactMessages$: Observable<Data>;
-  // private contactMessageSub: Subscription;
 
   public contactIdentity: string;
   public contactName: string;
@@ -59,15 +39,14 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
     private _page: PageRoute,
     private _router: RouterExtensions,
     private _route: ActivatedRoute,
+    private _snack: SnackBar,
     private IdentityServ: IdentityService
   ) {
 
-    // this.contactMessages = [];
-    // this.contactMessages$ = new Observable(); //new ObservableArray();
-
     this._route.params
     .subscribe(params => {
-      console.log('GOT route params', params);
+      console.log('[Message] Route params', params);
+
       if (params.hasOwnProperty('contactId')) {
         this.contactIdentity = params['contactId'];
       } else {
@@ -78,66 +57,25 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
 
     this.message = '';
     this.sendMessage = this.sendMessage.bind(this);
-
-    // load query params (if any)...
-    // this._route.queryParams
-    // .subscribe(params => {
-    //   console.log('GOT params', params);
-    // });
-
-    // this.page.on("loaded", (args) => {
-    //   var window = app.android.startActivity.getWindow();
-    //   window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-    // });
-
-    // applicationOn(suspendEvent, (args: ApplicationEventData) => {
-    //   // For Android applications, args.android is an android activity class.
-    //   if (args.android) console.log("SUSPEND Activity: " + args.android);
-    //   else if (args.ios) console.log("UIApplication: " + args.ios);
-    // });
-
-    // applicationOn(resumeEvent, (args: ApplicationEventData) => {
-    //   if (args.android) {
-    //     console.log("RESUME Activity: " + args.android);
-    //     var window = app.android.startActivity.getWindow();
-    //     window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-    //   }
-    // });
-  }
-
-  ngOnDestroy() {
-    console.log('Cleaning up Message View...');
-    // if (this.contactMessageSub) {
-    //   this.contactMessageSub.unsubscribe();
-    // }
   }
 
   ngOnInit() {
-    console.log(`MessageView... Loading Contact ${this.contactIdentity}`);
-    
-    // this.ContactServ.findContact(this.contactIdentity);
-    // this.IdentityServ.activeAccount.fetchMessages(this.IdentityServ.activeAccount.client)
+    console.log(`[Message] Loading Contact ${this.contactIdentity}`);
     
     if (this.IdentityServ.getActiveAccount()) {
       this._activeAccount = this.IdentityServ.getActiveAccount();
       this._contact = this.IdentityServ.getActiveAccount().findContact(this.contactIdentity);
 
       if (this._contact) {
-        // this.contactMessageSub = this.contact.messages$.subscribe(value => {
-        //   // console.log('subscribed!');
-        //   this.contactMessages.push(value);
-        //   // console.log('NEW MESSAGE', value);
-        // });
-
         this._dataItems = this._contact.oMessages$;
         this.contactName = this._contact.name;
       } else {
-        console.log('Unable to load contact');
+        console.log('[Message] Unable to load contact');
         this._dataItems = new ObservableArray();
         console.log(this.IdentityServ.getActiveAccount().contacts);
       }
     } else {
-      console.log('IdentityService missing active account');
+      console.log('[Message] IdentityService missing active account');
       this._dataItems = new ObservableArray();
     }
   }
@@ -164,7 +102,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
    * @param e 
    */
   public loadedEvent(e) {
-    console.log(`List has been loaded... item count: ${this._dataItems.length}`);
+    console.log(`[Message] RadList has been loaded... item count: ${this._dataItems.length}`);
     this.scrollToIndex(this._dataItems.length - 1);
   }
 
@@ -173,7 +111,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
    * @param e 
    */
   public populatedEvent(e) {
-    console.log('List has been populated');
+    console.log('[Message] RadList has been populated');
   }
 
   /**
@@ -190,7 +128,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
 
     this._timer = setTimeout(() => {
       try {
-        console.log('attempting to scroll', index);
+        console.log('[Message] Scrolling to latest message', index);
         if (this.list) this.list.scrollToIndex(index, false);
         else console.log('no list');
       } catch (err) {
@@ -215,7 +153,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
     try {
       this._activeAccount.sendRemoteMessage(this._contact, this.message)
       .then(() => {
-        console.log('Message sent successfully');
+        console.log('[Message] Message delivered successfully');
         this.scrollToIndex(this._dataItems.length - 1);
       }).catch(console.log);
 
@@ -226,7 +164,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
       this.textfield.dismissSoftInput(); // Hide Keyboard.
       this.scrollToIndex(this._dataItems.length - 1);
 
-      console.log(`MessageView... Something unexpected happened while delivering...`);
+      console.log(`[Message] Something unexpected happened while delivering...`);
       console.log(err.message ? err.message : err);
       alert('Something unexpected occurred while delivering your message, please try again.');
     }
@@ -263,7 +201,7 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
     }
   }
 
-  public onEditContact() {
+  public onEditContact(): void {
     console.log('[Message] Edit contact');
     this._router.navigate(['/contact/edit', this.contactIdentity], {
       transition: {
@@ -272,18 +210,27 @@ export class MessageComponent implements OnInit, AfterViewInit, OnDestroy {//, O
     });
   }
 
-  public onDeleteContact() {
-    alert('This feature is not available yet!');
+  public onCopyContact(): void {
+    console.log('[Message] Copy contact');
+    Clipboard.setText(this.contactIdentity)
+    .then(async () => {
+      try {
+        await this._snack.simple(`Copied ${this.contactIdentity} to clipboard!`, '#ffffff', '#333333', 3, false);
+      } catch (err) {
+        console.log(`[Message] FAILED copying ${this.contactIdentity} to clipboard`);
+        console.log(err.message ? err.message : err);
+      }
+    });
   }
 
   public onFetchMessages() {
     if (this.IdentityServ.getActiveAccount()) {
       this.IdentityServ.getActiveAccount().fetchRemoteMessages()
       .then(() => {
-        console.log('All messages have been fetched');
+        console.log('[Message] All messages have been fetched');
       }).catch(console.log);
     } else {
-      console.log('NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
+      console.log('[Message] NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
     }
   }
 }
