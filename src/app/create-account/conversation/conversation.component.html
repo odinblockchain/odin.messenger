@@ -1,5 +1,5 @@
-<GridLayout rows="240, auto, auto" [class.active]="active">
-  <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center" verticalAlignment="center">
+<GridLayout rows="auto, auto" [class.active]="active">
+  <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center" backgroundColor="blue">
     <Image class="odin-bg-circle" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
     <GridLayout class="odin-viking-guy">
       <Image #chatBubbleLeft class="chat-bubble" src="~/app/images/create-account/pg1/chat-bubble-blue-512.png"></Image>
@@ -13,13 +13,15 @@
     </GridLayout>
   </GridLayout>
 
-  <GridLayout width="80%" row="1" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="carousel-item-head-container">
-    <Label row="0" textWrap="true" text="Own Your"></Label>
-    <Label row="1" textWrap="true" text="Conversation"></Label>
-    <ContentView row="2" class="divider"></ContentView>
-  </GridLayout>
+  <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *"  backgroundColor="green">
+    <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading" backgroundColor="orange">
+      <Label row="0" textWrap="true" text="Own Your"></Label>
+      <Label row="1" textWrap="true" text="Conversation"></Label>
+      <ContentView row="2" class="divider"></ContentView>
+    </GridLayout>
 
-  <GridLayout width="80%" row="2" horizontalAlignment="center" verticalAlignment="center" class="carousel-item-desc">
-    <Label class="opensans-regular" text="Simply add contacts, then chat in complete privacy. No personal information is required to create your account." textWrap="true"></Label>
+    <GridLayout row="1" horizontalAlignment="center" verticalAlignment="center" class="body" backgroundColor="silver">
+      <Label class="opensans-regular" text="Simply add contacts, then chat in complete privacy. No personal information is required to create your account." textWrap="true"></Label>
+    </GridLayout>
   </GridLayout>
 </GridLayout>

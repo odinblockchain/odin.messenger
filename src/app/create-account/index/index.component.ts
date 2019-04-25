@@ -34,7 +34,7 @@ export class IndexComponent implements OnInit, AfterViewInit {
     private _router: RouterExtensions
   ) {
     this.packageVersion     = global.version ? global.version : '0.3.x';
-    this.currentSlideIndex  = 1;
+    this.currentSlideIndex  = 3;
     this.slideCount         = 3;
     this.isTransitioning    = false;
     this.allowGoBack        = false;

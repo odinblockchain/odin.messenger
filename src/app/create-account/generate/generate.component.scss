@@ -1,15 +1,17 @@
 @import "~/app-variables.scss";
 @import "../carousel-grid.scss";
 
-@keyframes hover {
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, -5, 0);
-  }
-  100% {
-    transform: translate3d(0, 0, 0);
+.android320 :host {
+  .swipe-wrap {
+    .phone {
+      height: 90;
+      transform: translate3d(0, 15, 0);
+    }
+
+    .hand {
+      height: 70;
+      transform: translate3d(15, 45, 0);
+    }
   }
 }
 
@@ -52,18 +54,10 @@
 .progress {
   height: 30;
   width: 80%;
-  margin-top: 20;
+  margin-top: 10;
   background-color: transparent;
   // background-color: orange;
-
-  &.complete {
-    animation-name: hover;
-    animation-duration: 4s;
-    animation-fill-mode: both;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-  }
-
+  
   StackLayout {
     padding-top: 5;
   }

@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
 
 @Component({
-  selector: "WalletConversationScreen",
+  selector: "WalletConversationScreen, [WalletConversationScreen]",
   moduleId: module.id,
   templateUrl: "./wallet.component.html",
   styleUrls: ['./wallet.component.css']

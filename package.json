@@ -1,6 +1,6 @@
 {
   "name": "odin.chat.client",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "ODIN Chat developed on NativeScript",
   "nativescript": {
     "id": "org.odinblockchain.messenger",
@@ -68,6 +68,7 @@
     "nativescript-floatingactionbutton": "^5.0.0",
     "nativescript-libsignal-protocol": "^0.2.0",
     "nativescript-orientation": "^2.2.1",
+    "nativescript-platform-css": "^1.6.6",
     "nativescript-plugin-firebase": "^8.1.1",
     "nativescript-randombytes": "^1.0.0",
     "nativescript-snackbar": "^4.0.0",

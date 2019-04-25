@@ -1,5 +1,5 @@
 @import "~/app-variables.scss";
- 
+
 /**
  * ODIN Features Base
  */
@@ -15,22 +15,31 @@
   border-radius: 4;
   padding: 9 17;
 }
+
 .carousel-status {
-  margin-top: 30;
-  margin-bottom: 30;
+  margin-top: 10;
+
+  .round-button-wrap  {
+    margin-bottom: 10;
+  }
 
   .caro-item-dot {
-    background-image: url("~/app/images/pagination/next.png");
-    background-repeat: no-repeat;
-    height: 18;
-    width: 18;
+    background: url("~/app/images/pagination/next.png") no-repeat transparent;
+    background-size: contain;
+    height: 10;
+    width: 10;
+    margin-right: 10;
   
     &.current {
       background-image: url("~/app/images/pagination/current.png");
+      height: 14;
+      width: 14;
     }
 
     &.complete {
       background-image: url("~/app/images/pagination/complete.png");
+      height: 16;
+      width: 16;
     }
   }  
 }

@@ -16,6 +16,7 @@ import { UserModel } from '~/app/shared/user.model';
 import { PreferencesService } from '~/app/shared/preferences.service';
 import { messaging, Message } from "nativescript-plugin-firebase/messaging";
 
+require( "nativescript-platform-css" );
 const firebase = require("nativescript-plugin-firebase");
 
 registerElement('Fab', () => require('nativescript-floatingactionbutton').Fab);

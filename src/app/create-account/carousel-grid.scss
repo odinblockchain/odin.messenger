@@ -2,38 +2,56 @@
 
 .carousel-item-gfx {
   margin-top: 10;
+  background-color: yellow;
 }
 
-.carousel-item-circle {
-  width: 100%;
-  height: 100%;
-  clip-path: circle(80% at 50% 50%);
-}
+.carousel-content {
+  margin-top: 10;
+  width: 80%;
+  font-size: 14;
 
-.carousel-item-head-container {
-  margin-top: 25;
-
-  Label {
-    color: $odin-dark;
-    font-size: 36;
-    text-align: center;
-    margin: 0;
-    padding: 0;
+  .heading {
+    Label {
+      color: $odin-dark;
+      font-size: 36;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+  
+    .divider {
+      height: 2;
+      background-color: $odin-blue-light;
+      width: 50%;
+      margin-top: 11;
+      margin-bottom: 20;
+    }
   }
 
-  .divider {
-    height: 2;
-    background-color: $odin-blue-light;
-    width: 50%;
-    margin-top: 11;
-    margin-bottom: 20;
+  .body {
+    Label {
+      font-size: 15;
+      color: $odin-blue-light;
+      text-align: center;   
+    }  
   }
 }
 
-.carousel-item-desc {
-  Label {
-    font-size: 15;
-    color: $odin-blue-light;
-    text-align: center;   
-  }  
+.android320 :host {
+  .odin-bg-circle,
+  .odin-bg-circle-shield-overlay {
+    height: 125;
+  }
+
+  .carousel-content {
+    .heading {
+      Label {
+        font-size: 24;
+      }
+
+      // .divider {
+      //   margin-bottom: 10;
+      // }
+    }
+  }
 }

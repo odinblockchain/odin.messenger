@@ -48,6 +48,54 @@
   }
 }
 
+@keyframes chatRightScreenSm {
+  0% {
+    transform: translate3d(25, 0, 0) scale(0.2);
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(15, -10, 0) scale(0.5);
+  }
+  30% {
+    transform: translate3d(15, -10, 0) scale(0.5);
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(15, -20, 0) scale(0.5);
+    opacity: 0;
+  }
+  90% {
+    transform: translate3d(25, 0, 0) scale(0.2);
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
+@keyframes chatLeftScreenSm {
+  0% {
+    transform: translate3d(-25, 10, 0) scale(0.2);
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(-10, 0, 0) scale(0.5);
+  }
+  30% {
+    transform: translate3d(-10, 0, 0) scale(0.5);
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(-10, -10, 0) scale(0.5);
+    opacity: 0;
+  }
+  90% {
+    transform: translate3d(-25, 10, 0) scale(0.2);
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
 .odin-viking-guy,
 .odin-viking-girl {
 
@@ -64,51 +112,66 @@
   }
 }
 
-.odin-viking-guy {
-  transform: translate3d(65, 10, 0);
+.android320 :host {
+  .odin-viking-guy,
+  .odin-viking-girl {
 
-  .chat-bubble {
-    transform: translate3d(-15, -55, 0) scale(0.2);
+    .viking {
+      height: 70;
+    }
+
+    .chat-bubble {
+      height: 70;
+    }
+
+    .shadow {
+      height: 3;
+    }
   }
 
-  .shadow {
-    transform: translate3d(120%, 55, 0);
+  .odin-viking-guy {
+
+    .viking {
+      transform: translate3d(40, 35, 0);
+    }
+  
+    .chat-bubble {
+      transform: translate3d(25, 0, 0) scale(0.2);
+      // transform: translate3d(10, -10, 0) scale(0.5);
+      animation-name: chatRightScreenSm;
+      animation-delay: 500ms;
+      animation-duration: 10s;
+      animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation-iteration-count: infinite;
+      animation-fill-mode: forwards;
+    }
+  
+    .shadow {
+      transform: translate3d(120%, 70, 0);
+    }
   }
-}
 
-.odin-viking-girl {
-  transform: translate3d(-55, 25, 0);
+  .odin-viking-girl {
+    
+    .viking {
+      transform: translate3d(-40, 45, 0);
+    }
+  
+    .chat-bubble {
+      transform: translate3d(-25, 10, 0) scale(0.2);
+      // transform: translate3d(-10, 10, 0) scale(0.5);
+      opacity: 0;
 
-  .chat-bubble {
-    transform: translate3d(20, -50, 0) scale(0.2);
-    // transform: translate3d(40, -80, 0) scale(0.8);
-    opacity: 0.2;
-  }
-
-  .shadow {
-    transform: translate3d(-120%, 55, 0);
-  }
-}
-
-.active .odin-viking-guy {
-  .chat-bubble {
-    animation-name: chatBubbleRight;
-    animation-delay: 500ms;
-    animation-duration: 10s;
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    animation-iteration-count: infinite;
-    animation-fill-mode: forwards;
-  }
-}
-
-.active .odin-viking-girl {
-  .chat-bubble {
-
-    animation-name: chatBubbleLeft;
-    animation-delay: 1.6s;
-    animation-duration: 10s;
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    animation-iteration-count: infinite;
-    animation-fill-mode: forwards;
+      animation-name: chatLeftScreenSm;
+      animation-delay: 1.5s;
+      animation-duration: 10s;
+      animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation-iteration-count: infinite;
+      animation-fill-mode: forwards;
+    }
+  
+    .shadow {
+      transform: translate3d(-120%, 80, 0);
+    }
   }
 }
