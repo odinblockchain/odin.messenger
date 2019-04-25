@@ -1,7 +1,9 @@
 @import "~/app-variables.scss";
 @import "../carousel-grid.scss";
 
-.android320 :host {
+.android320 :host,
+.android360 :host,
+.android400 :host {
   .swipe-wrap {
     .phone {
       height: 90;
@@ -57,7 +59,7 @@
   margin-top: 10;
   background-color: transparent;
   // background-color: orange;
-  
+
   StackLayout {
     padding-top: 5;
   }

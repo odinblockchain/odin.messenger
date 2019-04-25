@@ -37,7 +37,9 @@
   }
 }
 
-.android320 :host {
+.android320 :host,
+.android360 :host,
+.android400 :host {
   .odin-bg-circle,
   .odin-bg-circle-shield-overlay {
     height: 125;

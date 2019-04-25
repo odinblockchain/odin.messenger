@@ -86,7 +86,9 @@
   }
 }
 
-.android320 :host {
+.android320 :host,
+.android360 :host,
+.android400 :host {
   .odin-shield {
     .shield {
       height: 90;

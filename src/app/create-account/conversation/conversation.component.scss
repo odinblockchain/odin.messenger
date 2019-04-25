@@ -112,7 +112,9 @@
   }
 }
 
-.android320 :host {
+.android320 :host,
+.android360 :host,
+.android400 :host {
   .odin-viking-guy,
   .odin-viking-girl {
 

@@ -74,7 +74,9 @@
 //   }
 // }
 
-.android320 :host {
+.android320 :host,
+.android360 :host,
+.android400 :host {
   .odin-phone-assets {
     .phone {
       height: 80;
