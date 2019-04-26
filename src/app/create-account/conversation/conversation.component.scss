@@ -96,6 +96,55 @@
   }
 }
 
+@keyframes chatRightScreenLg {
+  0% {
+    transform: translate3d(55, 25, 0) scale(0.2);
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(20, 0, 0) scale(0.8);
+  }
+  30% {
+    transform: translate3d(20, 0, 0) scale(0.8);
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(20, -10, 0) scale(0.8);
+    opacity: 0;
+  }
+  90% {
+    transform: translate3d(55, 25, 0) scale(0.2);
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
+@keyframes chatLeftScreenLg {
+  0% {
+    transform: translate3d(-45, 35, 0) scale(0.2);
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(-20, 15, 0) scale(0.8);
+  }
+  30% {
+    transform: translate3d(-20, 15, 0) scale(0.8);
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(-20, 5, 0) scale(0.8);
+    opacity: 0;
+  }
+  90% {
+    transform: translate3d(-45, 35, 0) scale(0.2);
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
+
 .odin-viking-guy,
 .odin-viking-girl {
 
@@ -104,11 +153,59 @@
   }
 
   .chat-bubble {
-    height: 70;
+    height: 90;
   }
 
   .shadow {
     height: 3;
+  }
+}
+
+.odin-viking-guy {
+
+  .viking {
+    transform: translate3d(75, 80, 0);
+  }
+
+  .chat-bubble {
+    // transform: translate3d(55, 25, 0) scale(0.2);
+    // transform: translate3d(20, 0, 0) scale(0.8);
+    // opacity: 0;
+
+    animation-name: chatRightScreenLg;
+    animation-delay: 500ms;
+    animation-duration: 10s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
+  }
+
+  .shadow {
+    transform: translate3d(140%, 135, 0);
+  }
+}
+
+.odin-viking-girl {
+  
+  .viking {
+    transform: translate3d(-70, 90, 0);
+  }
+
+  .chat-bubble {
+    transform: translate3d(-45, 35, 0) scale(0.2);
+    // transform: translate3d(-20, 15, 0) scale(0.8);
+    opacity: 0;
+
+    animation-name: chatLeftScreenLg;
+    animation-delay: 1.7s;
+    animation-duration: 10s;
+    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation-iteration-count: infinite;
+    animation-fill-mode: forwards;
+  }
+
+  .shadow {
+    transform: translate3d(-140%, 145, 0);
   }
 }
 
@@ -149,7 +246,7 @@
     }
   
     .shadow {
-      transform: translate3d(120%, 70, 0);
+      transform: translate3d(140%, 70, 0);
     }
   }
 
@@ -173,7 +270,7 @@
     }
   
     .shadow {
-      transform: translate3d(-120%, 80, 0);
+      transform: translate3d(-140%, 80, 0);
     }
   }
 }

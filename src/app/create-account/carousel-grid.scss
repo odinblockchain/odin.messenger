@@ -5,10 +5,14 @@
   background-color: yellow;
 }
 
+.odin-bg-circle,
+.odin-bg-circle-shield-overlay {
+  height: 225;
+}
+  
+
 .carousel-content {
-  margin-top: 10;
   width: 80%;
-  font-size: 14;
 
   .heading {
     Label {
@@ -20,17 +24,17 @@
     }
   
     .divider {
-      height: 2;
       background-color: $odin-blue-light;
-      width: 50%;
       margin-top: 11;
       margin-bottom: 20;
+      height: 2;
+      width: 50%;
     }
   }
 
   .body {
     Label {
-      font-size: 15;
+      font-size: 18;
       color: $odin-blue-light;
       text-align: center;   
     }  

@@ -1,6 +1,18 @@
 @import "~/app-variables.scss";
 @import "../carousel-grid.scss";
 
+.swipe-wrap {
+  .phone {
+    height: 160;
+    transform: translate3d(0, 35, 0);
+  }
+
+  .hand {
+    height: 120;
+    transform: translate3d(30, 85, 0);
+  }
+}
+
 .android320 :host,
 .android360 :host,
 .android400 :host {

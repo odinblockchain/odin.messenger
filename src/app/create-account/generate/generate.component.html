@@ -40,7 +40,7 @@
     </GridLayout>
   </GridLayout>
 
-  <GridLayout *ngIf="!primaryAccount || !primaryAccount.registered" rows="2*, *">
+  <GridLayout *ngIf="!primaryAccount || !primaryAccount.registered" rows="4*, *">
 
     <GridLayout #slideContent id="slide-content" row="0" rows="*" backgroundColor="yellow">
   
@@ -74,31 +74,32 @@
       </GridLayout>
     </GridLayout>
     
-    <GridLayout row="2" rows="auto, *" backgroundColor="green">
-      <GridLayout row="0" rows="auto" class="progress" [class.complete]="entropyCreated">
-        <StackLayout *ngIf="!entropyCreated">
-          <ContentView class="shadow"></ContentView>
-          <ContentView class="overlay" horizontalAlignment="left" [style.width]="(currentEntropy/maxEntropy)*100 + '%'" ></ContentView>
-        </StackLayout>
-      </GridLayout>
+    <GridLayout row="1" rows="auto" backgroundColor="green">
+      <StackLayout backgroundColor="blue">
+        <GridLayout class="progress" [class.complete]="entropyCreated">
+          <StackLayout *ngIf="!entropyCreated">
+            <ContentView class="shadow"></ContentView>
+            <ContentView class="overlay" horizontalAlignment="left" [style.width]="(currentEntropy/maxEntropy)*100 + '%'" ></ContentView>
+          </StackLayout>
+        </GridLayout>
 
-      <GridLayout RoundButton
-                  class="progress-btn"
-                  row="1"
-                  style="opacity: 0.2"
-                  [busy]="registering"
-                  text="Keep Swiping"
-                  *ngIf="!entropyCreated || !accountGenerated">
-      </GridLayout>
-  
-      <GridLayout RoundButton
-                  row="1"
-                  [busy]="registering"
-                  text="Register"
-                  (tap)="onRegister($event)"
-                  *ngIf="entropyCreated && accountGenerated">
-      </GridLayout>
-    </GridLayout>
+        <GridLayout RoundButton
+                    class="progress-btn"
+                    row="1"
+                    style="opacity: 0.2"
+                    [busy]="registering"
+                    text="Keep Swiping"
+                    *ngIf="!entropyCreated || !accountGenerated">
+        </GridLayout>
+    
+        <GridLayout RoundButton
+                    row="1"
+                    [busy]="registering"
+                    text="Register"
+                    (tap)="onRegister($event)"
+                    *ngIf="entropyCreated && accountGenerated">
+        </GridLayout>
+      </StackLayout>
 
   </GridLayout>
 </GridLayout>
