@@ -16,7 +16,7 @@ import { UserModel } from '~/app/shared/user.model';
 import { PreferencesService } from '~/app/shared/preferences.service';
 import { messaging, Message } from "nativescript-plugin-firebase/messaging";
 
-require( "nativescript-platform-css" );
+require('nativescript-platform-css');
 const firebase = require("nativescript-plugin-firebase");
 
 registerElement('Fab', () => require('nativescript-floatingactionbutton').Fab);
@@ -70,6 +70,9 @@ const WALLET_REFRESH_DELAY = 5;
 
 // force application storage purge
 const FORCE_PURGE = false;
+
+// force enable/disable of updates
+const ALLOW_AUTO_PULL = false;
 
 @Component({
   moduleId: module.id,
@@ -205,6 +208,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     console.log('[App] AfterViewInit');
+    console.log(`[App] Detected Resolution ---
+    hdpi: ${screen.mainScreen.heightDIPs}
+    wdpi: ${screen.mainScreen.widthDIPs}
+    hpx:  ${screen.mainScreen.heightPixels}
+    wpx:  ${screen.mainScreen.widthPixels}
+    `);
+
     this.buildServices();
     this._Account.eventStream$.subscribe(event => {
       console.log('Account Event', event)
@@ -264,6 +274,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
    * Methods to execute after services are initialized
    */
   private async postInit() {
+    console.log('[App] PostInit');
+
     // set local useraccount to the activeAccount of Identity
     this.initAttempts = 0;
     this._loading     = false;
@@ -274,16 +286,50 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.userAccount.client = this._Client.findClientById(this.userAccount.client_id);
     }
 
-    console.log(`Notifications check --
-    Enabled:  ${messaging.areNotificationsEnabled()}
-    Token:    ${await firebase.getCurrentPushToken()}
-    \n`);
-
     await this._Preferences.loadPreferences();
     console.log(`Initial preferences check --
     Preferences:  ${JSON.stringify(this._Preferences.preferences)}`);
 
-    this._Identity.identity.fcmToken = await firebase.getCurrentPushToken();
+    try {
+      console.log(`Notifications check --
+      Enabled:  ${messaging.areNotificationsEnabled()}
+      Token:    ${await firebase.getCurrentPushToken()}
+      \n`);
+
+      this._Identity.identity.fcmToken = await firebase.getCurrentPushToken();
+      messaging.addOnPushTokenReceivedCallback(
+        token => {
+          // you can use this token to send to your own backend server,
+          // so you can send notifications to this specific device
+          console.log("Firebase plugin received a push token: " + token);
+          // var pasteboard = utils.ios.getter(UIPasteboard, UIPasteboard.generalPasteboard);
+          // pasteboard.setValueForPasteboardType(token, kUTTypePlainText);
+        }
+      );
+  
+      messaging.addOnMessageReceivedCallback(
+        message => {
+          console.log("Notification message received in push-view-model: " + JSON.stringify(message, getCircularReplacer()));
+          console.log(message);
+  
+          // display snack notification if already within app AND not in a message view
+          if ( (this.router.url.match(new RegExp('messenger/message','ig'))) ) {
+            this._snack.simple(`${message.title} – ${message.body}`, '#ffffff', '#333333', 3, false);
+          }
+          
+          return true;
+        }
+      ).then(() => {
+        console.log("Added addOnMessageReceivedCallback");
+      }, err => {
+        console.log("Failed to add addOnMessageReceivedCallback: " + err);
+      });
+    } catch (err) {
+      console.log('[App] ERROR --- Unable to load firebase FCM and notifications');
+      console.log(err.message ? err.message : err);
+    }
+
+
 
     // messaging.registerForPushNotifications({
     //   onPushTokenReceivedCallback: (token: string): void => {
@@ -303,33 +349,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     //   // showNotificationsWhenInForeground: true
     // }).then(() => console.log("Registered for push"));
 
-    messaging.addOnPushTokenReceivedCallback(
-      token => {
-        // you can use this token to send to your own backend server,
-        // so you can send notifications to this specific device
-        console.log("2Firebase plugin received a push token: " + token);
-        // var pasteboard = utils.ios.getter(UIPasteboard, UIPasteboard.generalPasteboard);
-        // pasteboard.setValueForPasteboardType(token, kUTTypePlainText);
-      }
-    );
-
-    messaging.addOnMessageReceivedCallback(
-      message => {
-        console.log("Notification message received in push-view-model: " + JSON.stringify(message, getCircularReplacer()));
-        console.log(message);
-
-        // display snack notification if already within app AND not in a message view
-        if ( (this.router.url.match(new RegExp('messenger/message','ig'))) ) {
-          this._snack.simple(`${message.title} – ${message.body}`, '#ffffff', '#333333', 3, false);
-        }
-        
-        return true;
-      }
-    ).then(() => {
-      console.log("Added addOnMessageReceivedCallback");
-    }, err => {
-      console.log("Failed to add addOnMessageReceivedCallback: " + err);
-    });
+    
 
     this.fetchRemoteMessages();
   }
@@ -506,18 +526,22 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   onApplicationResume(args: ApplicationEventData) {
     console.log('[App] Event: onApplicationResume @!@');
 
-    if (!this._fetchMessages) {
-      console.log('@!@ setup ping server');
+    if (!this._fetchMessages && ALLOW_AUTO_PULL) {
+      console.log('[App] onResume: Start Messages Refresh Timer');
       clearInterval(this._fetchMessages);
 
       this._fetchMessages = setInterval(() => {
-
-        console.log('@!@ make server ping');
+        console.log('[App] refresh: messages');
         this.fetchRemoteMessages();
       }, (MESSENGER_REFRESH_DELAY * 1000));
+    }
+
+    if (!this._fetchWallet && ALLOW_AUTO_PULL) {
+      console.log('[App] onResume: Start Wallet Refresh Timer');
+      clearInterval(this._fetchWallet);
 
       this._fetchWallet = setInterval(() => {
-        console.log('@!@ make wallet ping');
+        console.log('[App] refresh: wallet');
         this.fetchRemoteWallet();
       }, (WALLET_REFRESH_DELAY * 60 * 1000));
     }
