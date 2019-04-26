@@ -177,3 +177,22 @@
     }
   }
 }
+
+.android360 :host {
+  .odin-viking-guy,
+  .odin-viking-girl {
+    transform: translate3d(0, 20, 0);
+
+    .viking {
+      height: 90;
+    }
+
+    .chat-bubble {
+      height: 70;
+    }
+
+    .shadow {
+      height: 3;
+    }
+  }
+}

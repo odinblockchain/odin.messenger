@@ -86,6 +86,18 @@
   }
 }
 
+@keyframes shadowScreenMd {
+  0% {
+    transform: scale(1) translate3d(0, 90, 0);
+  }
+  50% {
+    transform: scale(0.7) translate3d(0, 90, 0);
+  }
+  100% {
+    transform: scale(1) translate3d(0, 90, 0);
+  }
+}
+
 .android320 :host,
 .android360 :host,
 .android400 :host {
@@ -112,5 +124,22 @@
       animation-timing-function: linear;
     }
 
+  }
+}
+
+.android360 :host {
+  .odin-shield {
+    .shield {
+      height: 130;
+    }
+
+    .shadow {
+      width: 70;
+      animation-name: shadowScreenMd;
+      animation-duration: 4s;
+      animation-fill-mode: both;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
   }
 }

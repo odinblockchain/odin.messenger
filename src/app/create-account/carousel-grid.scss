@@ -50,10 +50,33 @@
       Label {
         font-size: 24;
       }
+    }
 
-      // .divider {
-      //   margin-bottom: 10;
-      // }
+    .body {
+      Label {
+        font-size: 14;
+      }
+    }
+  }
+}
+
+.android360 :host {
+  .odin-bg-circle,
+  .odin-bg-circle-shield-overlay {
+    height: 175;
+  }
+
+  .carousel-content {
+    .heading {
+      Label {
+        font-size: 28;
+      }
+    }
+
+    .body {
+      Label {
+        font-size: 16;
+      }
     }
   }
 }

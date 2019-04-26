@@ -17,6 +17,20 @@
   }
 }
 
+.android360 :host {
+  .swipe-wrap {
+    .phone {
+      height: 120;
+      transform: translate3d(0, 25, 0);
+    }
+
+    .hand {
+      height: 100;
+      transform: translate3d(30, 65, 0);
+    }
+  }
+}
+
 .welcome {
   background-color: $odin-dark;
 
