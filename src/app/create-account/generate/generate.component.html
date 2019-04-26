@@ -44,7 +44,7 @@
 
     <GridLayout #slideContent id="slide-content" row="0" rows="*" backgroundColor="yellow">
   
-      <GridLayout rows="auto, auto" [class.active]="active">
+      <GridLayout rows="auto, *" [class.active]="active">
         <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center" backgroundColor="blue">
           <Image class="odin-bg-circle" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
           <GridLayout class="swipe-wrap">
@@ -53,7 +53,7 @@
           </GridLayout>
         </GridLayout>
       
-        <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="auto, auto"  backgroundColor="green">
+        <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *"  backgroundColor="green" verticalAlignment="center">
           <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading" backgroundColor="orange" *ngIf="!entropyCreated || !accountGenerated">
             <Label row="0" textWrap="true" text="Make Your"></Label>
             <Label row="1" textWrap="true" text="ODIN Identity"></Label>

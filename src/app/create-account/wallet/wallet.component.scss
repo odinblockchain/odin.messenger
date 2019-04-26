@@ -1,7 +1,7 @@
 @import "~/app-variables.scss";
 @import "../carousel-grid.scss";
 
-@keyframes odinPhoneAppear {
+@keyframes odinPhoneAppears {
   0% {
     transform: translate3d(5, 55, 0);
     opacity: 0;
@@ -12,7 +12,7 @@
   }
 }
 
-@keyframes odinAssetsAppearQuick {
+@keyframes odinAssetsAppearsQuick {
   0% {
     transform: translate3d(0, 0, 0) scale(0.3);
     opacity: 0;
@@ -23,7 +23,7 @@
   }
 }
 
-@keyframes odinAssetsAppearSmooth {
+@keyframes odinAssetsAppearsSmooth {
   0% {
     transform: translate3d(0, 0, 0) scale(0.3);
     opacity: 0;
@@ -95,7 +95,7 @@
       // transform: translate3d(5, 35, 0);
       opacity: 0;
 
-      animation-name: odinPhoneAppear;
+      animation-name: odinPhoneAppears;
       animation-direction: reverse;
       animation-duration: 200ms;
       animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -108,7 +108,7 @@
       // transform: translate3d(0, 0, 0) scale(0.96);
       opacity: 0;
 
-      animation-name: odinAssetsAppearQuick;
+      animation-name: odinAssetsAppearsQuick;
       animation-direction: reverse;
       animation-duration: 200ms;
       animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -127,7 +127,7 @@
       }
 
       .assets {
-        animation-name: odinAssetsAppearSmooth;
+        animation-name: odinAssetsAppearsSmooth;
         animation-delay: 1100ms;
         animation-duration: 900ms;
         animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);

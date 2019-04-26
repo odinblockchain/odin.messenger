@@ -1,4 +1,4 @@
-<GridLayout rows="auto, auto" [class.active]="active">
+<GridLayout rows="auto, *" [class.active]="active">
   <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center" backgroundColor="blue">
     <Image class="odin-bg-circle" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
     <GridLayout class="odin-phone-assets">
@@ -7,7 +7,7 @@
     </GridLayout>
   </GridLayout>
 
-  <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *"  backgroundColor="green">
+  <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *"  backgroundColor="green" verticalAlignment="center">
     <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading" backgroundColor="orange">
       <Label row="0" textWrap="true" text="Built-in"></Label>
       <Label row="1" textWrap="true" text="Digital Wallet"></Label>
