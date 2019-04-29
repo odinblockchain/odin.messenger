@@ -76,11 +76,9 @@
     
     <GridLayout row="1" rows="auto" backgroundColor="green">
       <StackLayout backgroundColor="blue">
-        <GridLayout class="progress" [class.complete]="entropyCreated">
-          <StackLayout *ngIf="!entropyCreated">
-            <ContentView class="shadow"></ContentView>
-            <ContentView class="overlay" horizontalAlignment="left" [style.width]="(currentEntropy/maxEntropy)*100 + '%'" ></ContentView>
-          </StackLayout>
+        <GridLayout class="progress" rows="*" [class.complete]="entropyCreated" *ngIf="!entropyCreated">
+          <ContentView row="0" class="shadow"></ContentView>
+          <ContentView row="0" class="overlay" horizontalAlignment="left" [style.width]="(currentEntropy/maxEntropy)*100 + '%'" ></ContentView>
         </GridLayout>
 
         <GridLayout RoundButton

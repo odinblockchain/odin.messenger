@@ -98,12 +98,10 @@
 
   .shadow {
     background-color: $odin-beige;
-    transform: translate3d(0, 0, 0);
   }
 
   .overlay {
     background-color: $odin-blue-light;
-    transform: translate3d(0, -20, 0);
     width: 20%;
     transition: width ease-in-out;
   }
