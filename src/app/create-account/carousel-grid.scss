@@ -4,36 +4,82 @@
   margin-top: 10;
 }
 
-.carousel-item-circle {
-  width: 100%;
-  height: 100%;
-  clip-path: circle(80% at 50% 50%);
+.odin-bg-circle,
+.odin-bg-circle-shield-overlay {
+  height: 225;
 }
+  
 
-.carousel-item-head-container {
-  margin-top: 25;
+.carousel-content {
+  width: 80%;
 
-  Label {
-    color: $odin-dark;
-    font-size: 36;
-    text-align: center;
-    margin: 0;
-    padding: 0;
+  .heading {
+    Label {
+      color: $odin-dark;
+      font-size: 36;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+  
+    .divider {
+      background-color: $odin-blue-light;
+      margin-top: 11;
+      margin-bottom: 10;
+      height: 2;
+      width: 50%;
+    }
   }
 
-  .divider {
-    height: 2;
-    background-color: $odin-blue-light;
-    width: 50%;
-    margin-top: 11;
-    margin-bottom: 20;
+  .body {
+    Label {
+      font-size: 18;
+      color: $odin-blue-light;
+      text-align: center;   
+    }  
   }
 }
 
-.carousel-item-desc {
-  Label {
-    font-size: 15;
-    color: $odin-blue-light;
-    text-align: center;   
-  }  
+.android320 :host,
+.android360 :host,
+.android400 :host {
+  .odin-bg-circle,
+  .odin-bg-circle-shield-overlay {
+    height: 125;
+  }
+
+  .carousel-content {
+    .heading {
+      Label {
+        font-size: 24;
+      }
+    }
+
+    .body {
+      Label {
+        font-size: 14;
+      }
+    }
+  }
+}
+
+.android360 :host {
+  .odin-bg-circle,
+  .odin-bg-circle-shield-overlay {
+    height: 175;
+  }
+
+  .carousel-content {
+    .heading {
+      Label {
+        font-size: 28;
+      }
+    }
+
+    .body {
+      Label {
+        font-size: 16;
+      }
+    }
+  }
 }

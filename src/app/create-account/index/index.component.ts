@@ -40,14 +40,14 @@ export class IndexComponent implements OnInit, AfterViewInit {
     this.allowGoBack        = false;
 
     // Span the background under status bar on Android
-    if (isAndroid && device.sdkVersion >= '21') {
-      const activity = app.android.startActivity;
-      const win = activity.getWindow();
-      // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
-      // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE); // disable screenshots
-      win.addFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-      // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    }
+    // if (isAndroid && device.sdkVersion >= '21') {
+    //   const activity = app.android.startActivity;
+    //   const win = activity.getWindow();
+    //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE); // disable screenshots
+    //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+    //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+    // }
   }
 
   ngOnInit(): void {
@@ -63,6 +63,8 @@ export class IndexComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.slidesView = this.slideElement.nativeElement;
+    const currSlide = this.slidesView.getChildAt(this.currentSlideIndex - 1);
+    currSlide.opacity = 1;
   }
 
   public onSwipe({ direction }: { direction: SwipeDirection }) {
@@ -135,7 +137,6 @@ export class IndexComponent implements OnInit, AfterViewInit {
 
     animationSet.play()
     .then(() => {
-      console.log("Animation finished");
       this.isTransitioning = false;
     })
     .catch((err) => {

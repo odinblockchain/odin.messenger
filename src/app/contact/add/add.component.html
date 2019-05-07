@@ -3,41 +3,43 @@
   <Label class="action-bar--title" text="Add New Contact"></Label>
 </ActionBar>
 
-<GridLayout class="view" rows="*, 2*">
-  <GridLayout class="header" row="0" rows="55, *" columns="*">
-    <!-- <ContentView row="0" col="0" width="100%">
-      <Button class="saveBtn" text="Save" horizontalAlignment="right" (tap)="onAddContact(contact)"></Button>
-    </ContentView> -->
-    <Image col="0" row="1" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
-  </GridLayout>
-
-  <GridLayout class="screen" row="1" rows="auto, auto, *">
-
-    <ContentView  row="0"
-                  InputField
-                  label="Display Name"
-                  labelSmall="(optional)"
-                  placeholder="John Smith"
-                  [(ngModel)]="contact.displayName">
-    </ContentView>
-
-    <ContentView  row="1"
-                  InputField
-                  label="Contact Username"
-                  labelSmall="(required)"
-                  placeholder="abc123@ODIN"
-                  [hasError]="badUsername"
-                  [(ngModel)]="contact.username">
-    </ContentView>
-
-    <GridLayout row="2"
-                RoundButton
-                theme="green"
-                text="Add Contact"
-                [busy]="processing"
-                (tap)="onAddContact(contact)">
+<ScrollView>
+  <GridLayout class="view" rows="*, 2*">
+    <GridLayout class="header" row="0" rows="55, *" columns="*">
+      <!-- <ContentView row="0" col="0" width="100%">
+        <Button class="saveBtn" text="Save" horizontalAlignment="right" (tap)="onAddContact(contact)"></Button>
+      </ContentView> -->
+      <Image col="0" row="1" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
     </GridLayout>
 
+    <GridLayout class="screen" row="1" rows="auto, auto, *">
+
+      <ContentView  row="0"
+                    InputField
+                    label="Display Name"
+                    labelSmall="(optional)"
+                    placeholder="John Smith"
+                    [(ngModel)]="contact.displayName">
+      </ContentView>
+
+      <ContentView  row="1"
+                    InputField
+                    label="Contact Username"
+                    labelSmall="(required)"
+                    placeholder="abc123@ODIN"
+                    [hasError]="badUsername"
+                    [(ngModel)]="contact.username">
+      </ContentView>
+
+      <GridLayout row="2"
+                  RoundButton
+                  theme="green"
+                  text="Add Contact"
+                  [busy]="processing"
+                  (tap)="onAddContact(contact)">
+      </GridLayout>
+
+    </GridLayout>
   </GridLayout>
-</GridLayout>
+</ScrollView>
   

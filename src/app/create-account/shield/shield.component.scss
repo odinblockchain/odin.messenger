@@ -3,37 +3,38 @@
 
 @keyframes shieldFloating {
   0% {
-    transform: translate(0, 0, 0);
+    transform: translate(0, 30, 0);
   }
   50% {
-    transform: translate3d(0, -15, 0);
+    transform: translate3d(0, 15, 0);
   }
   100% {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 30, 0);
   }
 }
 
 @keyframes shieldShadow {
   0% {
-    transform: scale(1) translate3d(0, 90, 0);
+    transform: scale(1) translate3d(0, 120, 0);
+    opacity: 1;
   }
   50% {
-    transform: scale(0.7) translate3d(0, 90, 0);
+    transform: scale(0.7) translate3d(0, 120, 0);
+    opacity: 0.5;
   }
   100% {
-    transform: scale(1) translate3d(0, 90, 0);
+    transform: scale(1) translate3d(0, 120, 0);
+    opacity: 1;
   }
 }
 
 .odin-shield {
-  .shield {
-    height: 180;
-    animation-name: shieldFloating;
-    // animation-delay: 164;
-    animation-duration: 4s;
-    // animation-fill-mode: forwards;
-    // animation-timing-function: linear;
 
+  .shield {
+    height: 160;
+
+    animation-name: shieldFloating;
+    animation-duration: 4s;
     animation-fill-mode: both;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
@@ -41,16 +42,106 @@
 
   .shadow {
     width: 100;
-    transform: translate3d(0, 90, 0);
+    // transform: translate3d(0, 90, 0);
 
     animation-name: shieldShadow;
-    // animation-delay: 164;
     animation-duration: 4s;
-    // animation-fill-mode: forwards;
-    // animation-timing-function: linear;
-
     animation-fill-mode: both;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
+
+  }
+}
+
+/**
+  Small Screens
+  x320
+**/
+
+@keyframes shieldScreenSm {
+  0% {
+    transform: translate3d(0, 15, 0);
+  }
+  50% {
+    transform: translate3d(0, 5, 0);
+  }
+  100% {
+    transform: translate3d(0, 15, 0);
+  }
+}
+
+@keyframes shadowScreenSm {
+  0% {
+    transform: scale(1) translate3d(0, 60, 0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.7) translate3d(0, 60, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1) translate3d(0, 60, 0);
+    opacity: 1;
+  }
+}
+
+.android320 :host,
+.android360 :host,
+.android400 :host {
+  .odin-shield {
+    .shield {
+      height: 90;
+      // transform: translate3d(0, 10, 0);
+
+      animation-name: shieldScreenSm;
+      animation-duration: 4s;
+      animation-fill-mode: both;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+
+    .shadow {
+      width: 50;
+      // transform: translate3d(0, 60, 0);
+
+      animation-name: shadowScreenSm;
+      animation-duration: 4s;
+      animation-fill-mode: both;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
+
+  }
+}
+
+@keyframes shadowScreenMd {
+  0% {
+    transform: scale(1) translate3d(0, 90, 0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.7) translate3d(0, 90, 0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1) translate3d(0, 90, 0);
+    opacity: 1;
+  }
+}
+
+.android360 :host {
+  .odin-shield {
+    .shield {
+      height: 130;
+    }
+
+    .shadow {
+      width: 70;
+      animation-name: shadowScreenMd;
+      animation-duration: 4s;
+      animation-fill-mode: both;
+      animation-iteration-count: infinite;
+      animation-timing-function: linear;
+    }
   }
 }

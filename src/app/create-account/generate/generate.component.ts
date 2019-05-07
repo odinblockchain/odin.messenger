@@ -13,6 +13,7 @@ import { Account } from "~/app/shared/models/identity";
 import { alert } from "tns-core-modules/ui/dialogs/dialogs";
 import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar } from "nativescript-snackbar";
+import { RouterExtensions } from "nativescript-angular/router";
 
 @Component({
   selector: "GenerateScreen",
@@ -43,6 +44,7 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
 
   constructor(
     private _page: Page,
+    private _router: RouterExtensions,
     private _zone: NgZone,
     private _IdentityServ: IdentityService,
     private _AccountServ: AccountService,
@@ -135,6 +137,10 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
       this.registering = false;
       this.busyClick = false;
     });
+  }
+
+  public onRedirectMessages() {
+    this._router.navigate(['/messenger'], { clearHistory: true });
   }
 
   public onCopyText(text: string) {

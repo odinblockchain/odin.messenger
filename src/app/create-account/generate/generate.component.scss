@@ -1,15 +1,45 @@
 @import "~/app-variables.scss";
 @import "../carousel-grid.scss";
 
-@keyframes hover {
-  0% {
-    transform: translate3d(0, 0, 0);
+.swipe-wrap {
+  .phone {
+    height: 160;
+    transform: translate3d(0, 35, 0);
   }
-  50% {
-    transform: translate3d(0, -5, 0);
+
+  .hand {
+    height: 120;
+    transform: translate3d(30, 85, 0);
   }
-  100% {
-    transform: translate3d(0, 0, 0);
+}
+
+.android320 :host,
+.android360 :host,
+.android400 :host {
+  .swipe-wrap {
+    .phone {
+      height: 90;
+      transform: translate3d(0, 15, 0);
+    }
+
+    .hand {
+      height: 70;
+      transform: translate3d(15, 45, 0);
+    }
+  }
+}
+
+.android360 :host {
+  .swipe-wrap {
+    .phone {
+      height: 120;
+      transform: translate3d(0, 25, 0);
+    }
+
+    .hand {
+      height: 100;
+      transform: translate3d(30, 65, 0);
+    }
   }
 }
 
@@ -17,52 +47,65 @@
   background-color: $odin-dark;
 
   .header {
-    background-color: $odin-dark;
+    background-color: $odin-green;
+    height: 200;
+
+    GridLayout {
+      height: 160;
+    }
   }
 
   .screen {
-    border-radius: 25% 25% 0 0;
-    background-color: $odin-beige;
+    border-radius: 0;
+    background-color: $odin-dark;
+    margin-bottom: 20;
+
+    .container {
+      width: 80%;
+    }
+
+    .body {
+      color: #cccccc;
+      font-size: 16;
+    }
+
+    .card {
+      background-color: transparent;
+      border-bottom-width: 0;
+      padding: 0;
+  
+      .card-content {
+        padding: 0;
+      }
+    }
   }
 
   .friend {
-    width: 100%;
+    width: 140;
 
     &.one {
-      // background-color: yellow;
-      transform: translate3d(30, 0, 0) scale(0.9);
+      transform: translate3d(30, -15, 0) scale(0.9);
       opacity: 0.8;
     }
 
     &.two {
-      transform: translate3d(0, 30, 0);
+      transform: translate3d(0, 15, 0);
       opacity: 1;
-      // background-color: orange;
     }
 
     &.three {
-      transform: translate3d(-30, 0, 0) scale(0.9);
+      transform: translate3d(-30, -15, 0) scale(0.9);
       opacity: 0.8;
-      // background-color: green;
     }
   }
-  // background: linear-gradient(to bottom, $odin-dark 60%, $odin-white 100%);
 }
 
 .progress {
   height: 30;
   width: 80%;
-  margin-top: 20;
+  margin-top: 10;
   background-color: transparent;
   // background-color: orange;
-
-  &.complete {
-    animation-name: hover;
-    animation-duration: 4s;
-    animation-fill-mode: both;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-  }
 
   StackLayout {
     padding-top: 5;
@@ -76,12 +119,10 @@
 
   .shadow {
     background-color: $odin-beige;
-    transform: translate3d(0, 0, 0);
   }
 
   .overlay {
     background-color: $odin-blue-light;
-    transform: translate3d(0, -20, 0);
     width: 20%;
     transition: width ease-in-out;
   }

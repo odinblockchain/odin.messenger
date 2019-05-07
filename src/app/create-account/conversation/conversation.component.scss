@@ -1,52 +1,102 @@
 @import "~/app-variables.scss";
 @import "../carousel-grid.scss";
 
-@keyframes chatBubbleRight {
+@keyframes chatRightScreenSm {
   0% {
-    transform: translate3d(-15, -55, 0) scale(0.2);
+    transform: translate3d(25, 0, 0) scale(0.2);
+    opacity: 1;
   }
   15% {
-    transform: translate3d(-35, -75, 0) scale(0.8);
+    transform: translate3d(10, -10, 0) scale(0.5);
   }
   30% {
-    transform: translate3d(-35, -75, 0) scale(0.8);
+    transform: translate3d(10, -10, 0) scale(0.5);
     opacity: 1;
   }
   35% {
-    transform: translate3d(-35, -85, 0) scale(0.8);
+    transform: translate3d(10, -20, 0) scale(0.5);
     opacity: 0;
   }
   90% {
-    transform: translate3d(-15, -55, 0) scale(0.2);
+    transform: translate3d(25, 0, 0) scale(0.2);
   }
   99% {
     opacity: 1;
   }
 }
 
-@keyframes chatBubbleLeft {
+@keyframes chatLeftScreenSm {
   0% {
-    transform: translate3d(20, -50, 0) scale(0.2);
+    transform: translate3d(-25, 10, 0) scale(0.2);
     opacity: 1;
   }
   15% {
-    transform: translate3d(40, -80, 0) scale(0.8);
+    transform: translate3d(-10, 0, 0) scale(0.5);
   }
   30% {
-    transform: translate3d(40, -80, 0) scale(0.8);
+    transform: translate3d(-10, 0, 0) scale(0.5);
     opacity: 1;
   }
   35% {
-    transform: translate3d(40, -90, 0) scale(0.8);
+    transform: translate3d(-10, -10, 0) scale(0.5);
     opacity: 0;
   }
   90% {
-    transform: translate3d(20, -50, 0) scale(0.2);
+    transform: translate3d(-25, 10, 0) scale(0.2);
   }
   99% {
-    opacity: 1;;
+    opacity: 1;
   }
 }
+
+@keyframes chatRightScreenLg {
+  0% {
+    transform: translate3d(55, 25, 0) scale(0.2);
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(20, 0, 0) scale(0.8);
+  }
+  30% {
+    transform: translate3d(20, 0, 0) scale(0.8);
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(20, -10, 0) scale(0.8);
+    opacity: 0;
+  }
+  90% {
+    transform: translate3d(55, 25, 0) scale(0.2);
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
+@keyframes chatLeftScreenLg {
+  0% {
+    transform: translate3d(-45, 35, 0) scale(0.2);
+    opacity: 1;
+  }
+  15% {
+    transform: translate3d(-20, 15, 0) scale(0.8);
+  }
+  30% {
+    transform: translate3d(-20, 15, 0) scale(0.8);
+    opacity: 1;
+  }
+  35% {
+    transform: translate3d(-20, 5, 0) scale(0.8);
+    opacity: 0;
+  }
+  90% {
+    transform: translate3d(-45, 35, 0) scale(0.2);
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
 
 .odin-viking-guy,
 .odin-viking-girl {
@@ -56,7 +106,7 @@
   }
 
   .chat-bubble {
-    height: 70;
+    height: 90;
   }
 
   .shadow {
@@ -65,50 +115,134 @@
 }
 
 .odin-viking-guy {
-  transform: translate3d(65, 10, 0);
+
+  .viking {
+    transform: translate3d(75, 80, 0);
+  }
 
   .chat-bubble {
-    transform: translate3d(-15, -55, 0) scale(0.2);
-  }
+    transform: translate3d(55, 25, 0) scale(0.2);
+    // transform: translate3d(20, 0, 0) scale(0.8);
 
-  .shadow {
-    transform: translate3d(120%, 55, 0);
-  }
-}
-
-.odin-viking-girl {
-  transform: translate3d(-55, 25, 0);
-
-  .chat-bubble {
-    transform: translate3d(20, -50, 0) scale(0.2);
-    // transform: translate3d(40, -80, 0) scale(0.8);
-    opacity: 0.2;
-  }
-
-  .shadow {
-    transform: translate3d(-120%, 55, 0);
-  }
-}
-
-.active .odin-viking-guy {
-  .chat-bubble {
-    animation-name: chatBubbleRight;
+    animation-name: chatRightScreenLg;
     animation-delay: 500ms;
     animation-duration: 10s;
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     animation-iteration-count: infinite;
     animation-fill-mode: forwards;
   }
+
+  .shadow {
+    transform: translate3d(140%, 135, 0);
+  }
 }
 
-.active .odin-viking-girl {
-  .chat-bubble {
+.odin-viking-girl {
+  
+  .viking {
+    transform: translate3d(-70, 90, 0);
+  }
 
-    animation-name: chatBubbleLeft;
-    animation-delay: 1.6s;
+  .chat-bubble {
+    transform: translate3d(-45, 35, 0) scale(0.2);
+    // transform: translate3d(-20, 15, 0) scale(0.8);
+    opacity: 0;
+
+    animation-name: chatLeftScreenLg;
+    animation-delay: 1.7s;
     animation-duration: 10s;
     animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
     animation-iteration-count: infinite;
     animation-fill-mode: forwards;
+  }
+
+  .shadow {
+    transform: translate3d(-140%, 145, 0);
+  }
+}
+
+.android320 :host,
+.android360 :host,
+.android400 :host {
+  .odin-viking-guy,
+  .odin-viking-girl {
+
+    .viking {
+      height: 70;
+    }
+
+    .chat-bubble {
+      height: 70;
+    }
+
+    .shadow {
+      height: 3;
+    }
+  }
+
+  .odin-viking-guy {
+
+    .viking {
+      transform: translate3d(40, 35, 0);
+    }
+  
+    .chat-bubble {
+      transform: translate3d(25, 0, 0) scale(0.2);
+      // transform: translate3d(10, -10, 0) scale(0.5);
+
+      animation-name: chatRightScreenSm;
+      animation-delay: 500ms;
+      animation-duration: 10s;
+      animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation-iteration-count: infinite;
+      animation-fill-mode: forwards;
+    }
+  
+    .shadow {
+      transform: translate3d(140%, 70, 0);
+    }
+  }
+
+  .odin-viking-girl {
+    
+    .viking {
+      transform: translate3d(-40, 45, 0);
+    }
+  
+    .chat-bubble {
+      transform: translate3d(-25, 10, 0) scale(0.2);
+      // transform: translate3d(-10, 10, 0) scale(0.5);
+      opacity: 0;
+
+      animation-name: chatLeftScreenSm;
+      animation-delay: 1.7s;
+      animation-duration: 10s;
+      animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation-iteration-count: infinite;
+      animation-fill-mode: forwards;
+    }
+  
+    .shadow {
+      transform: translate3d(-140%, 80, 0);
+    }
+  }
+}
+
+.android360 :host {
+  .odin-viking-guy,
+  .odin-viking-girl {
+    transform: translate3d(0, 20, 0);
+
+    .viking {
+      height: 90;
+    }
+
+    .chat-bubble {
+      height: 70;
+    }
+
+    .shadow {
+      height: 3;
+    }
   }
 }

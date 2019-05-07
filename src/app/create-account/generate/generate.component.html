@@ -1,87 +1,104 @@
 <GridLayout #generateLayout class="welcome-page-background">
   
-  <GridLayout *ngIf="primaryAccount && primaryAccount.registered" cols="*" rows="60, *, auto">
-  <!-- <GridLayout *ngIf="false" class="welcome" rows="*, 2*"> -->
+  <ScrollView *ngIf="primaryAccount && primaryAccount.registered">
+    <GridLayout cols="*" rows="auto, *" class="welcome">
+    <!-- <GridLayout *ngIf="false" class="welcome" rows="*, 2*"> -->
 
-    <GridLayout class="header" row="0" columns="*,*,*">
-      <Image col="0" row="0" class="friend one" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
-      <Image col="1" row="0" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
-      <Image col="2" row="0" class="friend three" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
+      <ContentView class="header" row="0">
+        <GridLayout row="0" columns="*,*,*">
+          <Image col="0" row="0" class="friend one" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
+          <Image col="1" row="0" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
+          <Image col="2" row="0" class="friend three" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
+        </GridLayout>
+      </ContentView>
+
+      <GridLayout class="screen" row="1" rows="*, auto, *">
+
+        <ContentView row="0" class="card container">
+          <StackLayout class="card-content">
+            <Label class="body" textWrap="true" text="Your ODIN Identity has been registered!"></Label>
+            <Label class="body" textWrap="true" text="You can copy your username below to share it with friends who are also using ODIN.Chat."></Label>
+          </StackLayout>
+        </ContentView>
+
+        <ContentView row="1" class="container m-b-15">
+            <ContentView  InputField
+                          label="Your Username"
+                          disabled="true"
+                          allowCopy="true"
+                          [value]="primaryAccount.username">
+            </ContentView>
+        </ContentView>
+
+        <GridLayout RoundButton
+                    class=""
+                    row="2"
+                    (tap)="onRedirectMessages()"
+                    text="Go to Messages">
+        </GridLayout>
+      </GridLayout>
+
     </GridLayout>
+  </ScrollView>
 
-    <GridLayout class="screen" row="1" rows="auto, auto, auto">
-      <ContentView row="0" class="card">
-        <StackLayout class="card-content">
-          <Label class="body" textWrap="true" text="Your ODIN Identity has been registered!"></Label>
-          <Label class="body" textWrap="true">
-            <FormattedString>
-              <Span text="Your public identity is "></Span>
-              <Span class="bold" [text]="primaryAccount.username"></Span>
-              <Span text="."></Span>
-            </FormattedString>
-          </Label>
-          <Label class="body" textWrap="true" text="You can share this username with others and begin conversing securely."></Label>
-        </StackLayout>
-      </ContentView>
+  <GridLayout *ngIf="!primaryAccount || !primaryAccount.registered" rows="4*, *">
 
-      <ContentView row="1" class="card">
-        <StackLayout class="card-content">
-          <Label class="body" textWrap="true" text="All messages are end-to-end encrypted and stored in a secure location. Upon receipt of a message, the original package will be purged."></Label>
-          <Label class="body last" textWrap="true" text="Please remember this is an early Alpha release of the ODIN Messenger. You may experience service distruption and/or drastic changes. Thank you for helping test our secure messanger."></Label>
-        </StackLayout>
-      </ContentView>
-
-      <ContentView row="2" class="actions">
-        <StackLayout>
-          <Button class="btn btn-outline" text="Copy Identiy to Clipboard" (tap)="onCopyText(primaryAccount.username)"></Button>
-          <Button class="btn btn-primary" text="Go to Messages" [nsRouterLink]="['/messenger']" clearHistory="true"></Button>
-        </StackLayout>
-      </ContentView>
-    </GridLayout>
-  </GridLayout>
-
-  <GridLayout *ngIf="!primaryAccount || !primaryAccount.registered" rows="auto, auto, *">
-  <!-- <GridLayout *ngIf="true" rows="auto, auto, *"> -->
-    
-    <GridLayout row="0" rows="*" class="slide m-t-20">
-      <GridLayout rows="240, auto, auto">
-          <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center" verticalAlignment="center">
-            <Image class="odin-bg-circle" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
-            <Image class="odin-bg-circle-shield-overlay" src="~/app/images/create-account/pg3/shield-shines-512.png"></Image>
-            <GridLayout class="odin-shield">
-              <Image class="shadow" src="~/app/images/create-account/pg3/shield-shadow-512.png"></Image>
-              <Image class="shield" src="~/app/images/create-account/pg3/shield-odin-logo-512.png"></Image>
-            </GridLayout>
-          </GridLayout>
-        
-          <GridLayout width="80%" row="1" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="carousel-item-head-container">
-            <Label row="0" textWrap="true" text="Generate Your"></Label>
-            <Label row="1" textWrap="true" text="Account"></Label>
-            <ContentView row="2" class="divider"></ContentView>
-          </GridLayout>
-        
-          <GridLayout width="80%" row="2" horizontalAlignment="center" verticalAlignment="center" class="carousel-item-desc">
-            <Label class="opensans-regular" text="This is the only bit of information we need from you to continue – your random finger movements! Start swiping your finger around and fill the progress bar below" textWrap="true"></Label>         
+    <GridLayout #slideContent id="slide-content" row="0" rows="*">
+  
+      <GridLayout rows="auto, *" [class.active]="active">
+        <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center">
+          <Image class="odin-bg-circle" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
+          <GridLayout class="swipe-wrap">
+            <Image class="phone" src="~/app/images/create-account/generate/swipe-screen-512.png"></Image>
+            <Image class="hand" src="~/app/images/create-account/generate/pointing-hand-512.png"></Image>
           </GridLayout>
         </GridLayout>
-    </GridLayout>
+      
+        <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *" verticalAlignment="center">
+          <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading" *ngIf="!entropyCreated || !accountGenerated">
+            <Label row="0" textWrap="true" text="Make Your"></Label>
+            <Label row="1" textWrap="true" text="ODIN Identity"></Label>
+            <ContentView row="2" class="divider"></ContentView>
+          </GridLayout>
 
-    <GridLayout row="1" rows="auto" class="progress" [class.complete]="entropyCreated">
-      <StackLayout *ngIf="!entropyCreated">
-        <ContentView class="shadow"></ContentView>
-        <ContentView class="overlay" horizontalAlignment="left" [style.width]="(currentEntropy/maxEntropy)*100 + '%'" ></ContentView>
-      </StackLayout>
-      <StackLayout *ngIf="entropyCreated">
-        <Image class="complete" src="~/app/images/pagination/complete.png"></Image>
-      </StackLayout>
+          <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading" *ngIf="entropyCreated && accountGenerated">
+            <Label row="0" textWrap="true" text="ODIN Identity"></Label>
+            <Label row="1" textWrap="true" text="Created"></Label>
+            <ContentView row="2" class="divider"></ContentView>
+          </GridLayout>
+      
+          <GridLayout row="1" horizontalAlignment="center" verticalAlignment="center" class="body">
+            <Label class="opensans-regular" text="Swipe your finger anywhere on this screen to forge your anonymous ODIN Identity." textWrap="true" *ngIf="!entropyCreated || !accountGenerated"></Label>
+            <Label class="opensans-regular" text="Register your account to begin having secure conversations with other ODIN Identities" textWrap="true" *ngIf="entropyCreated && accountGenerated"></Label>
+          </GridLayout>
+        </GridLayout>
+      </GridLayout>
     </GridLayout>
+    
+    <GridLayout row="1" rows="auto">
+      <StackLayout>
+        <GridLayout class="progress" rows="*" [class.complete]="entropyCreated" *ngIf="!entropyCreated">
+          <ContentView row="0" class="shadow"></ContentView>
+          <ContentView row="0" class="overlay" horizontalAlignment="left" [style.width]="(currentEntropy/maxEntropy)*100 + '%'" ></ContentView>
+        </GridLayout>
 
-    <GridLayout RoundButton
-                row="2"
-                [busy]="registering"
-                text="Register"
-                (tap)="onRegister($event)"
-                *ngIf="entropyCreated && accountGenerated">
-    </GridLayout>
+        <GridLayout RoundButton
+                    class="progress-btn"
+                    row="1"
+                    style="opacity: 0.2"
+                    [busy]="registering"
+                    text="Keep Swiping"
+                    *ngIf="!entropyCreated || !accountGenerated">
+        </GridLayout>
+    
+        <GridLayout RoundButton
+                    row="1"
+                    [busy]="registering"
+                    text="Register"
+                    (tap)="onRegister($event)"
+                    *ngIf="entropyCreated && accountGenerated">
+        </GridLayout>
+      </StackLayout>
+
   </GridLayout>
 </GridLayout>

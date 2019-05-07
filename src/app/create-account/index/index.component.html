@@ -1,64 +1,59 @@
-<GridLayout class="welcome-page-background" (swipe)="onSwipe($event)">
+<GridLayout class="welcome-page-background" (swipe)="onSwipe($event)" rows="3*, *">
 
-  <GridLayout rows="auto, *">
-    
-    <GridLayout #slideContent id="slide-content" row="0" rows="*" class="slide m-t-20">
+  <GridLayout #slideContent id="slide-content" row="0" rows="*">
 
-      <!-- Slide 1 "Conversation" -->
-      <GridLayout col="0" style="opacity: 1">
-        <CreateConversationScreen col="0" [active]="currentSlideIndex === 1" class="slide--wallet"></CreateConversationScreen>
-      </GridLayout>
-
-      <!-- Slide 2 "Wallet" -->
-      <GridLayout col="0" style="opacity: 0">
-        <WalletConversationScreen col="0" [active]="currentSlideIndex === 2" class="slide--wallet"></WalletConversationScreen>
-      </GridLayout>
-
-      <!-- Slide 3 "Military" -->
-      <GridLayout col="0"  style="opacity: 0">
-        <ShieldConversationScreen col="0" [active]="currentSlideIndex === 3" class="slide--wallet"></ShieldConversationScreen>
-      </GridLayout>
+    <!-- Slide 1 "Conversation" -->
+    <GridLayout CreateConversationScreen
+                col="0"
+                style="opacity: 1"
+                [active]="currentSlideIndex === 1">
     </GridLayout>
 
-    <GridLayout row="2" rows="auto, auto">
-      <GridLayout #carouselSlider class="carousel-status" row="0" rows="*" columns="*, auto, *">
-        <StackLayout  col="0"
-                      [class.current]="currentSlideIndex === 1"
-                      [class.complete]="currentSlideIndex > 1"
-                      class="caro-item-dot"
-                      verticalAlignment="top"
-                      horizontalAlignment="right">
-        </StackLayout>
-        <StackLayout  col="1" 
-                      [class.current]="currentSlideIndex === 2"
-                      [class.complete]="currentSlideIndex > 2"
-                      class="caro-item-dot"
-                      style="margin: 0 5"
-                      verticalAlignment="top"
-                      horizontalAlignment="center">
-        </StackLayout>
-        <StackLayout  col="2"
-                      [class.current]="currentSlideIndex === 3"
-                      class="caro-item-dot"
-                      verticalAlignment="top"
-                      horizontalAlignment="left">
-      </StackLayout>
-      </GridLayout>
-
-      <GridLayout RoundButton
-                  row="1"
-                  text="Continue"
-                  (tap)="onNextSlide()"
-                  *ngIf="currentSlideIndex < 3">
-      </GridLayout>
-
-      <GridLayout RoundButton
-                  row="1"
-                  text="Let's Go!"
-                  (tap)="onNextSlide()"
-                  *ngIf="currentSlideIndex === 3">
-      </GridLayout>
+    <!-- Slide 2 "Wallet" -->
+    <GridLayout WalletConversationScreen
+                col="0"
+                style="opacity: 0"
+                [active]="currentSlideIndex === 2">
     </GridLayout>
 
+    <!-- Slide 3 "Military" -->
+    <GridLayout ShieldConversationScreen
+                col="0"
+                style="opacity: 0"
+                [active]="currentSlideIndex === 3">
+    </GridLayout>
   </GridLayout>
+
+  <GridLayout row="2" rows="auto, *">
+    <GridLayout #carouselSlider class="carousel-status" row="0" rows="*" columns="*, auto, *">
+      <StackLayout  col="0"
+                    [class.current]="currentSlideIndex === 1"
+                    [class.complete]="currentSlideIndex > 1"
+                    class="caro-item-dot"
+                    verticalAlignment="center"
+                    horizontalAlignment="right">
+      </StackLayout>
+      <StackLayout  col="1" 
+                    [class.current]="currentSlideIndex === 2"
+                    [class.complete]="currentSlideIndex > 2"
+                    class="caro-item-dot"
+                    verticalAlignment="center"
+                    horizontalAlignment="center">
+      </StackLayout>
+      <StackLayout  col="2"
+                    [class.current]="currentSlideIndex === 3"
+                    class="caro-item-dot"
+                    verticalAlignment="center"
+                    horizontalAlignment="left">
+    </StackLayout>
+    </GridLayout>
+
+    <GridLayout RoundButton
+                class=""
+                row="1"
+                text="{{currentSlideIndex < 3 ? 'Continue' : 'Let\'s Go'}}"
+                (tap)="onNextSlide()">
+    </GridLayout>
+  </GridLayout>
+
 </GridLayout>

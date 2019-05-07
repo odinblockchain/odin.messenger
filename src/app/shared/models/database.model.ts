@@ -43,8 +43,8 @@ export class Database implements Deserializable {
     return true;
   }
 
-  public dbClose(): void {
-    if (this.dbReady()) this.db.close();
+  public async dbClose(): Promise<void> {
+    if (this.db && this.db.isOpen()) await this.db.close();
   }
 
   /**

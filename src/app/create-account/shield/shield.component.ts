@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-  selector: "ShieldConversationScreen",
+  selector: "ShieldConversationScreen, [ShieldConversationScreen]",
   moduleId: module.id,
   templateUrl: "./shield.component.html",
   styleUrls: ['./shield.component.css']
