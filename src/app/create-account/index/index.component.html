@@ -1,33 +1,30 @@
-<GridLayout class="welcome-page-background" (swipe)="onSwipe($event)" rows="4*, *">
+<GridLayout class="welcome-page-background" (swipe)="onSwipe($event)" rows="3*, *">
 
-  <GridLayout #slideContent id="slide-content" row="0" rows="*" backgroundColor="yellow">
+  <GridLayout #slideContent id="slide-content" row="0" rows="*">
 
     <!-- Slide 1 "Conversation" -->
     <GridLayout CreateConversationScreen
                 col="0"
                 style="opacity: 1"
-                [active]="currentSlideIndex === 1"
-                backgroundColor="red">
+                [active]="currentSlideIndex === 1">
     </GridLayout>
 
     <!-- Slide 2 "Wallet" -->
     <GridLayout WalletConversationScreen
                 col="0"
                 style="opacity: 0"
-                [active]="currentSlideIndex === 2"
-                backgroundColor="red">
+                [active]="currentSlideIndex === 2">
     </GridLayout>
 
     <!-- Slide 3 "Military" -->
     <GridLayout ShieldConversationScreen
                 col="0"
                 style="opacity: 0"
-                [active]="currentSlideIndex === 3"
-                backgroundColor="red">
+                [active]="currentSlideIndex === 3">
     </GridLayout>
   </GridLayout>
 
-  <GridLayout row="2" rows="auto, auto" backgroundColor="green">
+  <GridLayout row="2" rows="auto, *">
     <GridLayout #carouselSlider class="carousel-status" row="0" rows="*" columns="*, auto, *">
       <StackLayout  col="0"
                     [class.current]="currentSlideIndex === 1"

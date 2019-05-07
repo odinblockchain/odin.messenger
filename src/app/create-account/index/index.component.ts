@@ -137,7 +137,6 @@ export class IndexComponent implements OnInit, AfterViewInit {
 
     animationSet.play()
     .then(() => {
-      console.log("Animation finished");
       this.isTransitioning = false;
     })
     .catch((err) => {

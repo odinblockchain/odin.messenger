@@ -1,5 +1,5 @@
 <GridLayout rows="auto, *" [class.active]="active">
-  <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center" backgroundColor="blue">
+  <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center">
     <Image class="odin-bg-circle" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
     <Image class="odin-bg-circle-shield-overlay" src="~/app/images/create-account/pg3/shield-shines-512.png"></Image>
     <GridLayout class="odin-shield">
@@ -8,14 +8,14 @@
     </GridLayout>
   </GridLayout>
 
-  <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *"  backgroundColor="green" verticalAlignment="center">
-    <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading" backgroundColor="orange">
+  <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *" verticalAlignment="center">
+    <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading">
       <Label row="0" textWrap="true" text="Military Grade"></Label>
       <Label row="1" textWrap="true" text="Security"></Label>
       <ContentView row="2" class="divider"></ContentView>
     </GridLayout>
 
-    <GridLayout row="1" horizontalAlignment="center" verticalAlignment="center" class="body" backgroundColor="silver">
+    <GridLayout row="1" horizontalAlignment="center" verticalAlignment="center" class="body">
       <Label class="opensans-regular" text="Perfect forward secrecy and end-to-end encryption protect and secure against any potential future password compromises." textWrap="true"></Label>
     </GridLayout>
   </GridLayout>

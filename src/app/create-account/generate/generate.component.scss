@@ -47,36 +47,57 @@
   background-color: $odin-dark;
 
   .header {
-    background-color: $odin-dark;
+    background-color: $odin-green;
+    height: 200;
+
+    GridLayout {
+      height: 160;
+    }
   }
 
   .screen {
-    border-radius: 25% 25% 0 0;
-    background-color: $odin-beige;
+    border-radius: 0;
+    background-color: $odin-dark;
+    margin-bottom: 20;
+
+    .container {
+      width: 80%;
+    }
+
+    .body {
+      color: #cccccc;
+      font-size: 16;
+    }
+
+    .card {
+      background-color: transparent;
+      border-bottom-width: 0;
+      padding: 0;
+  
+      .card-content {
+        padding: 0;
+      }
+    }
   }
 
   .friend {
-    width: 100%;
+    width: 140;
 
     &.one {
-      // background-color: yellow;
-      transform: translate3d(30, 0, 0) scale(0.9);
+      transform: translate3d(30, -15, 0) scale(0.9);
       opacity: 0.8;
     }
 
     &.two {
-      transform: translate3d(0, 30, 0);
+      transform: translate3d(0, 15, 0);
       opacity: 1;
-      // background-color: orange;
     }
 
     &.three {
-      transform: translate3d(-30, 0, 0) scale(0.9);
+      transform: translate3d(-30, -15, 0) scale(0.9);
       opacity: 0.8;
-      // background-color: green;
     }
   }
-  // background: linear-gradient(to bottom, $odin-dark 60%, $odin-white 100%);
 }
 
 .progress {

@@ -1,67 +1,20 @@
 @import "~/app-variables.scss";
 @import "../carousel-grid.scss";
 
-@keyframes chatBubbleRight {
-  0% {
-    transform: translate3d(-15, -55, 0) scale(0.2);
-  }
-  15% {
-    transform: translate3d(-35, -75, 0) scale(0.8);
-  }
-  30% {
-    transform: translate3d(-35, -75, 0) scale(0.8);
-    opacity: 1;
-  }
-  35% {
-    transform: translate3d(-35, -85, 0) scale(0.8);
-    opacity: 0;
-  }
-  90% {
-    transform: translate3d(-15, -55, 0) scale(0.2);
-  }
-  99% {
-    opacity: 1;
-  }
-}
-
-@keyframes chatBubbleLeft {
-  0% {
-    transform: translate3d(20, -50, 0) scale(0.2);
-    opacity: 1;
-  }
-  15% {
-    transform: translate3d(40, -80, 0) scale(0.8);
-  }
-  30% {
-    transform: translate3d(40, -80, 0) scale(0.8);
-    opacity: 1;
-  }
-  35% {
-    transform: translate3d(40, -90, 0) scale(0.8);
-    opacity: 0;
-  }
-  90% {
-    transform: translate3d(20, -50, 0) scale(0.2);
-  }
-  99% {
-    opacity: 1;;
-  }
-}
-
 @keyframes chatRightScreenSm {
   0% {
     transform: translate3d(25, 0, 0) scale(0.2);
     opacity: 1;
   }
   15% {
-    transform: translate3d(15, -10, 0) scale(0.5);
+    transform: translate3d(10, -10, 0) scale(0.5);
   }
   30% {
-    transform: translate3d(15, -10, 0) scale(0.5);
+    transform: translate3d(10, -10, 0) scale(0.5);
     opacity: 1;
   }
   35% {
-    transform: translate3d(15, -20, 0) scale(0.5);
+    transform: translate3d(10, -20, 0) scale(0.5);
     opacity: 0;
   }
   90% {
@@ -168,9 +121,8 @@
   }
 
   .chat-bubble {
-    // transform: translate3d(55, 25, 0) scale(0.2);
+    transform: translate3d(55, 25, 0) scale(0.2);
     // transform: translate3d(20, 0, 0) scale(0.8);
-    // opacity: 0;
 
     animation-name: chatRightScreenLg;
     animation-delay: 500ms;
@@ -237,6 +189,7 @@
     .chat-bubble {
       transform: translate3d(25, 0, 0) scale(0.2);
       // transform: translate3d(10, -10, 0) scale(0.5);
+
       animation-name: chatRightScreenSm;
       animation-delay: 500ms;
       animation-duration: 10s;
@@ -262,7 +215,7 @@
       opacity: 0;
 
       animation-name: chatLeftScreenSm;
-      animation-delay: 1.5s;
+      animation-delay: 1.7s;
       animation-duration: 10s;
       animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
       animation-iteration-count: infinite;

@@ -1,26 +1,27 @@
 <GridLayout rows="auto, *" [class.active]="active">
-  <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center" backgroundColor="blue">
+  <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center">
     <Image class="odin-bg-circle" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
     <GridLayout class="odin-viking-guy">
-      <Image #chatBubbleLeft class="chat-bubble" src="~/app/images/create-account/pg1/chat-bubble-blue-512.png"></Image>
+      <Image class="chat-bubble" src="~/app/images/create-account/pg1/chat-bubble-blue-512.png"></Image>
       <Image class="shadow" src="~/app/images/create-account/pg1/viking-shadow.png"></Image>
       <Image class="viking" src="~/app/images/create-account/pg1/viking-boy-512.png"></Image>
     </GridLayout>
     <GridLayout class="odin-viking-girl">
-      <Image #chatBubbleRight class="chat-bubble" src="~/app/images/create-account/pg1/chat-bubble-white-512.png"></Image>
+      <Image class="chat-bubble" src="~/app/images/create-account/pg1/chat-bubble-white-512.png"></Image>
       <Image class="shadow" src="~/app/images/create-account/pg1/viking-shadow.png"></Image>
       <Image class="viking" src="~/app/images/create-account/pg1/viking-girl-512.png"></Image>
     </GridLayout>
   </GridLayout>
 
-  <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *"  backgroundColor="green" verticalAlignment="center">
-    <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading" backgroundColor="orange">
+  <GridLayout class="carousel-content" row="1" horizontalAlignment="center" rows="*, *" verticalAlignment="center">
+    <GridLayout row="0" horizontalAlignment="center" verticalAlignment="center" rows="*, *, auto" class="heading">
       <Label row="0" textWrap="true" text="Own Your"></Label>
       <Label row="1" textWrap="true" text="Conversation"></Label>
+      
       <ContentView row="2" class="divider"></ContentView>
     </GridLayout>
 
-    <GridLayout row="1" horizontalAlignment="center" verticalAlignment="center" class="body" backgroundColor="silver">
+    <GridLayout row="1" horizontalAlignment="center" verticalAlignment="center" class="body">
       <Label class="opensans-regular" text="Simply add contacts, then chat in complete privacy. No personal information is required to create your account." textWrap="true"></Label>
     </GridLayout>
   </GridLayout>
