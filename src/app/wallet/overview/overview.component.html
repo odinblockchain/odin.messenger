@@ -1,7 +1,6 @@
-<GridLayout class="page" rows="90,*" columns="*">
-
+<GridLayout class="page" [rows]="gridLayout.rows" columns="*">
   <ContentView row="0" class="summary">
-    <StackLayout *ngIf="currentWallet" orientation="vertical" verticalAlignment="center">
+    <StackLayout *ngIf="currentWallet && !smallScreen" orientation="vertical" verticalAlignment="center">
       <Label flexGrow="1" class="label" text="Balance"></Label>
       <Label flexGrow="1" class="balance">
         <FormattedString>
@@ -65,7 +64,7 @@
                 <Label *ngIf="!item.isTypePending()">
                   <FormattedString>
                     <Span class="transaction--label" [text]="item.timestamp | relativeTime"></Span>
-                    <Span class="transaction--label" [text]="displayBlockConf(item)"></Span>
+                    <Span *ngIf="!smallScreen" class="transaction--label" [text]="displayBlockConf(item)"></Span>
                   </FormattedString>
                 </Label>
               </StackLayout>

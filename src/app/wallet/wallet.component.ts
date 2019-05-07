@@ -5,7 +5,7 @@ import * as app from "tns-core-modules/application";
 import { EventData } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs";
 import { RadSideDrawer } from "nativescript-ui-sidedrawer";
-import { Page } from "ui/page";
+import { Page, layout } from "ui/page";
 import { setTimeout, setInterval, clearInterval } from 'tns-core-modules/timer/timer';
 import { WalletService } from '~/app/shared/services';
 import { Subscription, Observable as ObservableGeneric } from 'rxjs';
@@ -45,6 +45,12 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private creatingNewWallet: boolean;
 
+  public gridLayout;
+
+  @ViewChild('gridLayoutRef') walletGrid: ElementRef;
+  private gridLayoutRef: any;
+  public isLimitedView: boolean;
+
 	constructor(
     private page: Page,
     private _WalletServ: WalletService,
@@ -54,6 +60,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.tabSelectedIndex = 1;
     this.selectedWalletId = 0;
+    
+    this.isLimitedView = true;
+    this.gridLayout = {
+      rows: 'auto, 170, *, auto',
+    };
 
     this.refreshingWallet = false;
     this.creatingNewWallet = false;
@@ -198,10 +209,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log('[Wallet Component] KeepAlive Started');
     }
   }
-
+  
   ngOnInit() {
     console.log('[Wallet Component] @onInit');
 
+    this.gridLayoutRef = this.walletGrid.nativeElement;
     this.page.on('navigatingFrom', async (data) => {
       console.log('[Wallet Component] @navigatingFrom');
       if (this._walletServiceSub) this._walletServiceSub.unsubscribe();
@@ -228,6 +240,25 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public handleRequestNewAddress(event) {
     this._WalletServ.discoverNewAddress(this.selectedWallet);
+  }
+
+  public updateLayout() {
+    const width = layout.toDeviceIndependentPixels(
+      this.gridLayoutRef.nativeView.getMeasuredWidth()
+    );
+
+    console.log('DEVICE', width, this.gridLayoutRef.nativeView.getMeasuredWidth());
+  
+    if (width < 400) {
+      this.gridLayout = {
+        rows: 'auto, 125, *, auto',
+      };
+    } else {
+      this.isLimitedView = false;
+      this.gridLayout = {
+        rows: 'auto, 170, *, auto',
+      };
+    }
   }
 
   /**

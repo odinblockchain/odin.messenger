@@ -14,11 +14,24 @@ import * as utilityModule from "utils/utils";
 export class OverviewComponent implements OnInit {
   @Input() currentWallet: Wallet;
   @Input() blockheight: number;
+  @Input() smallScreen: boolean;
   @Input() transactions: ObservableArray<Transaction>;
-
-  constructor() { }
   
-  ngOnInit() { }
+  public gridLayout;
+
+  constructor() {
+    this.gridLayout = {
+      rows: 'auto *'
+    };
+  }
+  
+  ngOnInit() {
+    if (!this.smallScreen) {
+      this.gridLayout = {
+        rows: '90 *'
+      };
+    }
+  }
 
   public onTap(tx: Transaction) {
     if (!this.currentWallet || !this.currentWallet.coin || !this.currentWallet.coin.explorer_host)

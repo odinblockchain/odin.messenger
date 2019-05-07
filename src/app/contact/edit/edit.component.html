@@ -3,41 +3,43 @@
   <Label class="action-bar--title" text="Edit Contact"></Label>
 </ActionBar>
 
-<GridLayout class="view" rows="*, 2*">
-  <GridLayout class="header" row="0" rows="55, *" columns="*">
-    <!-- <ContentView row="0" col="0" width="100%">
-      <Button class="saveBtn" text="Save" horizontalAlignment="right" (tap)="onAddContact(contact)"></Button>
-    </ContentView> -->
-    <Image col="0" row="1" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
-  </GridLayout>
-
-  <GridLayout class="screen" row="1" rows="auto, auto, *">
-
-    <ContentView  row="0"
-                  InputField
-                  label="Display Name"
-                  labelSmall="(optional)"
-                  placeholder="John Smith"
-                  returnKeyType="done"
-                  [(ngModel)]="contact.name">
-    </ContentView>
-
-    <ContentView  row="1"
-                  InputField
-                  label="Contact Username"
-                  disabled="true"
-                  allowCopy="true"
-                  [value]="contact.username">
-    </ContentView>
-
-    <GridLayout row="2"
-                RoundButton
-                theme="green"
-                text="Save Contact"
-                [busy]="processing"
-                (tap)="onSaveContact()">
+<ScrollView>
+  <GridLayout class="view" rows="*, 2*">
+    <GridLayout class="header" row="0" rows="55, *" columns="*">
+      <!-- <ContentView row="0" col="0" width="100%">
+        <Button class="saveBtn" text="Save" horizontalAlignment="right" (tap)="onAddContact(contact)"></Button>
+      </ContentView> -->
+      <Image col="0" row="1" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
     </GridLayout>
 
+    <GridLayout class="screen" row="1" rows="auto, auto, *">
+
+      <ContentView  row="0"
+                    InputField
+                    label="Display Name"
+                    labelSmall="(optional)"
+                    placeholder="John Smith"
+                    returnKeyType="done"
+                    [(ngModel)]="contact.name">
+      </ContentView>
+
+      <ContentView  row="1"
+                    InputField
+                    label="Contact Username"
+                    disabled="true"
+                    allowCopy="true"
+                    [value]="contact.username">
+      </ContentView>
+
+      <GridLayout row="2"
+                  RoundButton
+                  theme="green"
+                  text="Save Contact"
+                  [busy]="processing"
+                  (tap)="onSaveContact()">
+      </GridLayout>
+
+    </GridLayout>
   </GridLayout>
-</GridLayout>
+</ScrollView>
   
