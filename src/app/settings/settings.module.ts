@@ -10,7 +10,8 @@ import { NativeScriptCommonModule } from "nativescript-angular/common";
 import { NativeScriptFormsModule } from "nativescript-angular/forms";
 
 import { SettingsRoutingModule } from "./settings-routing.module";
-import { SettingsComponent } from "./settings.component";
+import { IndexComponent } from "./index/index.component";
+import { NotificationsComponent } from "./notifications/notifications.component";
 
 @NgModule({
   imports: [
@@ -25,7 +26,8 @@ import { SettingsComponent } from "./settings.component";
     SettingsRoutingModule
   ],
   declarations: [
-    SettingsComponent
+    IndexComponent,
+    NotificationsComponent
   ],
   schemas: [
     NO_ERRORS_SCHEMA
