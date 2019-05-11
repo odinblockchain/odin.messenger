@@ -49,6 +49,13 @@ export class Client extends Database {
     };
   }
 
+  async storePreKeys(preKeys: SignalClientPreKey[]) {
+    this.log(`Storing prekeys -- ${preKeys.length}`);
+    this.pre_keys = this.pre_keys.concat(preKeys);
+    await this.save();
+    return true;
+  }
+
   /**
    * Creates a new LibsignalProtocol Client. Uses `saveData` to preload the 
    * `hashAccount`, `registrationId`, and `deviceId`.
@@ -61,7 +68,7 @@ export class Client extends Database {
    * @param preKeys 
    */
   async loadSignalClient(): Promise<SignalClient> {
-    this.log(`Load signal client for [${this.account_username}]`);
+    this.log(`Load signal client for [${this.account_username}] preKeys [${this.pre_keys.length}]`);
     
     // TODO LibsignalProtocol.Client should accept FALSE || null parameters
     this.signalClient = await new LibsignalProtocol.Client(

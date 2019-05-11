@@ -34,6 +34,11 @@ export class RemoteMessages {
   messages: RemoteMessage[];
 }
 
+export class RemoteKeyCount {
+  status: string;
+  count: number;
+}
+
 class ProcessError extends Error {
   constructor(message: string) {
     super(message); // (1)
@@ -58,6 +63,7 @@ export class Account extends Database {
   client: Client;
   preferences: any;
   logger: any;
+  remoteKeyCount: number;
 
   constructor(props?: any) {
     super('Account');
@@ -264,6 +270,126 @@ export class Account extends Database {
     return updated;
   }
 
+  public async fetchRemoteKeyCount(): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      this.log('Fetching remote key count');
+
+      try {
+        const res: HttpResponse = await request({
+          url: `${this.preferences.api_url}/keys/count?user=${this.client.account_username}`,
+          method: "GET",
+        });
+
+        if (res.statusCode !== 200) {
+          this.logger(`Unable to fetch remote key count u[${this.client.account_username}]`);
+          return reject(`Bad status code ${res.statusCode}`);
+        } 
+
+        const content: RemoteKeyCount = res.content.toJSON();
+        if (content.status !== 'ok') {
+          this.logger(`Invalid remote key fetch u[${this.client.account_username}]`);
+          return reject(`Remote key count response not ok ${res.statusCode}`);
+        }
+
+        this.remoteKeyCount = content.count;
+        this.log(`Total stored keys: ${content.count}`);
+        return resolve(content.count);
+      } catch (err) {
+        return reject(err);
+      }
+    });
+  }
+
+  public async publishFcmToken(fcmToken: string): Promise<boolean> {
+    const registerPackage = this.client.signalClient.exportRegistrationObj();
+    const putPackage = {
+      address: registerPackage.address,
+      fcmToken
+    };
+
+    this.log('Publishing new FCM Token');
+    try {
+      const res: HttpResponse = await request({
+        url: `${this.preferences.api_url}/keys`,
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        content: JSON.stringify(putPackage)
+      });
+
+      if (res.statusCode !== 200) {
+        this.log('Unable to publish fcm token');
+        console.log(res.content.toString());
+        this.logger(`Unable to publish fcm token u[${this.client.account_username}]`);
+        return false;
+      }
+
+      const content: RemoteKeyCount = res.content.toJSON();
+      if (content.status !== 'ok') {
+        this.logger(`Invalid publush remote key bundle u[${this.client.account_username}]`);
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.log('Unable to publish new fcm token');
+      console.log(err.message ? err.message : err);
+      return false;
+    }
+  }
+
+  public async publishRemoteKeyBundle(): Promise<boolean> {
+
+    let preKeyBatch = this.client.signalClient.generatePreKeyBatch();
+    let registerPackage = this.client.signalClient.exportRegistrationObj();
+    registerPackage.preKeys = preKeyBatch.map((key) => {
+      return {
+        id: key.id,
+        pubKey: key.pubKey
+      }
+    });
+
+    console.log('PUSHING PREKEYS', preKeyBatch.length);
+
+    try {
+      const res: HttpResponse = await request({
+        url: `${this.preferences.api_url}/keys`,
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        content: JSON.stringify(registerPackage)
+      });
+
+      if (res.statusCode !== 200) {
+        this.log('Unable to publish remote key bundle');
+
+        if (res.content.toString() === 'UserMaxPreKeys') {
+          this.log('Max chat tokens stored on server');
+          throw new Error('UserMaxPreKeys');
+        }
+
+        this.logger(`Unable to publish remote key bundle u[${this.client.account_username}]`);
+        return false;
+      }
+
+      const content: RemoteKeyCount = res.content.toJSON();
+      if (content.status !== 'ok') {
+        this.logger(`Invalid publush remote key bundle u[${this.client.account_username}]`);
+        return false;
+      }
+
+      await this.client.storePreKeys(preKeyBatch);
+      await this.save();
+      await this.client.save();
+
+      this.remoteKeyCount = content.count;
+      this.log(`Total stored keys: ${content.count}`);
+      return true;
+    } catch (err) {
+      console.log('Unable to store prekey batch');
+      console.log(err.message ? err.message : err);
+      throw err;
+    }
+  }
+
   /**
    * Request all available messages from the message server and handle each one
    * individually
@@ -291,6 +417,13 @@ export class Account extends Database {
           }
 
           this.log(`Total stored messages: ${await this.countTotalMessages()}`);
+          try {
+            const keyCount = await this.fetchRemoteKeyCount();
+            console.log('GOT KEY COUNT', keyCount);
+          } catch (err) {
+            console.log(err);
+          }
+
           return resolve(true);
         } else {
           this.logger(`Unable to fetch messages d[${this.client.device_id}] r[${this.client.registration_id}] statusCode: ${res.statusCode}`);

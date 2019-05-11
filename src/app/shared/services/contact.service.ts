@@ -106,4 +106,8 @@ export class ContactService extends StorageService {
       return c.username === username;
     });
   }
+
+  public async ___purge() {
+    delete this.contacts;
+  }
 }

@@ -87,4 +87,8 @@ export class AddressService extends StorageService {
   public findAddress(address) {
     return this.addresses.find(a => a.address === address);
   }
+
+  public async ___purge() {
+    delete this.addresses;
+  }
 }

@@ -993,4 +993,12 @@ export class WalletService extends StorageService {
       this.validateSession();
     }
   }
+
+  public async ___purge() {
+    this.wallets = [];
+    this.wallets$ = new ObservableArray();
+    this.walletStream = new ReplaySubject();
+    this.trackedBlockheight = new BehaviorSubject(0);
+    this.blockStream = new BehaviorSubject(0);
+  }
 }

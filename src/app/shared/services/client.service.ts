@@ -137,4 +137,8 @@ export class ClientService extends StorageService {
     if (!this.dbReady()) return false;
     return this.odb.get('SELECT * FROM clients WHERE account_username=?', username);
   }
+
+  public async ___purge() {
+    delete this.clients;
+  }
 }
