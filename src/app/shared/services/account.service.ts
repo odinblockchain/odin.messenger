@@ -218,4 +218,8 @@ export class AccountService extends StorageService {
       }
     });
   }
+
+  public async ___purge() {
+    delete this.accounts;
+  }
 }

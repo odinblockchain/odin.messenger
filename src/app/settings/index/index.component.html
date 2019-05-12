@@ -1,0 +1,61 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
+  </ActionItem>
+  <Label class="" text=""></Label>
+</ActionBar>
+
+<ScrollView class="view">
+  <GridLayout class="wrap" rows="90, 20, *">
+
+    <GridLayout row="0" class="profile container" columns="auto, *">
+      <FlexboxLayout col="0" class="client-name">
+        <Label class="innerLabel" text="{{activeAccount?.username[0]}}"></Label>
+      </FlexboxLayout>
+      <Label col="1" class="sidedrawer-header-text" [text]="activeAccount?.username" (tap)="onCopyText(activeAccount?.username)"></Label>
+    </GridLayout>
+
+    <StackLayout row="2" class="settings-list container">
+      <ContentView class="group-header">
+        <Label text="Settings"></Label>
+      </ContentView>
+
+      <GridLayout columns="auto, *" class="setting">
+        <Label col="0" text="&#xf4ad;" class="fas icon"></Label>
+        <StackLayout col="1" class="content" (tap)="onPublishTokens()">
+          <Label class="heading" textWrap="true">
+            <FormattedString>
+              <Span text="ODIN.Chat Tokens "></Span>
+              <Span text="({{ remoteKeyCountLabel() }})"></Span>
+            </FormattedString>
+          </Label>
+          <Label text="Publish more tokens to keep conversations active and secure." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="auto, *" class="setting">
+        <Label col="0" text="&#xf56e;" class="fas icon"></Label>
+        <StackLayout col="1" class="content" (tap)="viewIdentityBackup()">
+          <Label text="Identity Backup" class="heading"></Label>
+          <Label text="View your Mnemonic Phrase to restore your identity and wallet access in the future or on another device." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="auto, *" class="setting">
+        <Label col="0" text="&#xf0f3;" class="fas icon"></Label>
+        <StackLayout col="1" class="content" (tap)="viewNotificationSettings()">
+          <Label text="Notification Settings" class="heading"></Label>
+          <Label text="Adjust notifications for conversations received while you're offline." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="auto, *" class="setting">
+        <Label col="0" text="&#xf7e4;" class="fas icon red"></Label>
+        <StackLayout col="1" class="content last" (tap)="onPurgeApplication()">
+          <Label text="Identity Purge" class="heading"></Label>
+          <Label text="Purge your identity and everything stored on this application. This action cannot be undone." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+    </StackLayout>
+  </GridLayout>
+</ScrollView>

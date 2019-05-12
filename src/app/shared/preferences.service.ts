@@ -39,6 +39,14 @@ export class PreferencesService {
     console.log(`[PreferencesService] ${entry}`);
   }
 
+  public isNotificationEnabled(groupKey: string, prefKey: string) {
+    const { notifications } = this.preferences;
+    if (!notifications) return false;
+    if (!notifications.hasOwnProperty(groupKey)) return false;
+    if (!notifications[groupKey].hasOwnProperty(prefKey)) return false;
+    return !!notifications[groupKey][prefKey];
+  }
+
   public async loadPreferences(): Promise<any> {
     try {
       this.preferences = JSON.parse(getString('preferences'));
@@ -69,6 +77,7 @@ export class PreferencesService {
       } else {
         setString('preferences', JSON.stringify(this.preferences));
       }
+      this.log('Preferences updated');
     } catch (err) {
       this.log('Trouble saving preferences, applying default...');
       this.preferences = this.defaultPreferences;
@@ -81,7 +90,13 @@ export class PreferencesService {
   private _defaultPreferences(): any {
     return {
       api_url: (environment.osmServerUrl || 'https://osm-testnet.obsidianplatform.com'),
-      explorer_url: 'https://inspect.odinblockchain.org/api'
+      explorer_url: 'https://inspect.odinblockchain.org/api',
+      notifications: {
+        chat: {
+          push: true,
+          display: true
+        }
+      }
     };
   }
 }

@@ -96,6 +96,38 @@ export class StorageService {
   }
 
   /**
+   * Returns an array of tables from the sql_master table
+   */
+  public listAllTables(): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      if (!await this.dbReady()) {
+        this.log(`Unable to list all tables... Not Connected`);
+        return resolve([]);
+      }
+
+      const tables = await this.odb.all(`SELECT name FROM sqlite_master WHERE type='table'`);
+      return resolve(Object.keys(tables).map(key => tables[key].name));
+    });
+  }
+
+  /**
+   * Purges all stored information on the device for ODIN.Chat
+   */
+  public ___order66(): Promise<any> {
+    this.log('EXECUTING ORDER 66');
+    return new Promise((resolve, reject) => {
+      this.emit(`PurgeStart`);
+      this.clearStorage();
+      this.removeTables()
+      .then(() => {
+        this.log('INFORMATION PURGED');
+        this.emit(`PurgeComplete`);
+        return resolve(true);
+      }).catch(reject);
+    });
+  }
+
+  /**
    * Runs `sql` to create a table name. Currently does not check if the query
    * was successful or not, assumes `true`. Will convert `tableName` to lowercase.
    * 
@@ -141,21 +173,6 @@ export class StorageService {
     await this.odb.execSQL(`DROP TABLE IF EXISTS ${tableName}`);
     this.log(`...Table: [${tableName}] Purged`);
     this.emit(`TablePurge::${tableName}`);
-  }
-
-  /**
-   * Returns an array of tables from the sql_master table
-   */
-  public listAllTables(): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      if (!await this.dbReady()) {
-        this.log(`Unable to list all tables... Not Connected`);
-        return resolve([]);
-      }
-
-      const tables = await this.odb.all(`SELECT name FROM sqlite_master WHERE type='table'`);
-      return resolve(Object.keys(tables).map(key => tables[key].name));
-    });
   }
 
   /**

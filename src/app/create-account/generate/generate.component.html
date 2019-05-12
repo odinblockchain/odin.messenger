@@ -2,8 +2,6 @@
   
   <ScrollView *ngIf="primaryAccount && primaryAccount.registered">
     <GridLayout cols="*" rows="auto, *" class="welcome">
-    <!-- <GridLayout *ngIf="false" class="welcome" rows="*, 2*"> -->
-
       <ContentView class="header" row="0">
         <GridLayout row="0" columns="*,*,*">
           <Image col="0" row="0" class="friend one" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
@@ -42,7 +40,6 @@
   </ScrollView>
 
   <GridLayout *ngIf="!primaryAccount || !primaryAccount.registered" rows="4*, *">
-
     <GridLayout #slideContent id="slide-content" row="0" rows="*">
   
       <GridLayout rows="auto, *" [class.active]="active">

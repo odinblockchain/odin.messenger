@@ -152,4 +152,8 @@ export class IdentityService extends StorageService {
       return resolve(this.identity);
     });
   }
+
+  public async ___purge() {
+    delete this.identity;
+  }
 }

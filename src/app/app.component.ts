@@ -12,7 +12,6 @@ import { filter } from 'rxjs/operators';
 import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar } from "nativescript-snackbar";
 
-import { UserModel } from '~/app/shared/user.model';
 import { PreferencesService } from '~/app/shared/preferences.service';
 import { messaging, Message } from "nativescript-plugin-firebase/messaging";
 
@@ -88,6 +87,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private _loading: boolean;
   private _ready: boolean;
   private _sb: any;
+  private storageEventListener: any;
 
   public userAccount: any;
   public connected: boolean;
@@ -99,7 +99,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private router: Router,
     private routerExtensions: RouterExtensions,
-    private userModel: UserModel,
     private _storage: StorageService,
     private _pref: PreferencesService,
     private _Identity: IdentityService,
@@ -157,13 +156,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.storageEventListener && this.storageEventListener.unsubscribe();
     stopMonitoring();
   }
 
   ngOnInit(): void {
     this._activatedUrl = '/splashscreen';
     this._sideDrawerTransition = new SlideInOnTopTransition();
-    this.userAccount = this.userModel.saveData; //TODO REMOVE
     this.isWalletView = false;
 
     // this.adjustStatusBar();
@@ -181,6 +180,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log("firebase.init done");
     }, (error) => {
       console.log(`firebase.init error: ${error}`);
+    });
+
+    messaging.registerForPushNotifications()
+    .then(() => {
+      console.log('PUSH REGISTERED')
+    })
+    .catch(err => {
+      console.log('CANNOT REGISTER FOR PUSH');
     });
 
     // messaging.registerForPushNotifications({
@@ -297,32 +304,45 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       \n`);
 
       this._Identity.identity.fcmToken = await firebase.getCurrentPushToken();
-      messaging.addOnPushTokenReceivedCallback(
-        token => {
-          // you can use this token to send to your own backend server,
-          // so you can send notifications to this specific device
-          console.log("Firebase plugin received a push token: " + token);
-          // var pasteboard = utils.ios.getter(UIPasteboard, UIPasteboard.generalPasteboard);
-          // pasteboard.setValueForPasteboardType(token, kUTTypePlainText);
-        }
-      );
+
+      messaging.addOnPushTokenReceivedCallback(token => {
+        // you can use this token to send to your own backend server,
+        // so you can send notifications to this specific device
+        // var pasteboard = utils.ios.getter(UIPasteboard, UIPasteboard.generalPasteboard);
+        // pasteboard.setValueForPasteboardType(token, kUTTypePlainText);
+        console.log(`FCM TOKEN DETECTED...
+        Current:  [${this._Identity.identity.fcmToken}]
+        Received: [${token}]
+        \n`);
+        this._Identity.identity.fcmToken = token;
+        this._Identity.identity.save();
+      });
   
       messaging.addOnMessageReceivedCallback(
         message => {
           console.log("Notification message received in push-view-model: " + JSON.stringify(message, getCircularReplacer()));
           console.log(message);
-  
+
+          const blockedRoute = !!(`${this.router.url}`.match(new RegExp('messenger/message','ig')));
+          const notifyPrefDisplay = this._Preferences.isNotificationEnabled('chat', 'display');
+          
           // display snack notification if already within app AND not in a message view
-          if ( (this.router.url.match(new RegExp('messenger/message','ig'))) ) {
+          if ( !blockedRoute && notifyPrefDisplay ) {
+            console.log('SHOW SNACK');
             this._snack.simple(`${message.title} – ${message.body}`, '#ffffff', '#333333', 3, false);
+          } else {
+            console.log('HIDE SNACK', {
+              blockedRoute,
+              notifyPrefDisplay
+            });
           }
           
           return true;
         }
       ).then(() => {
-        console.log("Added addOnMessageReceivedCallback");
+          console.log("Added addOnMessageReceivedCallback");
       }, err => {
-        console.log("Failed to add addOnMessageReceivedCallback: " + err);
+          console.log("Failed to add addOnMessageReceivedCallback: " + err);
       });
     } catch (err) {
       console.log('[App] ERROR --- Unable to load firebase FCM and notifications');
@@ -348,9 +368,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     //   // When false, you can still force showing it when the app is in the foreground by adding 'showWhenInForeground' to the notification as mentioned in the readme.
     //   // showNotificationsWhenInForeground: true
     // }).then(() => console.log("Registered for push"));
-
-    
-
     this.fetchRemoteMessages();
   }
 
@@ -359,52 +376,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     .pipe(filter((event: any) => event instanceof NavigationEnd))
     .subscribe((event: NavigationEnd) => this._activatedUrl = event.urlAfterRedirects);
 
-    this.userModel.addEventListener(Observable.propertyChangeEvent, (args: PropertyChangeData) => {
-      console.log('[App] onAccountModelUpdate', {
-        eventName: args.eventName,
-        propertyName: args.propertyName,
-        newValue: args.value,
-        oldValue: args.oldValue
-      }); 
-    });
-
-    this.userModel.on('ClearSession', function(eventData) {
-      console.log(`[App] (UserModel) Event:${eventData.eventName}`);
-      // _this.userAccount = eventData.object['saveData'];
-
-      // if (_this._fetchMessages) {
-      //   clearInterval(_this._fetchMessages);
-      //   _this._fetchMessages = false;
-      // }
-    });
-
-    this.userModel.on('SaveDataPurged', function(eventData) {
-      console.log(`[App] (UserModel) Event:${eventData.eventName}`);
-      // _this.userAccount = eventData.object['saveData'];
-    });
-
-    this.userModel.on('SessionRestored', function(eventData) {
-      console.log(`[App] (UserModel) Event:${eventData.eventName}`);
-      // _this.userAccount = eventData.object['saveData'];
-    });
-
-    this.userModel.on('IdentityRegistered', function(eventData) {
-      console.log(`[App] (UserModel) Event:${eventData.eventName}`);
-    });
-
-    this.userModel.on('ContactsRestored', function(eventData) {
-      console.log(`[App] (UserModel) Event:${eventData.eventName}`);
-    });
-
-    this.userModel.on('NoConnection', function(eventData) {
-      console.log(`[App] (UserModel) Event:${eventData.eventName}`);
-      // _this.connected = false;
-      // clearInterval(_this._fetchMessages);
-    });
-
-    this.userModel.on('Connected', function(eventData) {
-      console.log(`[App] (UserModel) Event:${eventData.eventName}`);
-      // _this.connected = true;
+    this.storageEventListener = this._storage.eventStream$.subscribe(data => {
+      if (data === 'StorageService::PurgeStart') {
+        console.log('[App] StorageService PurgeStart');
+        this._Identity.___purge();
+        this._Account.___purge();
+        this._Address.___purge();
+        this._Client.___purge();
+        this._Contact.___purge();
+        this._Wallet.___purge();
+      } else if (data === 'StorageService::PurgeComplete') {
+        console.log('[App] StorageService PurgeComplete');
+        this.buildServices();
+      }
     });
   }
 

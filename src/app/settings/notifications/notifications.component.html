@@ -1,0 +1,53 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
+  <Label class="action-bar--title" text="App Notifications"></Label>
+</ActionBar>
+
+<ScrollView class="view">
+  <GridLayout class="wrap" rows="20, *">
+
+    <StackLayout row="2" class="section-list--wrapper container">
+      <ContentView class="group-header">
+        <Label text="Notifications for chats"></Label>
+      </ContentView>
+
+      <GridLayout columns="auto, *" class="section-list--section">
+        <AbsoluteLayout col="0" class="slide-wrap" [class.is-active]="chatPreferences?.push" (tap)="toggleChatPref('push')">
+          <ContentView class="slider-background"></ContentView>
+          <AbsoluteLayout class="slider-dot">
+            <ContentView class="slider-dot--inner"></ContentView>
+          </AbsoluteLayout>
+        </AbsoluteLayout>
+
+        <StackLayout col="1" class="content" (tap)="toggleChatPref('push')">
+          <Label class="heading" textWrap="true">
+            <FormattedString>
+              <Span text="Push new messages"></Span>
+            </FormattedString>
+          </Label>
+          <Label text="Receive a push notification for new messages if you are not currently using ODIN.Chat" class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="auto, *" class="section-list--section">
+        <AbsoluteLayout col="0" class="slide-wrap" [class.is-active]="chatPreferences?.display" (tap)="toggleChatPref('display')">
+          <ContentView class="slider-background"></ContentView>
+          <AbsoluteLayout class="slider-dot">
+            <ContentView class="slider-dot--inner"></ContentView>
+          </AbsoluteLayout>
+        </AbsoluteLayout>
+
+        <StackLayout col="1" class="content" (tap)="toggleChatPref('display')">
+          <Label class="heading" textWrap="true">
+            <FormattedString>
+              <Span text="Display new messages"></Span>
+            </FormattedString>
+          </Label>
+          <Label text="Display a new message alert if you are currently using ODIN.Chat" class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+    </StackLayout>
+
+  </GridLayout>
+</ScrollView>
+  

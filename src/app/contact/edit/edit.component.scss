@@ -10,7 +10,11 @@
   .screen {
     border-radius: 0 50% 0 0;
     background-color: $odin-dark;
-    padding: 0 20;
+  }
+  
+  .container {
+    padding-left: 20;
+    padding-right: 20;
   }
 
   .friend {
