@@ -74,10 +74,6 @@ ListView {
 
 .innerLabel {
   color: #ffffff;
-  // align-self: center;
-  // justify-self: center;
-  // text-align: center;
-  // vertical-align: center;
 }
 
 .error-text,
@@ -108,6 +104,8 @@ ListView {
 
 
 .chatbox {
+  height: 60;
+  // background-color: blue;
   // background-color: #30A9FF;
 
   .chatbox--wrap {
@@ -138,5 +136,14 @@ ListView {
     height: 45;
     border-radius: 0 4 4 0;
 
+  }
+}
+
+.action-box {
+  height: 120;
+  transform: translate3d(0, 30, 0);
+
+  &.active {
+    transform: translate3d(0, 40, 0);
   }
 }

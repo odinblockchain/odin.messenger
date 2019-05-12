@@ -6,7 +6,7 @@
   <Label class="action-bar--title" [text]="displayName()"></Label>
 </ActionBar>
 
-<GridLayout class="message-view" rows="*, 60">
+<GridLayout class="message-view" rows="*, auto">
 
   <RadListView row="0" #listView [items]="dataItems" [itemTemplateSelector]="messageTemplate" (loaded)="loadedEvent($event)" (dataPopulated)="populatedEvent($event)">
     <ng-template tkListItemTemplate let-item="item">
@@ -45,6 +45,7 @@
                     class="message--bubble"
                     textWrap="true"
                     [text]="item.message"
+                    (longPress)="onLongPressMessage(item)"
                     verticalAlignment="top">
             </Label>
             <Label *ngIf="item.status === 'fail'" style="margin-left: 10" class="fa error-icon" text="&#xf12a;" verticalAlignment="center"></Label>
@@ -70,6 +71,7 @@
                     class="message--bubble"
                     textWrap="true"
                     [text]="item.message"
+                    (longPress)="onLongPressMessage(item)"
                     verticalAlignment="top">
             </Label>
             <Label *ngIf="item.status === 'fail'" style="margin-left: 10" class="fa error-icon" text="&#xf12a;" verticalAlignment="center"></Label>
@@ -91,4 +93,14 @@
       <Button #btn class="chatbox--btn btn btn-primary" row="0" col="1" text="send" (tap)=sendMessage()></Button>
     </GridLayout>
   </StackLayout>
+
+  <!-- <StackLayout  row="1" 
+                #actionBox
+                class="action-box"
+                [class.active]="actionBoxActive"
+                backgroundColor="red">
+    <GridLayout columns="*, auto">
+      <Button #btn class="chatbox--btn btn btn-primary" row="0" col="1" text="send" (tap)=sendMessage()></Button>
+    </GridLayout>
+  </StackLayout> -->
 </GridLayout>
