@@ -1,23 +1,25 @@
-import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
-import { RadSideDrawer } from "nativescript-ui-sidedrawer";
-import * as app from "tns-core-modules/application";
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
+import * as app from 'tns-core-modules/application';
 import { UserModel } from '~/app/shared/user.model';
 import { PreferencesService } from '~/app/shared/preferences.service';
-import { alert, confirm } from "ui/dialogs";
-import { isAndroid, isIOS, device } from "platform";
-import { Page } from "ui/page";
-import { Account } from "~/app/shared/models/identity";
-import { IdentityService } from "~/app/shared/services/identity.service";
-import { StorageService } from "~/app/shared";
-import { RouterExtensions } from "nativescript-angular/router";
+import { alert, confirm } from 'ui/dialogs';
+import { isAndroid, isIOS, device } from 'platform';
+import { Page } from 'ui/page';
+import { Account } from '~/app/shared/models/identity';
+import { IdentityService } from '~/app/shared/services/identity.service';
+import { StorageService } from '~/app/shared';
+import { RouterExtensions } from 'nativescript-angular/router';
+import * as Clipboard from 'nativescript-clipboard';
+import { SnackBar } from 'nativescript-snackbar';
 
 declare var android: any;
 declare var java: any;
 
 @Component({
-  selector: "SettingsIndex",
+  selector: 'SettingsIndex',
   moduleId: module.id,
-  templateUrl: "./index.component.html",
+  templateUrl: './index.component.html',
   styleUrls: ['./index.component.css']
 })
 export class IndexComponent implements OnInit {
@@ -32,7 +34,8 @@ export class IndexComponent implements OnInit {
     private _pref: PreferencesService,
     private _IdentityServ: IdentityService,
     private _StorageServ: StorageService,
-    private _router: RouterExtensions
+    private _router: RouterExtensions,
+    private _snack: SnackBar
   ) {
     this.darkMode     = true;
     this.user         = this._user;
@@ -101,7 +104,7 @@ export class IndexComponent implements OnInit {
       console.log(err.message ? err.message : err);
 
       if (err.message === 'UserMaxPreKeys') {
-        return alert("You have published the current maximum amount of single use chat tokens. Please wait until your token count has decreased.");
+        return alert('You have published the current maximum amount of single use chat tokens. Please wait until your token count has decreased.');
       }
 
       alert('Something went wrong while publishing new chat tokens. Please try again later.');
@@ -111,13 +114,33 @@ export class IndexComponent implements OnInit {
   public viewNotificationSettings() {
     this._router.navigate(['/settings/notifications'], {
       transition: {
-        name: "slideLeft"
+        name: 'slideLeft'
+      }
+    });
+  }
+
+  public viewIdentityBackup() {
+    this._router.navigate(['/settings/identity'], {
+      transition: {
+        name: 'slideLeft'
+      }
+    });
+  }
+
+  public onCopyText(text: string) {
+    let sb = this._snack;
+    Clipboard.setText(text)
+    .then(async function() {
+      try {
+        await sb.simple('Username copied to clipboard!', '#ffffff', '#333333', 3, false);
+      } catch (err) {
+        console.log('Unable to copy to clipboard', err);
       }
     });
   }
 
   toggleUITheme() {
-    if (isAndroid && device.sdkVersion >= "21") {
+    if (isAndroid && device.sdkVersion >= '21') {
       let windowView = app.android.startActivity.getWindow();
       let decorView = windowView.getDecorView();
       console.log('>= 21', device.sdkVersion);

@@ -1,0 +1,94 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
+  <Label class="action-bar--title" text="Identity Backup"></Label>
+</ActionBar>
+
+<ScrollView class="view">
+  <GridLayout *ngIf="!backupActive" class="wrap" rows="auto, auto, *">
+
+    <StackLayout row="0" class="notice container m-b-20">
+      <Label class="m-b-10">
+        <FormattedString>
+          <Span class="fa icon" text="&#xf071;"></Span>
+          <Span text="  WARNING"></Span>
+        </FormattedString>
+      </Label>
+      <Label text="Only view your identity in private!" textWrap="true"></Label>
+    </StackLayout>
+
+    <StackLayout row="1" class="container m-b-20">
+      <Label class="m-b-5" textWrap="true">
+        <FormattedString>
+          <Span text="With your backup phrase, you'll be able to restore your "></Span>
+          <Span class="u-weight-bold" text="core identity "></Span>
+          <Span text="even if you lost access to this device."></Span>
+        </FormattedString>
+      </Label>
+      <Label textWrap="true">
+        <FormattedString>
+          <Span text="Your "></Span>
+          <Span class="u-weight-bold" text="core identity "></Span>
+          <Span text="is used for various features on ODIN.Chat such as accounts and wallets. Your messages and saved contacts are only stored locally on this device and can never be recovered."></Span>
+        </FormattedString>
+      </Label>
+    </StackLayout>
+
+    <StackLayout row="2" class="container">
+      <GridLayout class="backup reveal m-b-20">
+        <Label horizontalAlignment="center" (tap)="toggleBackup()">
+          <FormattedString backgroundColor="transparent">
+            <Span class="fa icon" text="&#xf06e;"></Span>
+            <Span text="  Tap to reveal"></Span>
+          </FormattedString>
+        </Label>
+      </GridLayout>
+    </StackLayout>
+
+  </GridLayout>
+
+  <GridLayout *ngIf="backupActive" class="wrap" rows="auto, auto, auto, *">
+    <StackLayout row="0" class="notice info container m-b-20">
+      <Label class="m-b-10">
+        <FormattedString>
+          <Span class="fa icon" text="&#xf129;"></Span>
+          <Span text="  Backup tip"></Span>
+        </FormattedString>
+      </Label>
+      <Label text="Store this information in a safe place, ideally offline (i.e., a piece of paper)" textWrap="true"></Label>
+    </StackLayout>
+
+    <StackLayout row="1" class="container m-b-20">
+      <Label class="m-b-5" textWrap="true">
+        <FormattedString>
+          <Span text="The order of each word is "></Span>
+          <Span class="u-weight-bold" text="highly important –"></Span>
+          <Span text=" misplacing even one word will alter your backup!"></Span>
+        </FormattedString>
+      </Label>
+      <Label class="m-b-5" textWrap="true">
+        <FormattedString>
+          <Span text="Your first word is "></Span>
+          <Span class="u-weight-bold" text="{{backupPhrase[0]}} "></Span>
+          <Span text=" and your fourth word is "></Span>
+          <Span class="u-weight-bold" text="{{backupPhrase[3]}}"></Span>
+          <Span text="."></Span>
+        </FormattedString>
+      </Label>
+    </StackLayout>
+
+    <StackLayout row="2" class="container">
+      <WrapLayout class="backup" orientation="horizontal">
+        <Label *ngFor="let word of backupPhrase" [text]="word"></Label>
+      </WrapLayout>
+    </StackLayout>
+
+    <GridLayout row="3"
+                RoundButton
+                theme="blue"
+                text="Complete"
+                (tap)="onCompleteBackup()">
+    </GridLayout>
+
+  </GridLayout>
+</ScrollView>
+  

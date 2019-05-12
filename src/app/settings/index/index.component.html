@@ -9,10 +9,10 @@
   <GridLayout class="wrap" rows="90, 20, *">
 
     <GridLayout row="0" class="profile container" columns="auto, *">
-      <FlexboxLayout col="0" class="client-name" backgroundColor="red">
-        <Label class="innerLabel" text="F"></Label>
+      <FlexboxLayout col="0" class="client-name">
+        <Label class="innerLabel" text="{{activeAccount?.username[0]}}"></Label>
       </FlexboxLayout>
-      <Label col="1" class="sidedrawer-header-text var" text="username@ODIN"></Label>
+      <Label col="1" class="sidedrawer-header-text" [text]="activeAccount?.username" (tap)="onCopyText(activeAccount?.username)"></Label>
     </GridLayout>
 
     <StackLayout row="2" class="settings-list container">
@@ -35,7 +35,7 @@
 
       <GridLayout columns="auto, *" class="setting">
         <Label col="0" text="&#xf56e;" class="fas icon"></Label>
-        <StackLayout col="1" class="content">
+        <StackLayout col="1" class="content" (tap)="viewIdentityBackup()">
           <Label text="Identity Backup" class="heading"></Label>
           <Label text="View your Mnemonic Phrase to restore your identity and wallet access in the future or on another device." class="hint" textWrap="true"></Label>
         </StackLayout>
