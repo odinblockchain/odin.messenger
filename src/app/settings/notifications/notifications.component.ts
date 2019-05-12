@@ -1,14 +1,17 @@
-import { Component } from "@angular/core";
-import { RouterExtensions } from "nativescript-angular/router";
-import { PreferencesService } from "~/app/shared/preferences.service";
-import { messaging, Message } from "nativescript-plugin-firebase/messaging";
-import { SnackBar } from "nativescript-snackbar";
-import { IdentityService } from "~/app/shared/services/identity.service";
+import { Component } from '@angular/core';
+import { RouterExtensions } from 'nativescript-angular/router';
+import { PreferencesService } from '~/app/shared/preferences.service';
+import { messaging } from 'nativescript-plugin-firebase/messaging';
+import { SnackBar } from 'nativescript-snackbar';
+import { IdentityService } from '~/app/shared/services/identity.service';
+import { connectionType, getConnectionType } from 'tns-core-modules/connectivity';
+
+const firebase = require('nativescript-plugin-firebase');
 
 @Component({
-  selector: "Notifications",
+  selector: 'Notifications',
   moduleId: module.id,
-  templateUrl: "./notifications.component.html",
+  templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css']
 })
 export class NotificationsComponent {
@@ -32,7 +35,7 @@ export class NotificationsComponent {
     this.chatPreferences = this._preferences.preferences.notifications.chat;
   }
 
-  public toggleChatPref(key: string) {
+  public async toggleChatPref(key: string) {
     if (this.chatPreferences.hasOwnProperty(key)) {
       this.chatPreferences[key] = !this.chatPreferences[key];
     } else {
@@ -41,38 +44,75 @@ export class NotificationsComponent {
 
     this._preferences.savePreferences();
 
-    if (key === 'push' && this.chatPreferences[key] === false) {
-      messaging.unregisterForPushNotifications()
-      .then(() => {
-        this._snack.simple(`You will no longer receive push notifications`, '#ffffff', '#333333', 3, false);
-      })
-      .catch(err => {
-        console.log('CANNOT UNREGISTER');
-      })
-    } else if (key === 'push' && this.chatPreferences[key] === true) {
-      const account = this._IdentityServ.getActiveAccount();
-      console.log(`NEW FCM TOKEN: ${this._IdentityServ.identity.fcmToken}`);
-      const token = this._IdentityServ.identity.fcmToken;
-      account.publishFcmToken(token)
-      .then((status) => {
-        if (status) {
-          console.log('NICE');
-        } else {
-          console.log('NOT NICE');
-        }
-      })
-      .catch(err => {
-        console.log('CANNOT REGISTER FOR PUSH');
-      });
-
-      // messaging.registerForPushNotifications()
-      // .then(() => {
-      //   console.log('PUSH REGISTERED');
-      // })
-      // .catch(err => {
-      //   console.log('CANNOT REGISTER FOR PUSH');
-      // });
+    if (key === 'push' && !this.hasConnection()) {
+      this.chatPreferences['push'] = !this.chatPreferences['push'];
+      this._preferences.savePreferences();
+      return this.confirmToast('Push notifications could not be updated at this time, please ensure you have an active internet connection.');
     }
+
+    if (key === 'push' && this.chatPreferences[key] === false) {
+      try {
+        await messaging.unregisterForPushNotifications();
+        this._snack.simple(`You will no longer receive push notifications`, '#ffffff', '#333333', 3, false);
+      } catch (err) {
+        console.log('[Settings.Notifications] Failed to unregister', err);
+        this.chatPreferences['push'] = true;
+        this._preferences.savePreferences();
+        this.confirmToast('Push notifications could not be updated at this time, please ensure you have an active internet connection.');
+      }
+    } else if (key === 'push' && this.chatPreferences[key] === true) {
+      try {
+        const account     = this._IdentityServ.getActiveAccount();
+        const fcmToken    = await firebase.getCurrentPushToken();
+        const savedToken  = this._IdentityServ.identity.fcmToken;
+
+        if (fcmToken != savedToken) {
+          this._IdentityServ.identity.fcmToken = fcmToken;
+          this._IdentityServ.identity.save();
+        }
+
+        console.log(`Notifications check --
+          Enabled:  ${messaging.areNotificationsEnabled()}
+          Saved:    ${savedToken}
+          Token:    ${fcmToken}
+        \n`);
+
+        const status = await account.publishFcmToken(savedToken);
+        if (!status) {
+          throw new Error('FCMTokenPublishError');
+        }
+
+        console.log('REGISTERED');
+      } catch (err) {
+        console.log('[Settings.Notifications] Failed to register', err);
+        this.chatPreferences['push'] = false;
+        this._preferences.savePreferences();
+        this.confirmToast('Push notifications could not be updated at this time, please ensure you have an active internet connection.');
+      }
+    }
+  }
+
+  private hasConnection() {
+    const type = getConnectionType();
+    if (type === connectionType.none) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private confirmToast(text: string) {
+    const opts = {
+      actionText: 'Ok',
+      actionTextColor: '#1D2323',
+      maxLines: 4,
+      snackText: text,
+      textColor: '#FCF9F1',
+      hideDelay: (10 * 1000),
+      backgroundColor: '#CC4F49'
+    };
+
+    this._snack.action(opts);
   }
 
   public onPreviousView() {

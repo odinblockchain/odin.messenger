@@ -310,7 +310,7 @@ export class Account extends Database {
     this.log('Publishing new FCM Token');
     try {
       const res: HttpResponse = await request({
-        url: `${this.preferences.api_url}/keys`,
+        url: `${this.preferences.api_url}/prefs`,
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         content: JSON.stringify(putPackage)
