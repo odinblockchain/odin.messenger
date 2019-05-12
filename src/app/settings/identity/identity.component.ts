@@ -27,8 +27,6 @@ export class IdentityComponent implements OnInit {
     } catch (err) {
       this.backupPhrase = [];
     }
-
-    try
   }
   
   ngOnInit() {
