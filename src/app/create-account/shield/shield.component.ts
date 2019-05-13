@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 
 @Component({
   selector: "ShieldConversationScreen, [ShieldConversationScreen]",
@@ -7,5 +7,7 @@ import { Component } from "@angular/core";
   styleUrls: ['./shield.component.css']
 })
 export class ShieldConversationScreenComponent {
+  @Input() active: boolean;
+
   constructor() { }
 }

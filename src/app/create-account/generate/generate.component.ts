@@ -1,24 +1,25 @@
-import { Component, OnInit, AfterContentInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone } from "@angular/core";
-import { Page } from "tns-core-modules/ui/page/page";
-import { setOrientation, disableRotation } from "nativescript-orientation";
+import { Component, OnInit, AfterContentInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Page } from 'tns-core-modules/ui/page/page';
+import { setOrientation, disableRotation } from 'nativescript-orientation';
 import Seeder from '~/app/lib/Seeder';
 import SecureRandom from '~/app/lib/SecureRandom';
-import { TouchGestureEventData } from "tns-core-modules/ui/gestures/gestures";
-import { IdentityService } from "~/app/shared/services/identity.service";
-import { Identity } from "~/app/shared/models/identity/identity.model";
-import { AccountService } from "~/app/shared/services";
-import { Client } from "~/app/shared/models/messenger/client.model";
-import { ClientService } from "~/app/shared/services/client.service";
-import { Account } from "~/app/shared/models/identity";
-import { alert } from "tns-core-modules/ui/dialogs/dialogs";
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures/gestures';
+import { IdentityService } from '~/app/shared/services/identity.service';
+import { Identity } from '~/app/shared/models/identity/identity.model';
+import { AccountService } from '~/app/shared/services';
+import { Client } from '~/app/shared/models/messenger/client.model';
+import { ClientService } from '~/app/shared/services/client.service';
+import { Account } from '~/app/shared/models/identity';
+import { alert } from 'tns-core-modules/ui/dialogs/dialogs';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar } from "nativescript-snackbar";
-import { RouterExtensions } from "nativescript-angular/router";
+import { SnackBar } from 'nativescript-snackbar';
+import { RouterExtensions } from 'nativescript-angular/router';
+import * as utils from 'tns-core-modules/utils/utils';
 
 @Component({
-  selector: "GenerateScreen",
+  selector: 'GenerateScreen',
   moduleId: module.id,
-  templateUrl: "./generate.component.html",
+  templateUrl: './generate.component.html',
   styleUrls: ['./generate.component.css']
 })
 export class GenerateScreenComponent implements OnInit, OnDestroy {
@@ -52,7 +53,7 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     private _snack: SnackBar
   ) {
     this._page.actionBarHidden = true;
-    this._page.cssClasses.add("welcome-page-background");
+    this._page.cssClasses.add('welcome-page-background');
     this._page.backgroundSpanUnderStatusBar = true;
     setOrientation('portrait');
     disableRotation();
@@ -153,6 +154,14 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
         console.log('Unable to copy to clipboard');
       }
     });
+  }
+
+  public openTos() {
+    utils.openUrl('https://odin.chat/terms-of-use');
+  }
+
+  public openPrivacy() {
+    utils.openUrl('https://odin.chat/privacy-policy');
   }
 
   private refreshPassport() {
