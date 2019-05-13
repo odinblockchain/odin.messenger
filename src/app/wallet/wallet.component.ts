@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
 import { TabView } from "tns-core-modules/ui/tab-view";
-import { isAndroid, isIOS } from "platform";
+import { isAndroid, isIOS, screen } from "platform";
 import * as app from "tns-core-modules/application";
 import { EventData } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs";
@@ -247,9 +247,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       this.gridLayoutRef.nativeView.getMeasuredWidth()
     );
 
-    console.log('DEVICE', width, this.gridLayoutRef.nativeView.getMeasuredWidth());
+    const height = screen.mainScreen.heightDIPs;
+
+    console.log('DEVICE', width, screen.mainScreen.heightDIPs);
   
-    if (width < 400) {
+    if (height < 500) {
       this.gridLayout = {
         rows: 'auto, 125, *, auto',
       };

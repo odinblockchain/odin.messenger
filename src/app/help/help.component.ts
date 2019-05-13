@@ -21,19 +21,31 @@ export class HelpComponent implements OnInit {
     sideDrawer.showDrawer();
   }
 
-  onTapWebsite() {
+  openChat() {
+    utilityModule.openUrl('https://odin.chat/');
+  }
+
+  openWebsite() {
     utilityModule.openUrl('https://odinblockchain.org/');
   }
 
-  onTapTwitter() {
+  openTwitter() {
     utilityModule.openUrl('https://twitter.com/odinblockchain');
   }
 
-  onTapDiscord() {
+  openFacebook() {
+    utilityModule.openUrl('https://www.facebook.com/OdinBlockchain/');
+  }
+
+  openDiscord() {
     utilityModule.openUrl('https://discord.me/odinblockchain');
   }
 
-  onTapReddit() {
-    utilityModule.openUrl('https://twitter.com/odinblockchain');
+  openTelegram() {
+    utilityModule.openUrl('https://t.me/odinblockchain');
+  }
+
+  openReddit() {
+    utilityModule.openUrl('http://reddit.com/r/odinblockchain');
   }
 }
