@@ -7,6 +7,7 @@ import { IndexComponent } from './index/index.component';
 import { NotificationsComponent } from './notifications/notifications.component';
 import { IdentityComponent } from './identity/identity.component';
 import { UIModule } from '../shared/ui/ui.module';
+import { MetricsComponent } from './metrics/metrics.component';
 
 @NgModule({
   imports: [
@@ -18,7 +19,8 @@ import { UIModule } from '../shared/ui/ui.module';
   declarations: [
     IndexComponent,
     NotificationsComponent,
-    IdentityComponent
+    IdentityComponent,
+    MetricsComponent
   ],
   schemas: [
     NO_ERRORS_SCHEMA

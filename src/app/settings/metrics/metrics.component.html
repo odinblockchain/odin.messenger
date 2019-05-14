@@ -1,0 +1,35 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
+  <Label class="action-bar--title" text="App Notifications"></Label>
+</ActionBar>
+
+<ScrollView class="view">
+  <GridLayout class="wrap" rows="20, *">
+
+    <StackLayout row="2" class="section-list--wrapper container">
+      <ContentView class="group-header">
+        <Label text="Anonymous Metrics"></Label>
+      </ContentView>
+
+      <GridLayout columns="auto, *" class="section-list--section">
+        <AbsoluteLayout col="0" class="slide-wrap" [class.is-active]="metricPreferences?.analytics" (tap)="togglePreference('analytics')">
+          <ContentView class="slider-background"></ContentView>
+          <AbsoluteLayout class="slider-dot">
+            <ContentView class="slider-dot--inner"></ContentView>
+          </AbsoluteLayout>
+        </AbsoluteLayout>
+
+        <StackLayout col="1" class="content" (tap)="togglePreference('analytics')">
+          <Label class="heading" textWrap="true">
+            <FormattedString>
+              <Span text="Analytics"></Span>
+            </FormattedString>
+          </Label>
+          <Label text="By enabling this preference, you are agreeing to share anonymous usage infromation about actions you do while using ODIN.Chat. This information is used to better improve the service and user experience. While we would prefer this to be enabled, you have full control over this setting." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+    </StackLayout>
+
+  </GridLayout>
+</ScrollView>
+  

@@ -300,6 +300,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     Preferences:  ${JSON.stringify(this._Preferences.preferences)}`);
 
     try {
+      console.log(`Metrics check --
+      Enabled:  ${this._Preferences.preferences.metrics.analytics}
+      `);
+
+      const allowAnalytics = !!(this._Preferences.preferences.metrics.analytics);
+      firebase.analytics.setAnalyticsCollectionEnabled(allowAnalytics);
+    } catch (err) {
+      console.log(`ERROR Checking metrics... Defaulting to true...`);
+      firebase.analytics.setAnalyticsCollectionEnabled(true);
+    }
+
+    try {
       console.log(`Notifications check --
       Enabled:  ${messaging.areNotificationsEnabled()}
       Token:    ${await firebase.getCurrentPushToken()}

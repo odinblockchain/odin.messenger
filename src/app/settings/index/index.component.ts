@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
 import * as app from 'tns-core-modules/application';
 import { UserModel } from '~/app/shared/user.model';
@@ -13,6 +13,7 @@ import { RouterExtensions } from 'nativescript-angular/router';
 import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar } from 'nativescript-snackbar';
 
+const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
 declare var java: any;
 
@@ -40,6 +41,10 @@ export class IndexComponent implements OnInit {
     this.darkMode     = true;
     this.user         = this._user;
     this.preferences  = this._pref.preferences;
+
+    firebase.analytics.setScreenName({
+      screenName: 'Settings Home'
+    }).then(() => {});
   }
 
   ngOnInit(): void {
@@ -67,9 +72,11 @@ export class IndexComponent implements OnInit {
     console.log('>> Working to clear session');
     const shouldClear = await confirm('Are you sure you want to purge your locally saved ODIN identity? You will lose access to all saved contacts, messages, and funds within your wallet. It is recommended you backup your identity before purging.');
     if (!shouldClear) return console.log('Canceled purge');
+    this._capturePurgeAttempt();
 
     const finalConfirm = await confirm('YOU ARE ABOUT TO PURGE YOUR IDENTITY. THIS ACTION CANNOT BE UNDONE. YOU WILL BE UNABLE TO RESTORE INFORMATION WITHOUT YOUR IDENTITY BACKUP.\n\nARE YOU SURE YOU WISH TO PROCEED?');
     if (!finalConfirm) return console.log('Canceled purge');
+    this._capturePurgeConfirm();
 
     this._StorageServ.___order66()
     .then(() => {
@@ -95,6 +102,8 @@ export class IndexComponent implements OnInit {
       }
 
       if (await this.activeAccount.publishRemoteKeyBundle()) {
+        this._capturePublishTokens();
+
         return alert('Successfully published a batch of chat tokens.');
       }
 
@@ -102,6 +111,8 @@ export class IndexComponent implements OnInit {
     } catch (err) {
       console.log('[Settings] ERROR PUBLISHING CHAT TOKENS');
       console.log(err.message ? err.message : err);
+
+      this._capturePublishTokensFailed();
 
       if (err.message === 'UserMaxPreKeys') {
         return alert('You have published the current maximum amount of single use chat tokens. Please wait until your token count has decreased.');
@@ -113,6 +124,14 @@ export class IndexComponent implements OnInit {
 
   public viewNotificationSettings() {
     this._router.navigate(['/settings/notifications'], {
+      transition: {
+        name: 'slideLeft'
+      }
+    });
+  }
+
+  public viewMetricsPreferences() {
+    this._router.navigate(['/settings/metrics'], {
       transition: {
         name: 'slideLeft'
       }
@@ -169,6 +188,34 @@ export class IndexComponent implements OnInit {
     } else {
       console.log('not supported');
     }
+  }
+
+  private _capturePublishTokens() {
+    firebase.analytics.logEvent({
+      key: 'settings_publish_tokens'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Settings Publish Tokens'); });
+  }
+
+  private _capturePublishTokensFailed() {
+    firebase.analytics.logEvent({
+      key: 'settings_publish_tokens_failed'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Settings Publish Tokens Failed'); });
+  }
+
+  private _capturePurgeAttempt() {
+    firebase.analytics.logEvent({
+      key: 'settings_purge_attempt'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Settings Purge Attempt'); });
+  }
+
+  private _capturePurgeConfirm() {
+    firebase.analytics.logEvent({
+      key: 'settings_purge_confirm'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Settings Purge Confirm'); });
   }
 }
 
