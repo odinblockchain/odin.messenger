@@ -39,10 +39,10 @@
     </GridLayout>
   </ScrollView>
 
-  <GridLayout *ngIf="!primaryAccount || !primaryAccount.registered" rows="4*, *">
+  <GridLayout *ngIf="!primaryAccount || !primaryAccount.registered" rows="3*, *">
     <GridLayout #slideContent id="slide-content" row="0" rows="*">
   
-      <GridLayout rows="auto, *" [class.active]="active">
+      <GridLayout rows="auto, *" [class.active]="active" >
         <GridLayout class="carousel-item-gfx" row="0" horizontalAlignment="center">
           <Image class="odin-bg-circle" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
           <GridLayout class="swipe-wrap">
@@ -95,6 +95,11 @@
                     (tap)="onRegister($event)"
                     *ngIf="entropyCreated && accountGenerated">
         </GridLayout>
+
+        <FlexboxLayout class="policies m-t-10">
+          <Label class="m-r-20" text="Terms of Service" (tap)="openTos()"></Label>
+          <Label text="Privacy Policy" (tap)="openPrivacy()"></Label>
+        </FlexboxLayout>
       </StackLayout>
 
   </GridLayout>

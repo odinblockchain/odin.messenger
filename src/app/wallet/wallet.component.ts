@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
 import { TabView } from "tns-core-modules/ui/tab-view";
-import { isAndroid, isIOS } from "platform";
+import { isAndroid, isIOS, screen } from "platform";
 import * as app from "tns-core-modules/application";
 import { EventData } from "tns-core-modules/data/observable";
 import { alert } from "tns-core-modules/ui/dialogs";
@@ -11,6 +11,8 @@ import { WalletService } from '~/app/shared/services';
 import { Subscription, Observable as ObservableGeneric } from 'rxjs';
 import { Wallet } from '~/app/shared/models/wallet';
 import { SnackBar } from 'nativescript-snackbar';
+
+const firebase = require('nativescript-plugin-firebase');
 
 const KEEP_ALIVE_DELAY = 2;
 
@@ -247,9 +249,11 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       this.gridLayoutRef.nativeView.getMeasuredWidth()
     );
 
-    console.log('DEVICE', width, this.gridLayoutRef.nativeView.getMeasuredWidth());
+    const height = screen.mainScreen.heightDIPs;
+
+    console.log('DEVICE', width, screen.mainScreen.heightDIPs);
   
-    if (width < 400) {
+    if (height < 500) {
       this.gridLayout = {
         rows: 'auto, 125, *, auto',
       };
@@ -443,19 +447,81 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedWallet.sendTransaction(this._WalletServ.electrumxClient, address, amount)
     .then(txid => {
       console.log('Assuming sent!', txid);
+      this._captureSend(amount);
+
       this._snack.simple('Transaction has been sent! Funds should be delivered within a few minutes.', '#ffffff', '#333333', 4, false);
     })
     .catch(err => {
       if (err.name && err.name === 'InvalidAddress') {
+        this._captureSendBadAddress();
+
         alert('Transaction failed, address was invalid. Please double check your input and make sure it is a correct ODIN address!');
       } else if (err.name && err.name === 'BalanceLow') {
+        this._captureSendBadAmount();
+
         alert('Transaction failed, wallet balance insufficient to cover transaction! You must deposit more ODIN into a receiving address.');
       } else if (err.name && err.name === 'TransactionFailed') {
+        this._captureSendBadOther();
+
         alert('Transaction failed, an unexpected error occurred while attempting to send transaction. Please wait and try again later.');
       } else {
+        this._captureSendBadOther();
+        
         console.log(err);
         alert('Transaction failed to send');
       }
     });
+  }
+
+  private formatBalance(amount: number): number {
+    return Number((amount / 1e8).toFixed(8));
+  }
+
+  private _captureSendBadAddress() {
+    firebase.analytics.logEvent({
+      key: 'wallet_send_bad_address'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Wallet Send Bad Address'); });
+  }
+
+  private _captureSendBadAmount() {
+    firebase.analytics.logEvent({
+      key: 'wallet_send_bad_amount'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Wallet Send Bad Amount'); });
+  }
+
+  private _captureSendBadOther() {
+    firebase.analytics.logEvent({
+      key: 'wallet_send_bad_other'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Wallet Send Bad Other'); });
+  }
+
+  private _captureSend(amount: number) {
+    const sendBuckets = [
+      { small:    [0, 100]        },
+      { medium:   [101, 500]      },
+      { standard: [501, 1000]     },
+      { large:    [1001, 5000]    },
+      { xlarge:   [5001, 10000]   },
+      { xxlarge:  [10001, 20000]  }
+    ];
+
+    const bucket = sendBuckets.filter(b => {
+      const range = Object.values(b)[0];
+      return (amount > range[0] && amount < range[1]);
+    });
+
+    firebase.analytics.logEvent({
+      key: 'wallet_send',
+      parameters: [
+        {
+          key: 'amount_bucket',
+          value: bucket ? Object.keys(bucket)[0] : 'unknown'
+        }
+      ]
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Wallet Send'); });
   }
 }

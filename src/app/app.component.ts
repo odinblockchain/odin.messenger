@@ -71,7 +71,7 @@ const WALLET_REFRESH_DELAY = 5;
 const FORCE_PURGE = false;
 
 // force enable/disable of updates
-const ALLOW_AUTO_PULL = false;
+const ALLOW_AUTO_PULL = true;
 
 @Component({
   moduleId: module.id,
@@ -88,6 +88,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private _ready: boolean;
   private _sb: any;
   private storageEventListener: any;
+  private accountEventListener: any;
 
   public userAccount: any;
   public connected: boolean;
@@ -157,6 +158,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.storageEventListener && this.storageEventListener.unsubscribe();
+    this.accountEventListener && this.accountEventListener.unsubscribe();
     stopMonitoring();
   }
 
@@ -298,6 +300,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     Preferences:  ${JSON.stringify(this._Preferences.preferences)}`);
 
     try {
+      console.log(`Metrics check --
+      Enabled:  ${this._Preferences.preferences.metrics.analytics}
+      `);
+
+      const allowAnalytics = !!(this._Preferences.preferences.metrics.analytics);
+      firebase.analytics.setAnalyticsCollectionEnabled(allowAnalytics);
+    } catch (err) {
+      console.log(`ERROR Checking metrics... Defaulting to true...`);
+      firebase.analytics.setAnalyticsCollectionEnabled(true);
+    }
+
+    try {
       console.log(`Notifications check --
       Enabled:  ${messaging.areNotificationsEnabled()}
       Token:    ${await firebase.getCurrentPushToken()}
@@ -376,7 +390,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     .pipe(filter((event: any) => event instanceof NavigationEnd))
     .subscribe((event: NavigationEnd) => this._activatedUrl = event.urlAfterRedirects);
 
-    this.storageEventListener = this._storage.eventStream$.subscribe(data => {
+    !this.storageEventListener && (this.storageEventListener = this._storage.eventStream$.subscribe(data => {
       if (data === 'StorageService::PurgeStart') {
         console.log('[App] StorageService PurgeStart');
         this._Identity.___purge();
@@ -389,7 +403,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         console.log('[App] StorageService PurgeComplete');
         this.buildServices();
       }
-    });
+    }));
+
+    !this.accountEventListener && (this.accountEventListener = this._Account.eventStream$.subscribe(data => {
+      if (data === 'AccountService::NewAccountCreated') {
+        this.postInit();
+      }
+    }));
   }
 
   cbParseTextAndUrl(argIntent) {
@@ -420,7 +440,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private createPlatformListeners() {
     if (hasListeners(launchEvent)) applicationOff(launchEvent, this.onApplicationLaunch, this);
-    if (hasListeners(displayedEvent)) applicationOff(displayedEvent, this.onApplicationLaunch, this);
+    if (hasListeners(displayedEvent)) applicationOff(displayedEvent, this.onApplicationReady, this);
     if (hasListeners(suspendEvent)) applicationOff(suspendEvent, this.onApplicationSuspend, this);
     if (hasListeners(resumeEvent)) applicationOff(resumeEvent, this.onApplicationResume, this);
     if (hasListeners(uncaughtErrorEvent)) applicationOff(uncaughtErrorEvent, this.onApplicationError, this);

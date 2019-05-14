@@ -1,8 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 import { Transaction, Wallet } from '~/app/shared/models/wallet';
-import { confirm } from "tns-core-modules/ui/dialogs";
-import * as utilityModule from "utils/utils";
+import { confirm } from 'tns-core-modules/ui/dialogs';
+import * as utilityModule from 'utils/utils';
+
+const firebase = require('nativescript-plugin-firebase');
 
 @Component({
 	moduleId: module.id,
@@ -23,6 +25,10 @@ export class OverviewComponent implements OnInit {
     this.gridLayout = {
       rows: 'auto *'
     };
+    
+    firebase.analytics.setScreenName({
+      screenName: 'Wallet Overview'
+    }).then(() => {});
   }
   
   ngOnInit() {
@@ -46,7 +52,10 @@ export class OverviewComponent implements OnInit {
       cancelButtonText: 'No'
     })
     .then(open => {
-      if (open) utilityModule.openUrl(this.currentWallet.coin.explorer_host + `tx/${tx.txid}`);
+      if (open) {
+        this._captureOpenInExplorer();
+        utilityModule.openUrl(this.currentWallet.coin.explorer_host + `tx/${tx.txid}`);
+      }
     }).catch(console.log);
   }
 
@@ -54,5 +63,12 @@ export class OverviewComponent implements OnInit {
     if (!item || !item.hasOwnProperty('height')) return '';
     if (this.blockheight <= 0) return ` | Block #${item.height}`;
     else return ` | ${this.blockheight - item.height} conf.`;
+  }
+
+  private _captureOpenInExplorer() {
+    firebase.analytics.logEvent({
+      key: 'wallet_open_transaction'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Wallet Open Transaction'); });
   }
 }

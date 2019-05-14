@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, forwardRef, AfterViewInit } from "@angular/core";
+import { Component, OnInit, Input, forwardRef, AfterViewInit, Output, EventEmitter } from "@angular/core";
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ReturnKeyType } from "tns-core-modules/ui/editable-text-base/editable-text-base";
 import * as Clipboard from 'nativescript-clipboard';
@@ -24,6 +24,8 @@ export class InputFieldComponent implements ControlValueAccessor {
   @Input() allowCopy: boolean;
   @Input() returnKeyType: ReturnKeyType;
   @Input('value') _value: string;
+
+  @Output() onCopy = new EventEmitter();
 
   public focused: boolean;
 
@@ -58,6 +60,7 @@ export class InputFieldComponent implements ControlValueAccessor {
     Clipboard.setText(this._value)
     .then(async () => {
       try {
+        this.onCopy.emit();
         await this._snack.simple(`Copied ${this._value} to clipboard!`, '#ffffff', '#333333', 3, false);
       } catch (err) {
         console.log(`[InputField] Failed to copy ${this._value} to clipboard`);

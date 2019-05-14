@@ -16,16 +16,37 @@
   background-color: $accent;
 }
 
+.fas,
 .fa {
-  font-family: "FontAwesome";
+  font-family: 'Font Awesome 5 Free', 'fa-solid-900';
+  font-weight: 900;
 }
 
 .far {
   font-family: 'fa-regular-400';
 }
 
-.fas {
-  font-family: 'fa-solid-900';
+.fab {
+  font-family: 'Font Awesome 5 Brands', 'fa-brands-400';
+  font-weight: 400;
+}
+
+.rubik {
+  font-family: 'Rubik Regular', 'Rubik-Regular';
+  font-weight: 400;
+
+  &.bold {
+    font-weight: 800;
+  }
+}
+
+.rubik-light {
+  font-family: 'Rubik Light', 'Rubik-Light';
+  font-weight: 400;
+
+  &.bold {
+    font-weight: 800;
+  }
 }
 
 .montserrat-extralight {

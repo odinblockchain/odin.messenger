@@ -3,6 +3,7 @@ import { RouterExtensions } from 'nativescript-angular/router';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import * as app from 'tns-core-modules/application';
 
+const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
 
 @Component({
@@ -27,6 +28,10 @@ export class IdentityComponent implements OnInit {
     } catch (err) {
       this.backupPhrase = [];
     }
+
+    firebase.analytics.setScreenName({
+      screenName: 'Settings Identity Backup'
+    }).then(() => {});
   }
   
   ngOnInit() {

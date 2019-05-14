@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { Page, isAndroid } from "ui/page";
-import { RadSideDrawer } from "nativescript-ui-sidedrawer";
-import * as app from "tns-core-modules/application";
-import { TouchGestureEventData } from "tns-core-modules/ui/gestures";
-import { GridLayout } from "ui/layouts/grid-layout";
-import { RouterExtensions } from "nativescript-angular/router";
+import { isAndroid } from 'ui/page';
+import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
+import * as app from 'tns-core-modules/application';
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
+import { GridLayout } from 'ui/layouts/grid-layout';
+import { RouterExtensions } from 'nativescript-angular/router';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Contact, Message } from '~/app/shared/models/messenger';
 import { SnackBar } from 'nativescript-snackbar';
 import { device } from 'tns-core-modules/platform/platform';
 
+const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
 
 @Component({
@@ -22,7 +23,6 @@ export class IndexComponent implements OnInit {
   public friends: Contact[];
 
 	constructor(
-    private _page: Page,
     private _router: RouterExtensions,
     private IdentityServ: IdentityService,
     private _snack: SnackBar
@@ -37,6 +37,10 @@ export class IndexComponent implements OnInit {
       const win = activity.getWindow();
       win.clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
+
+    firebase.analytics.setScreenName({
+      screenName: 'Messenger Home'
+    }).then(() => {});
   }
 
   ngOnInit() {
@@ -50,11 +54,14 @@ export class IndexComponent implements OnInit {
     });
   }
   
-  onAddContact() {
+  onAddContact(location: string) {
     console.log('CTA::AddContact');
-    this._router.navigate(["/contact/add"], {
+
+    this._captureAddContact(location);
+
+    this._router.navigate(['/contact/add'], {
       transition: {
-        name: "slideLeft"
+        name: 'slideLeft'
       }
     });
   }
@@ -82,10 +89,10 @@ export class IndexComponent implements OnInit {
   onTouchContact(args: TouchGestureEventData) {
     if (args.action === 'down') {
       let gridLayout = args.object as GridLayout;
-      gridLayout.className = "contact -active";
+      gridLayout.className = 'contact -active';
     } else if (args.action === 'up') {
       let gridLayout = args.object as GridLayout;
-      gridLayout.className = "contact";
+      gridLayout.className = 'contact';
     }
   }
 
@@ -107,6 +114,20 @@ export class IndexComponent implements OnInit {
       });
     } else {
       console.log('NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
+    }
+  }
+
+  private _captureAddContact(location: string) {
+    if (location === 'fab') {
+      firebase.analytics.logEvent({
+        key: 'messages_add_friend_fab'
+      })
+      .then(() => { console.log('[Analytics] Metric logged >> Messages Add Friend FAB'); });
+    } else if (location === 'menu') {
+      firebase.analytics.logEvent({
+        key: 'messages_add_friend_menu'
+      })
+      .then(() => { console.log('[Analytics] Metric logged >> Messages Add Friend Menu'); });
     }
   }
 }

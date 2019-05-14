@@ -1,35 +1,97 @@
 <ActionBar class="action-bar">
   <NavigationButton class="action-bar--button" ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
-  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
-      ios.position="left">
+  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()" ios.position="left">
   </ActionItem>
-  <Label class="action-bar--title" text="Help"></Label>
+  <Label class="action-bar--title" text="Information"></Label>
 </ActionBar>
 
-<ScrollView class="page">
-  <FlexboxLayout class="view">
+<ScrollView class="view">
+  <GridLayout class="wrap" rows="20, auto, auto, auto">
 
-    <ContentView class="card">
-      <StackLayout class="card-content">
-        <Label class="h2" textWrap="true" text="ODIN Messenger Help"></Label>
-        <Label class="body" textWrap="true" text="ODIN Messenger is a free end-to-end encrypted messenger based on the Obsidian Platform OSM."></Label>
-        <Label class="body" textWrap="true" text="The ODIN Messenger is an enhanced version of the OSM with plans to extend its functionality and security. It requires no association to your phone number or access to your address book keeping your identity secure."></Label>
-        <Label class="body last" textWrap="true" text="The ODIN Messenger is currently in ALPHA and as such there may be service disruption due as we provided new features and updates to improve this application and service. If you encounter any issues or have suggestions, please let us know by visiting our Reddit or Discord communities."></Label>
-      </StackLayout>
-    </ContentView>
+    <StackLayout row="1" class="settings-list container">
+      <ContentView class="group-header">
+        <Label text="ODIN.Chat Help"></Label>
+      </ContentView>
 
-    <ContentView class="actions">
-      <StackLayout class="actions">
-        <Button class="btn btn-outline" text="Website" (tap)="onTapWebsite()"></Button>
-  
-        <Button class="btn btn-outline" text="Twitter" (tap)="onTapTwitter()"></Button>
-  
-        <Button class="btn btn-outline" text="Discord" (tap)="onTapDiscord()"></Button>
-  
-        <Button class="btn btn-outline" text="Reddit" (tap)="onTapReddit()"></Button>
-      </StackLayout>
-    </ContentView>
+      <GridLayout columns="*" class="setting">
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="What is ODIN.Chat"></Label>
+          <Label text="ODIN.Chat is a free end-to-end encrypted messenger which utilizes the Signal Protocol and powered by ODIN Blockchain." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
 
-  </FlexboxLayout>
+      <GridLayout columns="*" class="setting">
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="What is ODIN Blockchain"></Label>
+          <Label text="ODIN Blockchain is a community focused cryptocurrency that aims to deliver a scalable blockchain infrastructure to house specialized protocols and decentralized applications to protect user privacy and data security." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="*" class="setting last">
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="More information and support"></Label>
+          <Label textWrap="true">
+            <FormattedString>
+              <Span text="You can find further information about this application by visiting "></Span>
+              <Span class="link" text="https://ODIN.chat" (tap)="openChat()"></Span>
+              <Span text=" or "></Span>
+              <Span class="link" text="https://odinblockchain.org." (tap)="openWebsite()"></Span>
+            </FormattedString>
+          </Label>
+          <Label text="You can also follow us online or visit one of our online communities for other inquiries." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+    </StackLayout>
+
+    <StackLayout row="2" class="settings-list container">
+      <ContentView class="group-header">
+        <Label text="Official Links"></Label>
+      </ContentView>
+
+      <GridLayout columns="auto, *" class="setting" (tap)="openTwitter()">
+        <Label col="0" text="&#xf099;" class="fab icon"></Label>
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Twitter"></Label>
+          <Label text="Follow or reach out to us via @odinblockchain." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="auto, *" class="setting last" (tap)="openFacebook()">
+        <Label col="0" text="&#xf39e;" class="fab icon"></Label>
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Facebook"></Label>
+          <Label text="Give us a like or share our platform with friends and family." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+    </StackLayout>
+
+    <StackLayout row="3" class="settings-list container">
+      <ContentView class="group-header">
+        <Label text="Official Communities"></Label>
+      </ContentView>
+
+      <GridLayout columns="auto, *" class="setting" (tap)="openDiscord()">
+        <Label col="0" text="&#xf392;" class="fab icon"></Label>
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Discord"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="auto, *" class="setting" (tap)="openTelegram()">
+        <Label col="0" text="&#xf3fe;" class="fab icon"></Label>
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Telegram"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="auto, *" class="setting last" (tap)="openReddit()">
+        <Label col="0" text="&#xf281;" class="fab icon"></Label>
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Reddit"></Label>
+        </StackLayout>
+      </GridLayout>
+    </StackLayout>
+
+  </GridLayout>
 </ScrollView>
-  

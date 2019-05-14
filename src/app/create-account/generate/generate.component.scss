@@ -131,3 +131,14 @@
     width: 20;
   }
 }
+
+.policies {
+  text-align: center;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
+  Label {
+    color: $odin-dark;
+  }
+}

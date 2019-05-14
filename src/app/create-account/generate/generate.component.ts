@@ -1,24 +1,27 @@
-import { Component, OnInit, AfterContentInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone } from "@angular/core";
-import { Page } from "tns-core-modules/ui/page/page";
-import { setOrientation, disableRotation } from "nativescript-orientation";
+import { Component, OnInit, AfterContentInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Page } from 'tns-core-modules/ui/page/page';
+import { setOrientation, disableRotation } from 'nativescript-orientation';
 import Seeder from '~/app/lib/Seeder';
 import SecureRandom from '~/app/lib/SecureRandom';
-import { TouchGestureEventData } from "tns-core-modules/ui/gestures/gestures";
-import { IdentityService } from "~/app/shared/services/identity.service";
-import { Identity } from "~/app/shared/models/identity/identity.model";
-import { AccountService } from "~/app/shared/services";
-import { Client } from "~/app/shared/models/messenger/client.model";
-import { ClientService } from "~/app/shared/services/client.service";
-import { Account } from "~/app/shared/models/identity";
-import { alert } from "tns-core-modules/ui/dialogs/dialogs";
+import { TouchGestureEventData } from 'tns-core-modules/ui/gestures/gestures';
+import { IdentityService } from '~/app/shared/services/identity.service';
+import { Identity } from '~/app/shared/models/identity/identity.model';
+import { AccountService } from '~/app/shared/services';
+import { Client } from '~/app/shared/models/messenger/client.model';
+import { ClientService } from '~/app/shared/services/client.service';
+import { Account } from '~/app/shared/models/identity';
+import { alert } from 'tns-core-modules/ui/dialogs/dialogs';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar } from "nativescript-snackbar";
-import { RouterExtensions } from "nativescript-angular/router";
+import { SnackBar } from 'nativescript-snackbar';
+import { RouterExtensions } from 'nativescript-angular/router';
+import * as utils from 'tns-core-modules/utils/utils';
+
+const firebase = require('nativescript-plugin-firebase');
 
 @Component({
-  selector: "GenerateScreen",
+  selector: 'GenerateScreen',
   moduleId: module.id,
-  templateUrl: "./generate.component.html",
+  templateUrl: './generate.component.html',
   styleUrls: ['./generate.component.css']
 })
 export class GenerateScreenComponent implements OnInit, OnDestroy {
@@ -52,7 +55,7 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     private _snack: SnackBar
   ) {
     this._page.actionBarHidden = true;
-    this._page.cssClasses.add("welcome-page-background");
+    this._page.cssClasses.add('welcome-page-background');
     this._page.backgroundSpanUnderStatusBar = true;
     setOrientation('portrait');
     disableRotation();
@@ -69,6 +72,10 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     this.onGenerationComplete = this.onGenerationComplete.bind(this);
     this.onTouchEntropy       = this.onTouchEntropy.bind(this);
     this.refreshPassport      = this.refreshPassport.bind(this);
+
+    firebase.analytics.setScreenName({
+      screenName: 'Generate Account'
+    }).then(() => {});
   }
 
   ngOnInit(): void {
@@ -114,6 +121,7 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     this._zone.run(() => {
       if (!this.seeder.poolFilled) {
         this.seeder.seed(args.getX(), args.getY());
+        this.seeder.seed(args.getX() + args.getY(), args.getY() - args.getX());
         this.currentEntropy = this.seeder.get('seedCount');
       }
     });
@@ -128,12 +136,16 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     this._AccountServ.registerAccount(this.identity, this.primaryAccount, this.primaryClient)
     .then(() => {
       console.log('onRegister!');
+      this._captureRegister();
+
       this._zone.run(this.refreshPassport);
     })
     .catch((err) => {
       console.log('Registration Faied');
       console.log(err.message ? err.message : err);
       
+      this._captureRegisterFailed();
+
       this.registering = false;
       this.busyClick = false;
     });
@@ -153,6 +165,24 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
         console.log('Unable to copy to clipboard');
       }
     });
+  }
+
+  public openTos() {
+    firebase.analytics.logEvent({
+      key: 'account_view_tos'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Account view tos'); });
+
+    utils.openUrl('https://odin.chat/terms-of-use');
+  }
+
+  public openPrivacy() {
+    firebase.analytics.logEvent({
+      key: 'account_view_privacy'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Account view privacy'); });
+
+    utils.openUrl('https://odin.chat/privacy-policy');
   }
 
   private refreshPassport() {
@@ -201,4 +231,17 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     });
   }
   
+  private _captureRegister() {
+    firebase.analytics.logEvent({
+      key: 'sign_up'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Account register'); });
+  }
+
+  private _captureRegisterFailed() {
+    firebase.analytics.logEvent({
+      key: 'sign_up_failed'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Account register failed'); });
+  }
 }

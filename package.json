@@ -1,7 +1,7 @@
 {
   "name": "odin.chat.client",
-  "version": "0.3.10",
-  "description": "ODIN Chat developed on NativeScript",
+  "version": "0.4.0",
+  "description": "ODIN Chat, private conversations with cryptocurrency wallet developed on NativeScript",
   "nativescript": {
     "id": "org.odinblockchain.messenger",
     "tns-android": {

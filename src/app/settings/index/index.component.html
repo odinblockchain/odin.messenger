@@ -6,7 +6,7 @@
 </ActionBar>
 
 <ScrollView class="view">
-  <GridLayout class="wrap" rows="90, 20, *">
+  <GridLayout class="wrap" rows="90, 20, *, *, *">
 
     <GridLayout row="0" class="profile container" columns="auto, *">
       <FlexboxLayout col="0" class="client-name">
@@ -43,11 +43,31 @@
 
       <GridLayout columns="auto, *" class="setting">
         <Label col="0" text="&#xf0f3;" class="fas icon"></Label>
-        <StackLayout col="1" class="content" (tap)="viewNotificationSettings()">
+        <StackLayout col="1" class="content last" (tap)="viewNotificationSettings()">
           <Label text="Notification Settings" class="heading"></Label>
           <Label text="Adjust notifications for conversations received while you're offline." class="hint" textWrap="true"></Label>
         </StackLayout>
       </GridLayout>
+    </StackLayout>
+
+    <StackLayout row="3" class="settings-list container">
+      <ContentView class="group-header">
+        <Label text="App Metrics"></Label>
+      </ContentView>
+
+      <GridLayout columns="auto, *" class="setting">
+        <Label col="0" text="&#xf0c3;" class="fas icon"></Label>
+        <StackLayout col="1" class="content last" (tap)="viewMetricsPreferences()">
+          <Label text="Preferences" class="heading"></Label>
+          <Label text="Adjust preferences related to ODIN.Chat internal metrics and event analytics." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+    </StackLayout>
+
+    <StackLayout row="4" class="settings-list container">
+      <ContentView class="group-header">
+        <Label text="Danger Zone"></Label>
+      </ContentView>
 
       <GridLayout columns="auto, *" class="setting">
         <Label col="0" text="&#xf7e4;" class="fas icon red"></Label>
