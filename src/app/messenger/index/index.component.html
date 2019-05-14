@@ -3,7 +3,7 @@
   <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
       ios.position="left">
   </ActionItem>
-  <ActionItem text="Add Contact" ios.position="popup" android.position="popup" (tap)="onAddContact()"></ActionItem>
+  <ActionItem text="Add Contact" ios.position="popup" android.position="popup" (tap)="onAddContact('menu')"></ActionItem>
   <ActionItem text="Fetch Messages" ios.position="popup" android.position="popup" (tap)="onFetchMessages()"></ActionItem>
   <Label class="action-bar--title" text="Messages"></Label>
 </ActionBar>
@@ -48,9 +48,9 @@
     </ScrollView>
 
     <!-- <StackLayout> -->
-    <FAB row="1" (tap)="onAddContact()" text="+" icon="~/app/images/icon-plus--light.png" rippleColor="#f1f1f1" class="fab-button" swipeAnimation="slideDown" hideOnSwipeOfView="userList" *ngIf="friends.length > 10"></FAB>
+    <FAB row="1" (tap)="onAddContact('fab')" text="+" icon="~/app/images/icon-plus--light.png" rippleColor="#f1f1f1" class="fab-button" swipeAnimation="slideDown" hideOnSwipeOfView="userList" *ngIf="friends.length > 10"></FAB>
 
-    <FAB row="1" (tap)="onAddContact()" text="+" icon="~/app/images/icon-plus--light.png" rippleColor="#f1f1f1" class="fab-button" swipeAnimation="slideDown" *ngIf="friends.length <= 10"></FAB>
+    <FAB row="1" (tap)="onAddContact('fab')" text="+" icon="~/app/images/icon-plus--light.png" rippleColor="#f1f1f1" class="fab-button" swipeAnimation="slideDown" *ngIf="friends.length <= 10"></FAB>
     <!-- </StackLayout> -->
 
   </GridLayout>

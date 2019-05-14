@@ -1,9 +1,9 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy  } from '@angular/core';
-import { PageRoute } from "nativescript-angular/router";
-import { RouterExtensions } from "nativescript-angular/router";
+import { PageRoute } from 'nativescript-angular/router';
+import { RouterExtensions } from 'nativescript-angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { alert } from "tns-core-modules/ui/dialogs";
-import { ObservableArray } from "tns-core-modules/data/observable-array";
+import { alert } from 'tns-core-modules/ui/dialogs';
+import { ObservableArray } from 'tns-core-modules/data/observable-array';
 
 import * as Clipboard from 'nativescript-clipboard';
 import { TextField } from 'ui/text-field';
@@ -13,6 +13,8 @@ import { Account } from '~/app/shared/models/identity';
 import { RadListView } from 'nativescript-ui-listview';
 import { SnackBar } from 'nativescript-snackbar';
 
+const firebase = require('nativescript-plugin-firebase');
+
 @Component({
 	moduleId: module.id,
 	selector: 'message',
@@ -20,8 +22,8 @@ import { SnackBar } from 'nativescript-snackbar';
 	styleUrls: ['./message.component.css']
 })
 export class MessageComponent implements OnInit, AfterViewInit {
-  @ViewChild("listView") lv: ElementRef;
-  @ViewChild("textfield") tf: ElementRef;
+  @ViewChild('listView') lv: ElementRef;
+  @ViewChild('textfield') tf: ElementRef;
 
   list: RadListView;
   textfield: TextField;
@@ -52,13 +54,17 @@ export class MessageComponent implements OnInit, AfterViewInit {
       if (params.hasOwnProperty('contactId')) {
         this.contactIdentity = params['contactId'];
       } else {
-        alert("Something went wrong while loading the requested messages.");
+        alert('Something went wrong while loading the requested messages.');
         this._router.navigate(['/messenger']);
       }
     });
 
     this.message = '';
     this.sendMessage = this.sendMessage.bind(this);
+
+    firebase.analytics.setScreenName({
+      screenName: 'Messenger Conversation'
+    }).then(() => {});
   }
 
   ngOnInit() {
@@ -157,6 +163,10 @@ export class MessageComponent implements OnInit, AfterViewInit {
       .then(() => {
         console.log('[Message] Message delivered successfully');
         this.scrollToIndex(this._dataItems.length - 1);
+
+        // capture the event of a message being sent and the length for
+        // an anonymous bucket
+        this._captureMessageSend(this.message.length);
       }).catch(console.log);
 
       this.textfield.text = '';
@@ -192,6 +202,9 @@ export class MessageComponent implements OnInit, AfterViewInit {
     console.log('[Message] onLongPressMessage', item);
     if (item.message && item.message.length) {
       this.actionBoxActive = !this.actionBoxActive;
+
+      // capture event of user long-pressing to copy a message
+      this._captureMessageCopied();
 
       Clipboard.setText(item.message)
       .then(() => {
@@ -231,6 +244,10 @@ export class MessageComponent implements OnInit, AfterViewInit {
 
   public onCopyContact(): void {
     console.log('[Message] Copy contact');
+
+    // capture event of user copying their friend's username
+    this._captureCopyFriendUsername();
+
     Clipboard.setText(this.contactIdentity)
     .then(async () => {
       try {
@@ -251,5 +268,45 @@ export class MessageComponent implements OnInit, AfterViewInit {
     } else {
       console.log('[Message] NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
     }
+  }
+
+  private _captureMessageSend(messageLength: number) {
+    const messageBuckets = [
+      { small:      [0, 20]     },
+      { medium:     [21, 50]    },
+      { standard:   [51, 140]   },
+      { long:       [141, 200]  },
+      { wideload:   [201, 9999] }
+    ];
+
+    const bucket = messageBuckets.filter(b => {
+      const range = Object.values(b)[0];
+      return (messageLength > range[0] && messageLength < range[1]);
+    });
+
+    firebase.analytics.logEvent({
+      key: 'messenger_send_message',
+      parameters: [
+        {
+          key: 'message_bucket',
+          value: bucket ? Object.keys(bucket)[0] : 'unknown'
+        }
+      ]
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Message Sent'); });
+  }
+
+  private _captureMessageCopied() {
+    firebase.analytics.logEvent({
+      key: 'messenger_copy_message'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Copy Message'); });
+  }
+
+  private _captureCopyFriendUsername() {
+    firebase.analytics.logEvent({
+      key: 'messenger_copy_friend'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Copy Friend'); });
   }
 }

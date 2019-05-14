@@ -1,18 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterExtensions } from "nativescript-angular/router";
+import { RouterExtensions } from 'nativescript-angular/router';
 
-import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
-import { alert } from "tns-core-modules/ui/dialogs";
-import { OSMClientService } from "~/app/shared/osm-client.service";
-import * as app from "tns-core-modules/application";
+import { SnackBar } from 'nativescript-snackbar';
+import { alert } from 'tns-core-modules/ui/dialogs';
+import { OSMClientService } from '~/app/shared/osm-client.service';
+import * as app from 'tns-core-modules/application';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Account } from '~/app/shared/models/identity';
 import { isAndroid } from 'tns-core-modules/ui/page/page';
 import { device } from 'tns-core-modules/platform/platform';
 
-import * as frame from 'tns-core-modules/ui/frame';
-
-
+const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
 
 export interface IAddContact {
@@ -43,6 +41,10 @@ export class AddComponent implements OnInit {
       const win = activity.getWindow();
       win.clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
+
+    firebase.analytics.setScreenName({
+      screenName: 'Contact Add'
+    }).then(() => {});
   }
 
   ngOnInit() {
@@ -61,7 +63,7 @@ export class AddComponent implements OnInit {
 
     if (this.contact.username === '') {
       this.badUsername = true;
-      return alert("An ODIN Identity is required to add another user.");
+      return alert('An ODIN Identity is required to add another user.');
     } else if (this.contact.username.indexOf('@') < 0) {
       this.badUsername = true;
       return alert("Usernames should include '@', please check and try again.");
@@ -73,7 +75,7 @@ export class AddComponent implements OnInit {
     try { 
       if (await this.activeAccount.hasFriend(this.contact.username)) {
         this.processing = false;
-        return alert("This user is already on your local contacts list!");
+        return alert('This user is already on your local contacts list!');
       }
 
       let contactDetails = await this._osmClient.fetchContact(this.contact.username);
@@ -84,7 +86,9 @@ export class AddComponent implements OnInit {
           displayName: '',
           username: ''
         };
-  
+        
+        // capture successful contact adding
+        this._captureUserAdd();
         alert(`Successfully added ${this.contact.username} to your local contacts!`);
         this._router.navigate(['/messenger']);
       } else {
@@ -96,11 +100,26 @@ export class AddComponent implements OnInit {
       console.log(err.message ? err.message : err);
 
       this.processing = false;
-      return alert("The specified user does not exist or the server is currently unavailable. Please check your entered information and try again.");
+      this._captureUserAddFailed();
+      return alert('The specified user does not exist or the server is currently unavailable. Please check your entered information and try again.');
     }
   }
   
   onPreviousView() {
     this._router.back();
+  }
+
+  private _captureUserAdd() {
+    firebase.analytics.logEvent({
+      key: 'contact_add'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Add Contact'); });
+  }
+
+  private _captureUserAddFailed() {
+    firebase.analytics.logEvent({
+      key: 'contact_add_failed'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Add Contact Failed'); });
   }
 }

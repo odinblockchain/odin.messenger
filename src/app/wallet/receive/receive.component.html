@@ -14,7 +14,7 @@
           <Label class="header--help-content" textWrap="true" text="For optimal security, we will generate a new ODIN address after a previous address has been used. They are all still associated with your Identity seed and aren't lost."></Label>
         </StackLayout>
 
-        <StackLayout *ngIf="freshAddress" class="address" (tap)="onCopyText(freshAddress?.address)">
+        <StackLayout *ngIf="freshAddress" class="address" (tap)="copyFreshAddress(freshAddress?.address)">
           <Label textWrap="true" class="address--hash" [text]="freshAddress?.address"></Label>
 
           <GridLayout cols="auto,*">
@@ -45,7 +45,7 @@
 
         <RadListView [items]="addresses" [filteringFunction]="usedAddressFilter">
           <ng-template tkListItemTemplate let-item="item" let-i="index">
-            <StackLayout class="address" (tap)="onCopyText(item.address)">
+            <StackLayout class="address" (tap)="copyUsedAddress(item.address)">
 
               <FlexboxLayout class="address--hash-wrap">
                 <Label textWrap="true" class="address--hash" [text]="item.address"></Label>

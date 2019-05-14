@@ -49,7 +49,6 @@ export class Contact extends Database {
     const messages = await this.getMessages();
     while (messages.length > 0) {
       const message = messages.shift();
-      this.log(`added message – ${message.message}`);
       this.messageStream.next(new Message(message));
       this.oMessages$.push(fromObject(message));
       this.msgKeys.push(message.key);
@@ -64,7 +63,7 @@ export class Contact extends Database {
     //   }
     // });
 
-    this.log(`loaded messages for [${this.username}]`);
+    this.log(`loaded messages for [${this.username}] ... Total [${this.msgKeys.length}]`);
     return this;
   }
 

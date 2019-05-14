@@ -91,6 +91,9 @@ export class PreferencesService {
     return {
       api_url: (environment.osmServerUrl || 'https://osm-testnet.obsidianplatform.com'),
       explorer_url: 'https://inspect.odinblockchain.org/api',
+      metrics: {
+        analytics: true
+      },
       notifications: {
         chat: {
           push: true,

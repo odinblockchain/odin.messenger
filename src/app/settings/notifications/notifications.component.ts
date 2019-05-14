@@ -33,6 +33,10 @@ export class NotificationsComponent {
 
     this._preferences.savePreferences();
     this.chatPreferences = this._preferences.preferences.notifications.chat;
+
+    firebase.analytics.setScreenName({
+      screenName: 'Settings Notifications'
+    }).then(() => {});
   }
 
   public async toggleChatPref(key: string) {
@@ -44,6 +48,11 @@ export class NotificationsComponent {
 
     this._preferences.savePreferences();
 
+    if (key === 'display') {
+      if (this.chatPreferences['display'] === true) this._captureEnableDisplay();
+      else this._captureDisableDisplay();
+    }
+
     if (key === 'push' && !this.hasConnection()) {
       this.chatPreferences['push'] = !this.chatPreferences['push'];
       this._preferences.savePreferences();
@@ -53,6 +62,7 @@ export class NotificationsComponent {
     if (key === 'push' && this.chatPreferences[key] === false) {
       try {
         await messaging.unregisterForPushNotifications();
+        this._captureDisablePush();
         this._snack.simple(`You will no longer receive push notifications`, '#ffffff', '#333333', 3, false);
       } catch (err) {
         console.log('[Settings.Notifications] Failed to unregister', err);
@@ -82,6 +92,7 @@ export class NotificationsComponent {
           throw new Error('FCMTokenPublishError');
         }
 
+        this._captureEnablePush();
         console.log('REGISTERED');
       } catch (err) {
         console.log('[Settings.Notifications] Failed to register', err);
@@ -121,5 +132,33 @@ export class NotificationsComponent {
         name: 'slideRight'
       },
     });
+  }
+
+  private _captureEnablePush() {
+    firebase.analytics.logEvent({
+      key: 'settings_notifications_push_enable'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Settings Notification Push Enable'); });
+  }
+
+  private _captureDisablePush() {
+    firebase.analytics.logEvent({
+      key: 'settings_notifications_push_disable'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Settings Notification Push Disable'); });
+  }
+
+  private _captureEnableDisplay() {
+    firebase.analytics.logEvent({
+      key: 'settings_notifications_display_enable'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Settings Notification Display Enable'); });
+  }
+
+  private _captureDisableDisplay() {
+    firebase.analytics.logEvent({
+      key: 'settings_notifications_display_disable'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Settings Notification Display Disable'); });
   }
 }

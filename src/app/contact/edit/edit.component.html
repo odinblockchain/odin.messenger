@@ -8,7 +8,7 @@
     <!-- <ContentView row="0" col="0" width="100%">
       <Button class="saveBtn" text="Save" horizontalAlignment="right" (tap)="onAddContact(contact)"></Button>
     </ContentView> -->
-    <Image col="0" row="1" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png"></Image>
+    <Image col="0" row="1" class="friend two" src="~/app/images/create-account/pg1/circle-bg-odin.png" (tap)="onTapFriendImage()"></Image>
   </GridLayout>
 
   <ScrollView class="screen" row="1">
@@ -29,7 +29,8 @@
                     label="Contact Username"
                     disabled="true"
                     allowCopy="true"
-                    [value]="contact.username">
+                    [value]="contact.username"
+                    (onCopy)="onContactCopy()">
       </ContentView>
 
       <GridLayout row="2"

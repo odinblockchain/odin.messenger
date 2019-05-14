@@ -1,19 +1,18 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { RouterExtensions } from "nativescript-angular/router";
 
-import { SnackBar, SnackBarOptions } from "nativescript-snackbar";
-import { alert, confirm } from "tns-core-modules/ui/dialogs";
-import { OSMClientService } from "~/app/shared/osm-client.service";
-import * as app from "tns-core-modules/application";
+import { SnackBar } from 'nativescript-snackbar';
+import { alert, confirm } from 'tns-core-modules/ui/dialogs';
+import * as app from 'tns-core-modules/application';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Account } from '~/app/shared/models/identity';
 import { isAndroid } from 'tns-core-modules/ui/page/page';
 import { device } from 'tns-core-modules/platform/platform';
 
-import * as frame from 'tns-core-modules/ui/frame';
 import { ActivatedRoute } from '@angular/router';
 import { Contact } from '~/app/shared/models/messenger';
 
+const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
 
 export interface IAddContact {
@@ -51,7 +50,7 @@ export class EditComponent implements OnInit, AfterViewInit {
     this._route.params
     .subscribe(params => {
       if (!params.hasOwnProperty('contactUsername')) {
-        alert("Something went wrong while loading the requested contact");
+        alert('Something went wrong while loading the requested contact');
         this._router.navigate(['/messenger']);
         return;
       }
@@ -64,6 +63,10 @@ export class EditComponent implements OnInit, AfterViewInit {
       const win = activity.getWindow();
       win.clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     }
+
+    firebase.analytics.setScreenName({
+      screenName: 'Contact Edit'
+    }).then(() => {});
   }
 
   ngOnInit(): void {
@@ -102,12 +105,20 @@ export class EditComponent implements OnInit, AfterViewInit {
       this.processing   = false;
       this.contactSaved = true;
       console.log('[Edit] contact saved!');
+
+      // capture successful friend edit
+      this._captureEditFriend();
+
       this._snack.simple('Contact updated!', '#ffffff', '#333333', 3, false);
     })
     .catch(err => {
       this.processing = false;
       console.log('[Edit] contact save error!');
       console.log(err.message ? err.message : err);
+
+      // capture failed friend edit
+      this._captureEditFriendFailed();
+
       this._snack.simple('Something went wrong while updating your contact', '#ffffff', '#333333', 3, false);
     });
   }
@@ -153,6 +164,16 @@ export class EditComponent implements OnInit, AfterViewInit {
     }
   }
 
+  public onTapFriendImage() {
+    // capture event of user tapping image
+    this._captureEditFriendTapImage();
+  }
+
+  public onContactCopy() {
+    // capture event of user tapping image
+    this._captureEditFriendCopyUsername();
+  }
+
   private hasModifiedContact() {
     return (this.contactCopy.name !== this.contact.name);
   }
@@ -168,5 +189,33 @@ export class EditComponent implements OnInit, AfterViewInit {
         },
       });
     }
+  }
+
+  private _captureEditFriend() {
+    firebase.analytics.logEvent({
+      key: 'messenger_edit_friend'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Edit Friend Success'); });
+  }
+
+  private _captureEditFriendFailed() {
+    firebase.analytics.logEvent({
+      key: 'messenger_edit_friend_failed'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Edit Friend Failed'); });
+  }
+
+  private _captureEditFriendTapImage() {
+    firebase.analytics.logEvent({
+      key: 'messenger_edit_friend_tap_image'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Edit Friend Tap Image'); });
+  }
+
+  private _captureEditFriendCopyUsername() {
+    firebase.analytics.logEvent({
+      key: 'messenger_edit_friend_copy_username'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Edit Friend Copy Username'); });
   }
 }

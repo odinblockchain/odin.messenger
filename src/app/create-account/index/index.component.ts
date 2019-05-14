@@ -1,19 +1,19 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from "@angular/core";
-import * as app from "tns-core-modules/application";
-import { Page, isAndroid, View } from "tns-core-modules/ui/page/page";
-import { device, screen } from "tns-core-modules/platform/platform";
-import { Animation } from "ui/animation";
-import { GridLayout } from "tns-core-modules/ui/layouts/grid-layout/grid-layout";
-import { SwipeDirection } from "tns-core-modules/ui/gestures/gestures";
-import { setOrientation, disableRotation } from "nativescript-orientation";
-import { RouterExtensions } from "nativescript-angular/router";
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Page, View } from 'tns-core-modules/ui/page/page';
+import { screen } from 'tns-core-modules/platform/platform';
+import { Animation } from 'ui/animation';
+import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout/grid-layout';
+import { SwipeDirection } from 'tns-core-modules/ui/gestures/gestures';
+import { setOrientation, disableRotation } from 'nativescript-orientation';
+import { RouterExtensions } from 'nativescript-angular/router';
 
+const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
 
 @Component({
-  selector: "CreateAccountIndex",
+  selector: 'CreateAccountIndex',
   moduleId: module.id,
-  templateUrl: "./index.component.html",
+  templateUrl: './index.component.html',
   styleUrls: ['./index.component.css']
 })
 export class IndexComponent implements OnInit, AfterViewInit {
@@ -48,11 +48,14 @@ export class IndexComponent implements OnInit, AfterViewInit {
     //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
     //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
     // }
+    firebase.analytics.setScreenName({
+      screenName: 'Create Account'
+    }).then(() => {});
   }
 
   ngOnInit(): void {
     this._page.actionBarHidden = true;
-    this._page.cssClasses.add("welcome-page-background");
+    this._page.cssClasses.add('welcome-page-background');
     this._page.backgroundSpanUnderStatusBar = true;
 
     this.screenWidth = screen.mainScreen.widthDIPs;

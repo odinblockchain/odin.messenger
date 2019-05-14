@@ -16,6 +16,8 @@ import { SnackBar } from 'nativescript-snackbar';
 import { RouterExtensions } from 'nativescript-angular/router';
 import * as utils from 'tns-core-modules/utils/utils';
 
+const firebase = require('nativescript-plugin-firebase');
+
 @Component({
   selector: 'GenerateScreen',
   moduleId: module.id,
@@ -70,6 +72,10 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     this.onGenerationComplete = this.onGenerationComplete.bind(this);
     this.onTouchEntropy       = this.onTouchEntropy.bind(this);
     this.refreshPassport      = this.refreshPassport.bind(this);
+
+    firebase.analytics.setScreenName({
+      screenName: 'Generate Account'
+    }).then(() => {});
   }
 
   ngOnInit(): void {

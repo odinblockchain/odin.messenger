@@ -1,7 +1,9 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy } from '@angular/core';
-import { alert, confirm } from "tns-core-modules/ui/dialogs";
+import { alert, confirm } from 'tns-core-modules/ui/dialogs';
 import { Wallet } from '~/app/shared/models/wallet';
 import { Subscription } from 'rxjs';
+
+const firebase = require('nativescript-plugin-firebase');
 
 interface TransactionDetails {
   amount: number,
@@ -63,10 +65,12 @@ export class SendComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.sendTransactionFn) return;
 
     if (!this.transactionDetails.address || this.transactionDetails.address.length === 0) {
+      this._captureSendBadAddress();
       return alert('You must enter a valid ODIN Address to send ODIN too.');
     }
 
     if (!this.transactionDetails.amount || isNaN(this.transactionDetails.amount)) {
+      this._captureSendBadAmount();
       return alert('You must enter a valid amount of ODIN to send.');
     }
 
@@ -81,12 +85,12 @@ export class SendComponent implements OnInit, OnChanges, OnDestroy {
     }
     
     confirm({
-      title: "Confirm Transaction",
+      title: 'Confirm Transaction',
       message: `Sending ${this.transactionDetails.amount} ODIN\n`
                 + `To ${this.transactionDetails.address}\n\n`
                 + 'Send this transaction?',
-      okButtonText: "Send",
-      cancelButtonText: "Cancel Transaction",
+      okButtonText: 'Send',
+      cancelButtonText: 'Cancel Transaction',
     })
     .then(result => {
       console.log(result);
@@ -97,5 +101,19 @@ export class SendComponent implements OnInit, OnChanges, OnDestroy {
 
   private formatBalance(amount: number): number {
     return Number((amount / 1e8).toFixed(8));
+  }
+
+  private _captureSendBadAddress() {
+    firebase.analytics.logEvent({
+      key: 'wallet_send_invalid_address'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Wallet Send Bad Address'); });
+  }
+
+  private _captureSendBadAmount() {
+    firebase.analytics.logEvent({
+      key: 'wallet_send_invalid_amount'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Wallet Send Bad Amount'); });
   }
 }
