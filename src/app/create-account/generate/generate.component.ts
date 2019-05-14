@@ -115,6 +115,7 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     this._zone.run(() => {
       if (!this.seeder.poolFilled) {
         this.seeder.seed(args.getX(), args.getY());
+        this.seeder.seed(args.getX() + args.getY(), args.getY() - args.getX());
         this.currentEntropy = this.seeder.get('seedCount');
       }
     });
