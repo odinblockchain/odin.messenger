@@ -153,6 +153,7 @@ export class AccountService extends StorageService {
 
     this.log(`account numeric – ${masterNumeric}`);
     this.log(`account hash – ${hashAddress}`);
+    this.emit('NewAccountCreated');
 
     return this.createAccount(new Account({
       bip44_index,

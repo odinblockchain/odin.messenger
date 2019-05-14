@@ -11,8 +11,10 @@ import { environment } from '~/environments/environment';
   providedIn: 'root'
 })
 export class IdentityService extends StorageService {
+  // init
   public identity: Identity;
   
+  // runtime
   private activeAccount: Account;
 
   constructor(
@@ -155,5 +157,6 @@ export class IdentityService extends StorageService {
 
   public async ___purge() {
     delete this.identity;
+    delete this.activeAccount;
   }
 }
