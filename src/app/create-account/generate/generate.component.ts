@@ -136,12 +136,16 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     this._AccountServ.registerAccount(this.identity, this.primaryAccount, this.primaryClient)
     .then(() => {
       console.log('onRegister!');
+      this._captureRegister();
+
       this._zone.run(this.refreshPassport);
     })
     .catch((err) => {
       console.log('Registration Faied');
       console.log(err.message ? err.message : err);
       
+      this._captureRegisterFailed();
+
       this.registering = false;
       this.busyClick = false;
     });
@@ -164,10 +168,20 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
   }
 
   public openTos() {
+    firebase.analytics.logEvent({
+      key: 'account_view_tos'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Account view tos'); });
+
     utils.openUrl('https://odin.chat/terms-of-use');
   }
 
   public openPrivacy() {
+    firebase.analytics.logEvent({
+      key: 'account_view_privacy'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Account view privacy'); });
+
     utils.openUrl('https://odin.chat/privacy-policy');
   }
 
@@ -217,4 +231,17 @@ export class GenerateScreenComponent implements OnInit, OnDestroy {
     });
   }
   
+  private _captureRegister() {
+    firebase.analytics.logEvent({
+      key: 'sign_up'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Account register'); });
+  }
+
+  private _captureRegisterFailed() {
+    firebase.analytics.logEvent({
+      key: 'sign_up_failed'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Account register failed'); });
+  }
 }
