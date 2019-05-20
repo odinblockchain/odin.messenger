@@ -1,6 +1,6 @@
-import { Injectable } from "@angular/core";
-import { request } from "http";
-import { PreferencesService } from "./preferences.service";
+import { Injectable } from '@angular/core';
+import { request } from 'tns-core-modules/http';
+import { PreferencesService } from './preferences.service';
 
 
 export interface IRegistrationData {
@@ -38,7 +38,7 @@ export class OSMClientService {
     return new Promise((resolve, reject) => {
       request({
         url: `${this._pref.preferences.api_url}/keys/?user=${contactIdentity}`,
-        method: "GET"
+        method: 'GET'
       }).then((response) => {
         if (response.statusCode !== 200) {
           console.log('OSMClientService... RESPONSE');
@@ -70,7 +70,7 @@ export class OSMClientService {
     return new Promise((resolve, reject) => {
       request({
         url: `${this._pref.preferences.api_url}/keys/count?user=${hashAccountName}`,
-        method: "GET"
+        method: 'GET'
       }).then((response) => {
         if (response.statusCode !== 200) {
           console.log('OSMClientService... RESPONSE');
@@ -109,8 +109,8 @@ export class OSMClientService {
     return new Promise((resolve, reject) => {
       request({
         url: `${this._pref.preferences.api_url}/keys`,
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         content: JSON.stringify(clientDetails)
       }).then((response) => {
         if (response.statusCode !== 200) {
@@ -152,8 +152,8 @@ export class OSMClientService {
     return new Promise((resolve, reject) => {
       request({
         url: `${this._pref.preferences.api_url}/messages`,
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         content: JSON.stringify(putMessageBody)
       }).then((response) => {
         if (response.statusCode !== 200) {
@@ -186,7 +186,7 @@ export class OSMClientService {
     return new Promise((resolve, reject) => {
       request({
         url: `${this._pref.preferences.api_url}/messages?deviceId=${deviceId}&registrationId=${registrationId}`,
-        method: "GET",
+        method: 'GET',
       }).then((response) => {
         if (response.statusCode !== 200) {
           console.log('OSMClientService... RESPONSE');
@@ -218,7 +218,7 @@ export class OSMClientService {
     return new Promise((resolve, reject) => {
       request({
         url: `${this._pref.preferences.api_url}/messages?key=${messageKey}`,
-        method: "DELETE",
+        method: 'DELETE',
       }).then((response) => {
         if (response.statusCode !== 200) {
           console.log('OSMClientService... RESPONSE');

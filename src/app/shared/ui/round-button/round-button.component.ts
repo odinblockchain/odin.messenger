@@ -1,15 +1,10 @@
-import { Component, OnInit, AfterContentInit, AfterViewInit, OnDestroy, ViewChild, ElementRef, NgZone, Input, Output, EventEmitter } from "@angular/core";
-import { Page } from "tns-core-modules/ui/page/page";
-import { setOrientation, disableRotation } from "nativescript-orientation";
-import Seeder from '~/app/lib/Seeder';
-import SecureRandom from '~/app/lib/SecureRandom';
-import { TouchGestureEventData } from "tns-core-modules/ui/gestures/gestures";
-import { AnimationCurve } from "tns-core-modules/ui/enums/enums";
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
+import { AnimationCurve } from 'tns-core-modules/ui/enums/enums';
 
 @Component({
-  selector: "RoundButton, [RoundButton]",
   moduleId: module.id,
-  templateUrl: "./round-button.component.html",
+  selector: 'RoundButton, [RoundButton]',
+  templateUrl: './round-button.component.html',
   styleUrls: ['./round-button.component.css']
 })
 export class RoundButtonComponent implements OnInit, AfterViewInit {

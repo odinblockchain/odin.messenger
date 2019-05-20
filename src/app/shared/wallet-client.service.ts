@@ -1,6 +1,6 @@
-import { Injectable } from "@angular/core";
-import { request } from "http";
-import { PreferencesService } from "./preferences.service";
+import { Injectable } from '@angular/core';
+import { request } from 'tns-core-modules/http';
+import { PreferencesService } from './preferences.service';
 
 @Injectable()
 export class WalletClientService {
@@ -15,7 +15,7 @@ export class WalletClientService {
       request({
         // url: `${this._pref.preferences.explorer_url}/tx/${txHash}`,
         url: 'https://inspect.odinblockchain.org/api' + `/tx/${txHash}`,
-        method: "GET"
+        method: 'GET'
       }).then((response) => {
         if (response.statusCode !== 200) {
           console.log('[WalletClientService]... RESPONSE');
@@ -48,7 +48,7 @@ export class WalletClientService {
       request({
         // url: `${this._pref.preferences.explorer_url}/tx/${txHash}`,
         url: 'https://inspect.odinblockchain.org/api' + `/stats`,
-        method: "GET"
+        method: 'GET'
       }).then((response) => {
         if (response.statusCode !== 200) {
           console.log('[WalletClientService]... RESPONSE');

@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Page, View } from 'tns-core-modules/ui/page/page';
-import { screen } from 'tns-core-modules/platform/platform';
-import { Animation } from 'ui/animation';
+import { screen, isAndroid, device } from 'tns-core-modules/platform/platform';
+import { Animation } from 'tns-core-modules/ui/animation';
 import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout/grid-layout';
 import { SwipeDirection } from 'tns-core-modules/ui/gestures/gestures';
 import { setOrientation, disableRotation } from 'nativescript-orientation';
 import { RouterExtensions } from 'nativescript-angular/router';
+import * as app from 'tns-core-modules/application';
 
 const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
@@ -39,15 +40,20 @@ export class IndexComponent implements OnInit, AfterViewInit {
     this.isTransitioning    = false;
     this.allowGoBack        = false;
 
-    // Span the background under status bar on Android
-    // if (isAndroid && device.sdkVersion >= '21') {
-    //   const activity = app.android.startActivity;
-    //   const win = activity.getWindow();
-    //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE); // disable screenshots
-    //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-    //   // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-    // }
+    try {
+      // Span the background under status bar on Android
+      if (isAndroid && device.sdkVersion >= '21') {
+        const activity = app.android.startActivity;
+        const win = activity.getWindow();
+        // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // win.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE); // disable screenshots
+        win.clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        win.clearFlags(android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+      }
+    } catch (err) {
+      console.log('Unable to unset translucent settings');
+    }
+
     firebase.analytics.setScreenName({
       screenName: 'Create Account'
     }).then(() => {});

@@ -1,8 +1,8 @@
-import { Component, OnInit, Input, forwardRef, AfterViewInit, Output, EventEmitter } from "@angular/core";
+import { Component, Input, forwardRef, Output, EventEmitter } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { ReturnKeyType } from "tns-core-modules/ui/editable-text-base/editable-text-base";
+import { ReturnKeyType } from 'tns-core-modules/ui/editable-text-base/editable-text-base';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar } from "nativescript-snackbar";
+import { SnackBar } from 'nativescript-snackbar';
 
 @Component({
   moduleId: module.id,

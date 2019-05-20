@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 import { Transaction, Wallet } from '~/app/shared/models/wallet';
 import { confirm } from 'tns-core-modules/ui/dialogs';
-import * as utilityModule from 'utils/utils';
+import * as utilityModule from 'tns-core-modules/utils/utils';
 
 const firebase = require('nativescript-plugin-firebase');
 

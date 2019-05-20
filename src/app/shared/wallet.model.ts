@@ -1,13 +1,13 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { Buffer } from 'buffer';
-import { RouterExtensions } from "nativescript-angular/router";
+import { RouterExtensions } from 'nativescript-angular/router';
 import { ElectrumxClient } from 'nativescript-electrumx-client';
-import { Observable } from "tns-core-modules/data/observable";
-import { clearTimeout, setTimeout } from "tns-core-modules/timer";
-import { alert } from "ui/dialogs";
+import { Observable } from 'tns-core-modules/data/observable';
+import { clearTimeout, setTimeout } from 'tns-core-modules/timer';
+import { alert } from 'tns-core-modules/ui/dialogs';
 import { ODIN } from '~/app/bundle.odin';
 import { StorageService } from './index';
-import { WalletClientService } from "./wallet-client.service";
+import { WalletClientService } from './wallet-client.service';
 
 
 
@@ -267,7 +267,7 @@ export class WalletModel extends Observable {
           console.log('...emit WalletReady', Date.now());
 
           self.notify({
-            eventName: "WalletReady",
+            eventName: 'WalletReady',
             object: this
           });
 
@@ -289,7 +289,7 @@ export class WalletModel extends Observable {
           console.log('...emit WalletReady', Date.now());
 
           self.notify({
-            eventName: "WalletReady",
+            eventName: 'WalletReady',
             object: this
           });
 
@@ -309,7 +309,7 @@ export class WalletModel extends Observable {
         console.log('...emit WalletReady', Date.now());
 
         self.notify({
-          eventName: "WalletReady",
+          eventName: 'WalletReady',
           object: this
         });
 
@@ -335,7 +335,7 @@ export class WalletModel extends Observable {
     //   alert('We were unable to load your wallet at this time. Please try again later.');
 
     //   this.notify({
-    //     eventName: "LoadWalletError",
+    //     eventName: 'LoadWalletError',
     //     object: this
     //   });
     // });
@@ -433,7 +433,7 @@ export class WalletModel extends Observable {
         this.walletData.noticeText  = '';
 
         this.notify({
-          eventName: "WalletReady",
+          eventName: 'WalletReady',
           object: this
         });
 
@@ -795,7 +795,7 @@ export class WalletModel extends Observable {
 
         if (sent && sent.length >= 64) {
           this.notify({
-            eventName: "TransactionSent",
+            eventName: 'TransactionSent',
             object: this
           });
 
@@ -827,7 +827,7 @@ export class WalletModel extends Observable {
   /**
    * 
    * @param seed The primary seed hash of which all wallets, accounts, and addresses should exist from.
-   * @param accountIndex The current account "wallet" to discover.
+   * @param accountIndex The current account 'wallet' to discover.
    * @param addressIndex The current address to fetch details for.
    * @param isExternal Determines if the details should be for the external or internal (change) address.
    */
@@ -872,15 +872,15 @@ export class WalletModel extends Observable {
 
   /**
    * Discovery method for external (non-change) addresses. Will loop through all potential addresses
-   * associated to an `accountIndex` or "wallet" until the agreed gap limit is reached.
+   * associated to an `accountIndex` or 'wallet' until the agreed gap limit is reached.
    * 
-   * The established "Gap Limit" is 20 addresses. This means, 20 addresses that have no prior
+   * The established 'Gap Limit' is 20 addresses. This means, 20 addresses that have no prior
    * transaction history. Internally referred to as `active` addresses. Once 20 addresses have
    * been discovered and verified to not be `active` then we can safely assume we are done with
    * this discovery.
    * 
    * @param seed The primary seed hash of which all wallets, accounts, and addresses should exist from.
-   * @param accountIndex The current account "wallet" to discover.
+   * @param accountIndex The current account 'wallet' to discover.
    */
   private async externalAddressDiscovery(seed: any, accountIndex: number): Promise<IAddressDiscovery> {
     let addressIndex: number                  = 0;
@@ -922,11 +922,11 @@ export class WalletModel extends Observable {
 
   /**
    * Discovery method for internal (change-only) addresses which should have a 1:1 association
-   * with `active` external accounts "Addresses". An Address is considered `active` if it has had
+   * with `active` external accounts 'Addresses'. An Address is considered `active` if it has had
    * at least one transaction.
    * 
    * @param seed The primary seed hash of which all wallets, accounts, and addresses should exist from.
-   * @param accountIndex The current account "wallet" to discover.
+   * @param accountIndex The current account 'wallet' to discover.
    * @param activeExternalAddresses An array of active external Addresses.
    */
   private async internalAddressDiscovery(seed: any, accountIndex: number, activeExternalAddresses: any[]): Promise<any> {
@@ -1057,7 +1057,7 @@ export class WalletModel extends Observable {
    * summary.
    * 
    * @param seed The primary seed hash of which all wallets, accounts, and addresses should exist from.
-   * @param accountIndex The current account "wallet" to discover.
+   * @param accountIndex The current account 'wallet' to discover.
    */
   private async accountDiscovery(seed: any, accountIndex: number): Promise<IWallet> {
     let account = {
@@ -1156,7 +1156,7 @@ export class WalletModel extends Observable {
       this.chainStats.blockheight = data.result.height;
       
       this.notify({
-        eventName: "NewBlockFound",
+        eventName: 'NewBlockFound',
         object: this
       });
     }
@@ -1177,7 +1177,7 @@ export class WalletModel extends Observable {
       this.chainStats.blockheight = header.height;
 
       this.notify({
-        eventName: "NewBlockFound",
+        eventName: 'NewBlockFound',
         object: this
       });
     }
@@ -1187,11 +1187,11 @@ export class WalletModel extends Observable {
    * Subscribe to any errors streamed from this plugin.
    * There are two primary error types to watch out for:
    *
-   * err.name === "UnexpectedResponseError"
+   * err.name === 'UnexpectedResponseError'
    * This error comes from an unexpected response from ElectrumX as
    * ElectrumX should always return a JSON.parse-able string response.
    *
-   * err.name === "TCPClientError"
+   * err.name === 'TCPClientError'
    * This error comes from the base class TcpClient when a connection
    * fails.
    */

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { isAndroid } from 'ui/page';
+import { isAndroid } from 'tns-core-modules/ui/page';
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
 import * as app from 'tns-core-modules/application';
 import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
-import { GridLayout } from 'ui/layouts/grid-layout';
+import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
 import { RouterExtensions } from 'nativescript-angular/router';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Contact, Message } from '~/app/shared/models/messenger';

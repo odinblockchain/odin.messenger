@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
-import * as app from 'application';
-import * as utilityModule from 'utils/utils';
+import * as app from 'tns-core-modules/application';
+import * as utilityModule from 'tns-core-modules/utils/utils';
 
 const firebase = require('nativescript-plugin-firebase');
 

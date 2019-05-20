@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone } from '@angular/core';
-import { TabView } from "tns-core-modules/ui/tab-view";
-import { isAndroid, isIOS, screen } from "platform";
-import * as app from "tns-core-modules/application";
-import { EventData } from "tns-core-modules/data/observable";
-import { alert } from "tns-core-modules/ui/dialogs";
-import { RadSideDrawer } from "nativescript-ui-sidedrawer";
-import { Page, layout } from "ui/page";
+import { TabView } from 'tns-core-modules/ui/tab-view';
+import { isAndroid, isIOS, screen } from 'tns-core-modules/platform';
+import * as app from 'tns-core-modules/application';
+import { EventData } from 'tns-core-modules/data/observable';
+import { alert } from 'tns-core-modules/ui/dialogs';
+import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
+import { Page, layout } from 'tns-core-modules/ui/page';
 import { setTimeout, setInterval, clearInterval } from 'tns-core-modules/timer/timer';
 import { WalletService } from '~/app/shared/services';
 import { Subscription, Observable as ObservableGeneric } from 'rxjs';
@@ -23,7 +23,7 @@ const KEEP_ALIVE_DELAY = 2;
 	styleUrls: ['./wallet.component.css']
 })
 export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild("tabView") tabView: ElementRef;
+  @ViewChild('tabView') tabView: ElementRef;
 
   private _keepAliveTimer: any;
   private _walletServiceSub: Subscription;

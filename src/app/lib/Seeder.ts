@@ -1,5 +1,5 @@
 import SecureRandom from './SecureRandom';
-import { Observable, EventData } from "data/observable";
+import { Observable, EventData } from 'tns-core-modules/data/observable';
 import * as shajs from 'sha.js'
 
 export default class Seeder extends Observable {
@@ -71,7 +71,7 @@ export default class Seeder extends Observable {
       hex.push((bytes[i] >>> 4).toString(16));
       hex.push((bytes[i] & 0xF).toString(16));
     }
-    return hex.join("");
+    return hex.join('');
   }
 
   public sha256Seed = function() {

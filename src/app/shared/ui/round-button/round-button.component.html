@@ -1,11 +1,11 @@
 <GridLayout #roundButtonWrap
-            class="round-button-wrap btn-theme-{{theme}}"
+            class="round-button-wrap"
             [class.busy]="busy"
             [class.disabled]="disabled"
 
             rows="auto"
             horizontalAlignment="center">
-  <StackLayout class="cta">
+  <StackLayout class="cta cta-bonus">
     <Button class="shadow"></Button>
     <Button class="overlay" [text]="text" (tap)="onTap($event)"></Button>
   </StackLayout>

@@ -6,7 +6,7 @@ import { alert } from 'tns-core-modules/ui/dialogs';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
 
 import * as Clipboard from 'nativescript-clipboard';
-import { TextField } from 'ui/text-field';
+import { TextField } from 'tns-core-modules/ui/text-field';
 import { Contact, Message } from '~/app/shared/models/messenger';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Account } from '~/app/shared/models/identity';

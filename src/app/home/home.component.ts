@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
-import { Page } from "ui/page";
-import { RouterExtensions } from "nativescript-angular/router";
-import { StorageService } from "~/app/shared";
-import { AccountService } from "~/app/shared/services";
-import { Account } from "~/app/shared/models/identity";
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Page } from 'tns-core-modules/ui/page';
+import { RouterExtensions } from 'nativescript-angular/router';
+import { StorageService } from '~/app/shared';
+import { AccountService } from '~/app/shared/services';
+import { Account } from '~/app/shared/models/identity';
 
 @Component({
-    selector: "Splashscreen",
+    selector: 'Splashscreen',
     moduleId: module.id,
-    templateUrl: "./home.component.html",
+    templateUrl: './home.component.html',
     styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit, OnDestroy {

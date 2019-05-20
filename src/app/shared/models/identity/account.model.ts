@@ -3,7 +3,7 @@ import { Message } from '../messenger/message.model';
 import { Contact } from '../messenger';
 import { SignalAddress, SignedPreKey, PublicPreKey, PreKeyBundle, SignalClientContact } from '../signal';
 import { Client } from '../messenger/client.model';
-import { request, HttpResponse } from 'http';
+import { request, HttpResponse } from 'tns-core-modules/http';
 import Hashids from 'hashids';
 
 export interface IRemoteContact {

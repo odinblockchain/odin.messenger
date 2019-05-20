@@ -1,8 +1,5 @@
-import { Injectable } from "@angular/core";
-import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
-// import { StorageService } from "./storage.service";
-import { alert } from "ui/dialogs";
-import { environment } from "~/environments/environment";
+import { Injectable } from '@angular/core';
+import { environment } from '~/environments/environment';
 import {
   getBoolean,
   setBoolean,
@@ -13,7 +10,7 @@ import {
   hasKey,
   remove,
   clear
-} from "tns-core-modules/application-settings";
+} from 'tns-core-modules/application-settings';
 
 
 @Injectable()

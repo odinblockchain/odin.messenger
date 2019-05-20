@@ -1,15 +1,8 @@
-import { Injectable } from "@angular/core";
-import { fromObject, fromObjectRecursive, Observable, PropertyChangeData } from "tns-core-modules/data/observable";
+import { Injectable } from '@angular/core';
+import { Observable } from 'tns-core-modules/data/observable';
 import { StorageService } from './index';
 import { OSMClientService } from './osm-client.service';
-import { RouterExtensions } from "nativescript-angular/router";
-import { ObservableArray, ChangedData } from "tns-core-modules/data/observable-array";
-
-import { ODIN } from '~/app/bundle.odin';
-
-import Hashids from 'hashids';
-import { alert } from "ui/dialogs";
-
+import { RouterExtensions } from 'nativescript-angular/router';
 import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
 
 export class UserSaveData {
@@ -222,10 +215,10 @@ export class UserModel extends Observable {
 
     await this._store.clearStorage();
     await this.clearSaveData();
-    this._router.navigate(["/splashscreen"], { clearHistory: true });
+    this._router.navigate(['/splashscreen'], { clearHistory: true });
 
     this.notify({
-      eventName: "ClearSession",
+      eventName: 'ClearSession',
       object: this
     });
 
@@ -257,7 +250,7 @@ export class UserModel extends Observable {
     };
     
     this.notify({
-      eventName: "SaveDataPurged",
+      eventName: 'SaveDataPurged',
       object: this
     });
 
