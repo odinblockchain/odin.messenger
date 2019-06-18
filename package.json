@@ -1,95 +1,96 @@
 {
-  "name": "odin.chat.client",
-  "version": "0.4.3",
-  "description": "ODIN Chat, private conversations with cryptocurrency wallet developed on NativeScript",
-  "nativescript": {
-    "id": "org.odinblockchain.messenger",
-    "tns-android": {
-      "version": "5.1.0"
+    "name": "odin.chat.client",
+    "version": "0.4.3",
+    "description": "ODIN Chat, private conversations with cryptocurrency wallet developed on NativeScript",
+    "nativescript": {
+        "id": "org.odinblockchain.messenger",
+        "tns-android": {
+            "version": "5.4.0"
+        }
+    },
+    "readme": "NativeScript Application",
+    "author": "ODINBLOCKCHAIN",
+    "contributors": [
+        {
+            "name": "Pixxlated",
+            "url": "https://twitter.com/pixxlated"
+        }
+    ],
+    "keywords": [
+        "odin",
+        "blockchain",
+        "osm",
+        "odinblockchain",
+        "messenger",
+        "secure",
+        "signal",
+        "telegram",
+        "whatsapp",
+        "private",
+        "bitcoin",
+        "wallet"
+    ],
+    "license": "GPL-3.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/odinblockchain/odin.messenger"
+    },
+    "bugs": {
+        "url": "https://github.com/odinblockchain/odin.messenger/issues"
+    },
+    "homepage": "https://github.com/odinblockchain/odin.messenger#readme",
+    "scripts": {
+        "build.android": "npm i && tns platform add android && tns build android",
+        "build.android.noinstall": "npm i && tns build android",
+        "remove.android": "tns platform remove android",
+        "lint": "tslint \"src/**/*.ts\"",
+        "clean": "rm -rf hooks/ node_modules/ platforms/",
+        "android.run.prod": "tns run android --bundle --env.environment=prod",
+        "android.run.dev": "tns run android --bundle --env.environment=dev",
+        "android.run.reg": "tns run android --bundle --env.environment=reg"
+    },
+    "dependencies": {
+        "@angular/animations": "~7.0.0",
+        "@angular/common": "~7.0.0",
+        "@angular/compiler": "~7.0.0",
+        "@angular/core": "~7.0.0",
+        "@angular/forms": "~7.0.0",
+        "@angular/http": "~7.0.0",
+        "@angular/platform-browser": "~7.0.0",
+        "@angular/platform-browser-dynamic": "~7.0.0",
+        "@angular/router": "~7.0.0",
+        "buffer": "^5.2.1",
+        "hashids": "^1.2.2",
+        "moment": "^2.24.0",
+        "nativescript-angular": "~7.0.0",
+        "nativescript-appversion": "^1.4.1",
+        "nativescript-clipboard": "^1.1.7",
+        "nativescript-electrumx-client": "0.1.20",
+        "nativescript-floatingactionbutton": "^5.0.0",
+        "nativescript-libsignal-protocol": "^0.2.0",
+        "nativescript-orientation": "^2.2.1",
+        "nativescript-platform-css": "^1.6.6",
+        "nativescript-plugin-firebase": "^8.1.1",
+        "nativescript-randombytes": "^1.0.0",
+        "nativescript-snackbar": "^4.0.0",
+        "nativescript-sqlite": "^2.3.3",
+        "nativescript-theme-core": "~1.0.4",
+        "nativescript-ui-listview": "^5.2.0",
+        "nativescript-ui-sidedrawer": "~5.0.0",
+        "reflect-metadata": "~0.1.10",
+        "rxjs": "~6.3.0",
+        "sha.js": "^2.4.11",
+        "tns-core-modules": "^5.4.2",
+        "zone.js": "~0.8.18"
+    },
+    "devDependencies": {
+        "@angular/compiler-cli": "^7.2.13",
+        "@nativescript/schematics": "^0.5.2",
+        "@ngtools/webpack": "~7.1.0",
+        "codelyzer": "~4.5.0",
+        "nativescript-dev-sass": "^1.7.0",
+        "nativescript-dev-typescript": "~0.7.0",
+        "nativescript-dev-webpack": "^0.21.1",
+        "tslint": "~5.11.0"
     }
-  },
-  "readme": "NativeScript Application",
-  "author": "ODINBLOCKCHAIN",
-  "contributors": [
-    {
-      "name": "Pixxlated",
-      "url": "https://twitter.com/pixxlated"
-    }
-  ],
-  "keywords": [
-    "odin",
-    "blockchain",
-    "osm",
-    "odinblockchain",
-    "messenger",
-    "secure",
-    "signal",
-    "telegram",
-    "whatsapp",
-    "private",
-    "bitcoin",
-    "wallet"
-  ],
-  "license": "GPL-3.0",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/odinblockchain/odin.messenger"
-  },
-  "bugs": {
-    "url": "https://github.com/odinblockchain/odin.messenger/issues"
-  },
-  "homepage": "https://github.com/odinblockchain/odin.messenger#readme",
-  "scripts": {
-    "build.android": "npm i && tns platform add android && tns build android",
-    "remove.android": "tns platform remove android",
-    "lint": "tslint \"src/**/*.ts\"",
-    "clean": "rm -rf hooks/ node_modules/ platforms/",
-    "android.run.prod": "tns run android --bundle --env.environment=prod",
-    "android.run.dev": "tns run android --bundle --env.environment=dev",
-    "android.run.reg": "tns run android --bundle --env.environment=reg"
-  },
-  "dependencies": {
-    "@angular/animations": "~7.0.0",
-    "@angular/common": "~7.0.0",
-    "@angular/compiler": "~7.0.0",
-    "@angular/core": "~7.0.0",
-    "@angular/forms": "~7.0.0",
-    "@angular/http": "~7.0.0",
-    "@angular/platform-browser": "~7.0.0",
-    "@angular/platform-browser-dynamic": "~7.0.0",
-    "@angular/router": "~7.0.0",
-    "buffer": "^5.2.1",
-    "hashids": "^1.2.2",
-    "moment": "^2.24.0",
-    "nativescript-angular": "~7.0.0",
-    "nativescript-appversion": "^1.4.1",
-    "nativescript-clipboard": "^1.1.7",
-    "nativescript-electrumx-client": "0.1.20",
-    "nativescript-floatingactionbutton": "^5.0.0",
-    "nativescript-libsignal-protocol": "^0.2.0",
-    "nativescript-orientation": "^2.2.1",
-    "nativescript-platform-css": "^1.6.6",
-    "nativescript-plugin-firebase": "^8.1.1",
-    "nativescript-randombytes": "^1.0.0",
-    "nativescript-snackbar": "^4.0.0",
-    "nativescript-sqlite": "^2.3.3",
-    "nativescript-theme-core": "~1.0.4",
-    "nativescript-ui-listview": "^5.2.0",
-    "nativescript-ui-sidedrawer": "~5.0.0",
-    "reflect-metadata": "~0.1.10",
-    "rxjs": "~6.3.0",
-    "sha.js": "^2.4.11",
-    "tns-core-modules": "^5.1.2",
-    "zone.js": "~0.8.18"
-  },
-  "devDependencies": {
-    "@angular/compiler-cli": "^7.2.13",
-    "@nativescript/schematics": "^0.5.2",
-    "@ngtools/webpack": "~7.1.0",
-    "codelyzer": "~4.5.0",
-    "nativescript-dev-sass": "^1.7.0",
-    "nativescript-dev-typescript": "~0.7.0",
-    "nativescript-dev-webpack": "^0.21.1",
-    "tslint": "~5.11.0"
-  }
 }
