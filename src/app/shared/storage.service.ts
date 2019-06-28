@@ -13,8 +13,8 @@ const MessagesSQL = `CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY
 const CoinsSQL = `CREATE TABLE IF NOT EXISTS coins (name TEXT PRIMARY KEY NOT NULL, is_default BOOLEAN DEFAULT false, bip44 INTEGER UNIQUE, label TEXT DEFAULT "", symbol TEXT NOT NULL, icon_path TEXT DEFAULT "", explorer_host TEXT, explorer_api_host STRING, explorer_api_stats STRING, electrumx_host TEXT, electrumx_port INTEGER DEFAULT (50001))`;
 const WalletsSQL = `CREATE TABLE IF NOT EXISTS wallets (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, coin_name TEXT NOT NULL, account_bip44 INTEGER NOT NULL, bip44_index INTEGER NOT NULL, balance_conf REAL DEFAULT (0), balance_unconf REAL DEFAULT (0), last_updated INTEGER, last_tx_timestamp INTEGER, FOREIGN KEY (coin_name) REFERENCES coins (name) ON DELETE CASCADE, FOREIGN KEY (account_bip44) REFERENCES accounts (bip44_index) ON DELETE CASCADE)`;
 const AddressesSQL = `CREATE TABLE IF NOT EXISTS addresses (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, bip44_index INTEGER NOT NULL, address TEXT NOT NULL, hash TEXT NOT NULL, wif TEXT NOT NULL, balance_conf REAL DEFAULT (0), balance_unconf REAL DEFAULT (0), external BOOLEAN DEFAULT false, used BOOLEAN DEFAULT false, last_updated INTEGER, last_tx_timestamp INTEGER, FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE)`;
-const TransactionsSQL = `CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, address_id INTEGER NOT NULL, type TEXT, txid TEXT NOT NULL, height INTEGER, vin_addresses TEXT, vout_addresses TEXT, value REAL, timestamp INTEGER, FOREIGN KEY (address_id) REFERENCES addresses (id) ON DELETE CASCADE, FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE)`;
-const UnspentSQL = `CREATE TABLE IF NOT EXISTS unspent (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, address_id INTEGER NOT NULL, address TEXT NOT NULL, height INTEGER, txid TEXT NOT NULL, txid_pos INTEGER NOT NULL, value REAL NOT NULL DEFAULT (0), FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE, FOREIGN KEY (address_id) REFERENCES addresses (id))`;
+const TransactionsSQL = `CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, address_id INTEGER NOT NULL, type TEXT, txid TEXT NOT NULL, height INTEGER, vin_addresses TEXT, vout_addresses TEXT, value TEXT NOT NULL DEFAULT "0", timestamp INTEGER, FOREIGN KEY (address_id) REFERENCES addresses (id) ON DELETE CASCADE, FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE)`;
+const UnspentSQL = `CREATE TABLE IF NOT EXISTS unspent (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, wallet_id INTEGER NOT NULL, address_id INTEGER NOT NULL, address TEXT NOT NULL, height INTEGER, txid TEXT NOT NULL, txid_pos INTEGER NOT NULL, value TEXT NOT NULL DEFAULT "0", FOREIGN KEY (wallet_id) REFERENCES wallets (id) ON DELETE CASCADE, FOREIGN KEY (address_id) REFERENCES addresses (id))`;
 const LogsSQL = `CREATE TABLE logs (id INTEGER PRIMARY KEY AUTOINCREMENT, timestamp INTEGER, message STRING DEFAULT "")`;
 
 const DefaultCoinsSQL = `INSERT INTO coins (name, bip44, is_default, label, symbol, icon_path, explorer_host, explorer_api_host, explorer_api_stats, electrumx_host, electrumx_port) values ("ODIN", 2100, "true", "ODIN", "Ø", "res://coin_odin", "https://explore.odinblockchain.org/", "https://inspect.odinblockchain.org/api", "https://inspect.odinblockchain.org/api/stats", "electrumx.odinblockchain.org", 50001)`;
@@ -26,6 +26,24 @@ export class StorageService {
   public preferences: any;
   public databaseName: string;
   public odb: any;
+
+  /**
+   * Static properties
+   */
+
+  static DatabaseName: string             = DatabaseName;
+
+  /* SQL Tables */
+  static CreateAccountsTable: string      = AccountsSQL;
+  static CreateClientsTable: string       = ClientsSQL;
+  static CreateContactsTable: string      = ContactsSQL;
+  static CreateMessagesTable: string      = MessagesSQL;
+  static CreateCoinsTable: string         = CoinsSQL;
+  static CreateWalletsTable: string       = WalletsSQL;
+  static CreateAddressesTable: string     = AddressesSQL;
+  static CreateTransactionsTable: string  = TransactionsSQL;
+  static CreateUnspentTable: string       = UnspentSQL;
+  static CreateLogsTable: string          = LogsSQL;
   
   constructor(
     @Inject('serviceId') @Optional() public serviceId?: string) {
@@ -134,7 +152,7 @@ export class StorageService {
    * @param tableName The name of the table, used for events and logging
    * @param sql The SQL query to create the table
    */
-  private async createTable(tableName: string, sql: string, defaultInsert?: string): Promise<boolean> {
+  public async createTable(tableName: string, sql: string, defaultInsert?: string): Promise<boolean> {
     tableName = tableName.toLowerCase();
     if (!await this.dbReady()) {
       this.log(`...Table: [${tableName}] Skipped -- Not Connected`);
@@ -158,12 +176,30 @@ export class StorageService {
   }
 
   /**
+   * Will create  a group of tables based on the provided `group`.
+   * 
+   * @param group The group key for a related batch of tables
+   */
+  public async createGroup(group: string): Promise<boolean> {
+    if (group === 'wallet') {
+      await this.createTable('coins', StorageService.CreateCoinsTable, DefaultCoinsSQL);
+      await this.createTable('wallets', StorageService.CreateWalletsTable);
+      await this.createTable('addresses', StorageService.CreateAddressesTable);
+      await this.createTable('transactions', StorageService.CreateTransactionsTable);
+      await this.createTable('unspent', StorageService.CreateUnspentTable);
+      return true;
+    }
+
+    return true;
+  }
+
+  /**
    * Will purge/delete a given `tableName` if the table exists. Will convert
    * `tableName` to lowercase.
    * 
    * @param tableName The name of the table to purge
    */
-  private async purgeTable(tableName: string): Promise<boolean> {
+  public async purgeTable(tableName: string): Promise<boolean> {
     tableName = tableName.toLowerCase();
     if (!await this.dbReady()) {
       this.log(`...Purge: [${tableName}] Skipped -- Not Connected`);
@@ -173,6 +209,25 @@ export class StorageService {
     await this.odb.execSQL(`DROP TABLE IF EXISTS ${tableName}`);
     this.log(`...Table: [${tableName}] Purged`);
     this.emit(`TablePurge::${tableName}`);
+  }
+
+  /**
+   * Will purge a group of tables based on the provided `group`.
+   * 
+   * @param group The group key for a related batch of tables
+   */
+  public async purgeGroup(group: string): Promise<boolean> {
+    if (group === 'wallet') {
+      await this.purgeTable('coins');
+      await this.purgeTable('wallets');
+      await this.purgeTable('addresses');
+      await this.purgeTable('transactions');
+      await this.purgeTable('unspent');
+
+      return true;
+    }
+    
+    return true;
   }
 
   /**
@@ -228,16 +283,16 @@ export class StorageService {
 
       try {
         // let foo = await this.odb.all(`SELECT name FROM sqlite_master WHERE type='table'`);
-        await this.createTable('accounts', AccountsSQL);
-        await this.createTable('clients', ClientsSQL);
-        await this.createTable('contacts', ContactsSQL);
-        await this.createTable('messages', MessagesSQL);
-        await this.createTable('coins', CoinsSQL, DefaultCoinsSQL);
-        await this.createTable('wallets', WalletsSQL);
-        await this.createTable('addresses', AddressesSQL);
-        await this.createTable('transactions', TransactionsSQL);
-        await this.createTable('unspent', UnspentSQL);
-        await this.createTable('logs', LogsSQL);
+        await this.createTable('accounts', StorageService.CreateAccountsTable);
+        await this.createTable('clients', StorageService.CreateClientsTable);
+        await this.createTable('contacts', StorageService.CreateContactsTable);
+        await this.createTable('messages', StorageService.CreateMessagesTable);
+        await this.createTable('coins', StorageService.CreateCoinsTable, DefaultCoinsSQL);
+        await this.createTable('wallets', StorageService.CreateWalletsTable);
+        await this.createTable('addresses', StorageService.CreateAddressesTable);
+        await this.createTable('transactions', StorageService.CreateTransactionsTable);
+        await this.createTable('unspent', StorageService.CreateUnspentTable);
+        await this.createTable('logs', StorageService.CreateLogsTable);
 
         this.log('[loadTables] End');
         this.emit('TableLoadEnd');
@@ -415,30 +470,4 @@ export class StorageService {
   public clearStorage() {
     return clear();
   }
-
-  // public fetchStorageKeys() {
-  //   if (isAndroid) {
-  //     const sharedPreferences = getNativeApplication().getApplicationContext().getSharedPreferences("prefs.db", 0);
-  //     const mappedPreferences = sharedPreferences.getAll();
-  //     const iterator = mappedPreferences.keySet().iterator();
-
-  //     while (iterator.hasNext()) {
-  //       const key = iterator.next();
-  //       console.log(key); // myString, myNumbver, isReal
-  //       const value = mappedPreferences.get(key);
-  //       console.log(value); // "John Doe", 42, true
-  //     }
-
-  //   } else if (isIOS) {
-  //     // tslint:disable-next-line
-  //     // Note: If using TypeScript you will need tns-platform-declarations plugin to access the native APIs like NSUserDefaults
-  //     const userDefaults = utils.ios.getter(NSUserDefaults, NSUserDefaults.standardUserDefaults);
-  //     const dictionaryUserDefaults = userDefaults.dictionaryRepresentation();
-
-  //     const allKeys = dictionaryUserDefaults.allKeys;
-  //     console.log(allKeys);
-  //     const allValues = dictionaryUserDefaults.allValues;
-  //     console.log(allValues);
-  //   }
-  // }
 }
