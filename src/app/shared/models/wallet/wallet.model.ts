@@ -158,14 +158,14 @@ export class Wallet extends Database {
           unspent.txid,
           unspent.height,
           unspent.txid_pos,
-          unspent.value,
+          `${unspent.value}`,
   
           this.id,
           unspent.txid
         ]);
 
         if (!updated) this.log(`failed to update unspent: ${unspent.txid}`);
-        else this.log(`updated unspent ${unspent.txid}`);
+        else this.log(`updated unspent ${unspent.txid}`);        
         return unspent;
       } else {
         const unspentId = await this.db.execSQL(`INSERT INTO unspent (wallet_id, address_id, address, txid, height, txid_pos, value) values (?, ?, ?, ?, ?, ?, ?)`, [
@@ -175,12 +175,11 @@ export class Wallet extends Database {
           unspent.txid,
           unspent.height,
           unspent.txid_pos,
-          unspent.value
+          `${unspent.value}`
         ]);
 
         unspent.id = unspentId;
         this.log(`inserted unspent @${unspentId} ${unspent.txid}`);
-
         return unspent;
       }
     } catch (err) {
@@ -436,7 +435,7 @@ export class Wallet extends Database {
     InputSum: ${inputSum}
     Change:   ${inputSum - valueTotal}\n`);
 
-    inputs.forEach(input => console.log('Input:', JSON.stringify(input)));
+    inputs.forEach(input => console.log('UNSPENT Input:', JSON.stringify(input)));
 
     if (inputSum < valueTotal) {
       this.emit('TransactionFailed');

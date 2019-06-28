@@ -36,6 +36,12 @@ export class Transaction extends Database {
   }
 
   deserialize(input?: any) {
+    if (!input || typeof input !== 'object') return this;
+
+    if (input.hasOwnProperty('value')) {
+      input.value = Number(input.value);
+    }
+    
     Object.assign(this, input);
     return this;
   }
@@ -95,7 +101,7 @@ export class Transaction extends Database {
       (typeof this.vout_addresses === 'string')
         ? this.vout_addresses
         : JSON.stringify(this.vout_addresses),
-      this.value,
+      `${this.value}`,
       this.timestamp,
 
       this.id
@@ -200,7 +206,7 @@ export class Transaction extends Database {
         (typeof transaction.vout_addresses === 'string')
           ? transaction.vout_addresses
           : JSON.stringify(transaction.vout_addresses),
-        transaction.value,
+        `${transaction.value}`,
         transaction.timestamp
       ]);
 
