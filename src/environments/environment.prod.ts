@@ -6,5 +6,7 @@ export const environment = {
   mockIdentity: false,
   purgeWallet: false,
   purgeMessenger: false,
-  purgeAll: false
+  purgeAll: false,
+  migration: '0001',
+  app_version: '0.4.4'
 };
