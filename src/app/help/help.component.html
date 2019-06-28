@@ -10,6 +10,26 @@
 
     <StackLayout row="1" class="settings-list container">
       <ContentView class="group-header">
+        <Label text="About App"></Label>
+      </ContentView>
+
+      <GridLayout columns="*" class="setting">
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="App Version"></Label>
+          <Label text="{{ packageVersion || 'Not specified' }}" class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="*" class="setting">
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Migration version"></Label>
+          <Label text="{{ preferences?.migration || 'Not specified' }}" class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+    </StackLayout>
+
+    <StackLayout row="2" class="settings-list container">
+      <ContentView class="group-header">
         <Label text="ODIN.Chat Help"></Label>
       </ContentView>
 
@@ -44,7 +64,7 @@
 
     </StackLayout>
 
-    <StackLayout row="2" class="settings-list container">
+    <StackLayout row="3" class="settings-list container">
       <ContentView class="group-header">
         <Label text="Official Links"></Label>
       </ContentView>
@@ -66,7 +86,7 @@
       </GridLayout>
     </StackLayout>
 
-    <StackLayout row="3" class="settings-list container">
+    <StackLayout row="4" class="settings-list container">
       <ContentView class="group-header">
         <Label text="Official Communities"></Label>
       </ContentView>
