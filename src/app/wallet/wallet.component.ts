@@ -514,10 +514,14 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     firebase.analytics.logEvent({
-      key: 'wallet_send',
+      key: 'spend_virtual_currency',
       parameters: [
         {
-          key: 'amount_bucket',
+          key: 'virtual_currency_name',
+          value: 'odin'
+        },
+        {
+          key: 'item_name',
           value: bucket ? Object.keys(bucket)[0] : 'unknown'
         }
       ]
