@@ -49,8 +49,7 @@ export class PreferencesService {
       this.preferences = JSON.parse(getString('preferences'));
       if (!this.preferences ||
           typeof this.preferences !== 'object' ||
-          !this.preferences.api_url ||
-          this.preferences.api_url === ''
+          !this.preferences.api_url || this.preferences.api_url === ''
       ) {
         this.preferences = this.defaultPreferences;
       }
@@ -67,13 +66,12 @@ export class PreferencesService {
       preferences = null;
     }
 
-    try {
-      if (preferences) {
+    try {      
+      if (preferences && typeof preferences === 'object') {
         this.preferences = preferences;
-        setString('preferences', JSON.stringify(preferences));
-      } else {
-        setString('preferences', JSON.stringify(this.preferences));
       }
+      
+      setString('preferences', JSON.stringify(this.preferences));
       this.log('Preferences updated');
     } catch (err) {
       this.log('Trouble saving preferences, applying default...');
@@ -86,6 +84,7 @@ export class PreferencesService {
 
   private _defaultPreferences(): any {
     return {
+      migration: '0001',
       api_url: (environment.osmServerUrl || 'https://osm-testnet.obsidianplatform.com'),
       explorer_url: 'https://inspect.odinblockchain.org/api',
       metrics: {
