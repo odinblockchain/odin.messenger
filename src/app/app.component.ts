@@ -319,6 +319,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             Current Protocol:     ${this._Preferences.preferences.migration}
             Environment Protocol: ${environment.migration}
           `);
+
+          this.buildServices();
         } else {
           throw new Error('MIGRATION UNSUCCESSFUL');
         }
