@@ -53,8 +53,9 @@ export class IdentityService extends StorageService {
   private async loadIdentity() {
     return new Promise(async (resolve, reject) => {
       this.identity = new Identity(this.fetchIdentity());
-      this.log('View Identity');
-      this.dir(this.identity.serialize());
+
+      // this.log('View Identity');
+      // this.dir(this.identity.serialize());
 
       this.identity.store = this.storeIdentity;
       this.identity.fetch = this.fetchIdentity;

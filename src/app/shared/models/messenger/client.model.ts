@@ -89,16 +89,16 @@ export class Client extends Database {
     // TODO Client should allow exporting of serialized properties without first doing this
     let serializedClient: SignalClientSerialized = JSON.parse(JSON.stringify(this.signalClient));
 
-    this.log(`Integrity check`);
-    this.log(`
-      account:      ${this.signalClient.username},
-      regId:        ${this.signalClient.registrationId},
-      devId:        ${this.signalClient.deviceId},
-      idpair:       ${serializedClient.identityKeyPair}
-      signedPreKey: ${serializedClient.signedPreKey}
-      preKeys:      ${serializedClient.preKeys ? serializedClient.preKeys.length : 0},
-      preKey0:      ${serializedClient.preKeys ? JSON.stringify(serializedClient.preKeys[0]) : ''}
-    `);
+    // this.log(`Integrity check`);
+    // this.log(`
+    //   account:      ${this.signalClient.username},
+    //   regId:        ${this.signalClient.registrationId},
+    //   devId:        ${this.signalClient.deviceId},
+    //   idpair:       ${serializedClient.identityKeyPair}
+    //   signedPreKey: ${serializedClient.signedPreKey}
+    //   preKeys:      ${serializedClient.preKeys ? serializedClient.preKeys.length : 0},
+    //   preKey0:      ${serializedClient.preKeys ? JSON.stringify(serializedClient.preKeys[0]) : ''}
+    // `);
 
     this.identity_key_pair = serializedClient.identityKeyPair;
     this.signed_pre_key = serializedClient.signedPreKey;
