@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { RadSideDrawer } from 'nativescript-ui-sidedrawer';
 import * as app from 'tns-core-modules/application';
 import * as utilityModule from 'tns-core-modules/utils/utils';
+import { PreferencesService } from '../shared/preferences.service';
+import { environment } from '~/environments/environment.tns';
 
 const firebase = require('nativescript-plugin-firebase');
 
@@ -12,8 +14,15 @@ const firebase = require('nativescript-plugin-firebase');
 	styleUrls: ['./help.component.css']
 })
 export class HelpComponent implements OnInit {
+  public preferences: any = {};
+  public packageVersion: string = null;
 
-	constructor() {
+	constructor(
+    private _Preferences: PreferencesService,
+  ) {
+    this.preferences = this._Preferences.preferences;
+    this.packageVersion = global.version ? global.version : environment.app_version;
+
     firebase.analytics.setScreenName({
       screenName: 'Help'
     }).then(() => {});

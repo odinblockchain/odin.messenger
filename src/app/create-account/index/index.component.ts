@@ -7,6 +7,7 @@ import { SwipeDirection } from 'tns-core-modules/ui/gestures/gestures';
 import { setOrientation, disableRotation } from 'nativescript-orientation';
 import { RouterExtensions } from 'nativescript-angular/router';
 import * as app from 'tns-core-modules/application';
+import { environment } from '~/environments/environment.tns';
 
 const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
@@ -34,7 +35,7 @@ export class IndexComponent implements OnInit, AfterViewInit {
     private _page: Page,
     private _router: RouterExtensions
   ) {
-    this.packageVersion     = global.version ? global.version : '0.3.x';
+    this.packageVersion     = global.version ? global.version : environment.app_version;
     this.currentSlideIndex  = 1;
     this.slideCount         = 3;
     this.isTransitioning    = false;

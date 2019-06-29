@@ -11,6 +11,7 @@ import { DrawerTransitionBase, RadSideDrawer, SlideInOnTopTransition } from 'nat
 import { filter } from 'rxjs/operators';
 import * as Clipboard from 'nativescript-clipboard';
 import { SnackBar } from "nativescript-snackbar";
+import { environment } from '~/environments/environment';
 
 import { PreferencesService } from '~/app/shared/preferences.service';
 import { messaging, Message } from "nativescript-plugin-firebase/messaging";
@@ -58,6 +59,7 @@ import {
   startMonitoring,
   stopMonitoring
 } from 'tns-core-modules/connectivity';
+import loadMigration from './shared/migrations';
 
 declare var android: any;
 
@@ -95,13 +97,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   public isWalletView: boolean;
   public networkState: string;
   public osmServerError: boolean;
-  public packageVersion: string;
 
   constructor(
     private router: Router,
     private routerExtensions: RouterExtensions,
     private _storage: StorageService,
-    private _pref: PreferencesService,
     private _Identity: IdentityService,
     private _Account: AccountService,
     private _Client: ClientService,
@@ -122,7 +122,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.postInit = this.postInit.bind(this);
     this.setNetworkState = this.setNetworkState.bind(this);
-    this.packageVersion = global.version ? global.version : '0.3.x';
 
     this.setNetworkState(getConnectionType());
     startMonitoring(this.setNetworkState);
@@ -297,7 +296,39 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     await this._Preferences.loadPreferences();
     console.log(`Initial preferences check --
-    Preferences:  ${JSON.stringify(this._Preferences.preferences)}`);
+    Preferences: ${JSON.stringify(this._Preferences.preferences, null, 2)}`);
+
+    try {
+      const { migration: savedMigration } = this._Preferences.preferences;
+
+      if (!savedMigration
+          || isNaN(savedMigration)
+          || Number(savedMigration) < Number(environment.migration)
+      ) {
+
+        console.log(`[App] Protocol mismatch!
+          Current Protocol:     ${savedMigration}
+          Environment Protocol: ${environment.migration}
+        `);
+
+        if (await loadMigration('0001')) {
+          this._Preferences.preferences.migration = environment.migration;
+          await this._Preferences.savePreferences();
+
+          console.log(`[App] Protocol updated!
+            Current Protocol:     ${this._Preferences.preferences.migration}
+            Environment Protocol: ${environment.migration}
+          `);
+
+          this.buildServices();
+        } else {
+          throw new Error('MIGRATION UNSUCCESSFUL');
+        }
+      }
+    } catch (err) {
+      console.log('[App Error] Unable to load migrations');
+      console.log(err);
+    }
 
     try {
       console.log(`Metrics check --
@@ -363,25 +394,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       console.log(err.message ? err.message : err);
     }
 
-
-
-    // messaging.registerForPushNotifications({
-    //   onPushTokenReceivedCallback: (token: string): void => {
-    //     console.log("1Firebase plugin received a push token: " + token);
-    //   },
-
-    //   onMessageReceivedCallback: (message: Message) => {
-    //     console.log("1Push message received in push-view-model: " + JSON.stringify(message, getCircularReplacer()));
-    //   },
-
-    //   // Whether you want this plugin to automatically display the notifications or just notify the callback. Currently used on iOS only. Default true.
-    //   // showNotifications: true,
-
-    //   // Whether you want this plugin to always handle the notifications when the app is in foreground.
-    //   // Currently used on iOS only. Default false.
-    //   // When false, you can still force showing it when the app is in the foreground by adding 'showWhenInForeground' to the notification as mentioned in the readme.
-    //   // showNotificationsWhenInForeground: true
-    // }).then(() => console.log("Registered for push"));
     this.fetchRemoteMessages();
   }
 

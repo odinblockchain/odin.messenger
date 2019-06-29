@@ -200,7 +200,7 @@ export class Address extends Database {
           transaction.height,
           JSON.stringify(transaction.vin_addresses),
           JSON.stringify(transaction.vout_addresses),
-          transaction.value,
+          `${transaction.value}`,
           transaction.timestamp
         ]);
       } catch (err) {
@@ -217,7 +217,7 @@ export class Address extends Database {
           transaction.height,
           JSON.stringify(transaction.vin_addresses),
           JSON.stringify(transaction.vout_addresses),
-          transaction.value,
+          `${transaction.value}`,
           transaction.timestamp,
   
           this.wallet_id,

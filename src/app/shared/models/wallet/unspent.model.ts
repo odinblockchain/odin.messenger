@@ -21,6 +21,12 @@ export class Unspent extends Database {
   }
 
   deserialize(input: any) {
+    if (!input || typeof input !== 'object') return this;
+
+    if (input.hasOwnProperty('value')) {
+      input.value = Number(input.value);
+    }
+
     Object.assign(this, input);
     return this;
   }
