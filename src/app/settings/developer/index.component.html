@@ -1,0 +1,28 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
+  <Label class="action-bar--title" text="Developer Tools"></Label>
+</ActionBar>
+
+<ContentView class="view">
+  <StackLayout class="section-list--wrapper container">
+    <ContentView class="group-header">
+      <Label text="App Logs"></Label>
+    </ContentView>
+
+    <RadListView
+      #listView
+      class="section-list--logs"
+      [items]="subItems | reverse"
+    >
+
+      <ng-template let-item="item">
+        <StackLayout class="content">
+          <Label [text]="item.timestamp | formatTime: 'YYYY-MM-DD HH:mm:ss'" class="label"></Label>
+          <Label [text]="item.message" class="entry" textWrap="true"></Label>
+        </StackLayout>
+      </ng-template>
+
+    </RadListView>
+  </StackLayout>
+</ContentView>
+  

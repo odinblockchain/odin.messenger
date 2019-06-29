@@ -4,6 +4,7 @@ import * as app from 'tns-core-modules/application';
 import * as utilityModule from 'tns-core-modules/utils/utils';
 import { PreferencesService } from '../shared/preferences.service';
 import { environment } from '~/environments/environment.tns';
+import { SnackBar } from 'nativescript-snackbar';
 
 const firebase = require('nativescript-plugin-firebase');
 
@@ -14,21 +15,46 @@ const firebase = require('nativescript-plugin-firebase');
 	styleUrls: ['./help.component.css']
 })
 export class HelpComponent implements OnInit {
+  private versionTouches: number;
   public preferences: any = {};
   public packageVersion: string = null;
 
 	constructor(
     private _Preferences: PreferencesService,
+    private _snack: SnackBar
   ) {
-    this.preferences = this._Preferences.preferences;
+    this.preferences    = this._Preferences.preferences;
     this.packageVersion = global.version ? global.version : environment.app_version;
+    this.versionTouches = 0;
 
     firebase.analytics.setScreenName({
       screenName: 'Help'
     }).then(() => {});
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
+
+  onVersionTouch = (): void => {
+    const { developer } = this._Preferences.preferences;
+
+    if (developer) return;
+    if (this.versionTouches < 5) {
+      this.versionTouches++;
+      return;
+    }
+    
+    this._Preferences.savePreferences({
+      ...this._Preferences.preferences,
+      developer: true
+    })
+    .then(() => {
+      this._snack.simple('Developer mode activated', '#ffffff', '#333333', 3, false);
+      firebase.analytics.logEvent({
+        key: 'developer_mode'
+      })
+      .then(() => { console.log('[Analytics] Metric logged >> Developer mode activated'); });
+    });
+  }
   
   onDrawerButtonTap(): void {
     const sideDrawer = <RadSideDrawer>app.getRootView();

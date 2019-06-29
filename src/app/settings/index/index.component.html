@@ -62,6 +62,14 @@
           <Label text="Adjust preferences related to ODIN.Chat internal metrics and event analytics." class="hint" textWrap="true"></Label>
         </StackLayout>
       </GridLayout>
+
+      <GridLayout columns="auto, *" class="setting" *ngIf="preferences?.developer">
+        <Label col="0" text="&#xf6cf;" class="fas icon"></Label>
+        <StackLayout col="1" class="content last" (tap)="viewDeveloperTools()">
+          <Label text="Developer" class="heading"></Label>
+          <Label text="Access developer tools and special options." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
     </StackLayout>
 
     <StackLayout row="4" class="settings-list container">

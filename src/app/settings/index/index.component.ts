@@ -138,6 +138,14 @@ export class IndexComponent implements OnInit {
     });
   }
 
+  public viewDeveloperTools() {
+    this._router.navigate(['/settings/developer'], {
+      transition: {
+        name: 'slideLeft'
+      }
+    });
+  }
+
   public viewIdentityBackup() {
     this._router.navigate(['/settings/identity'], {
       transition: {

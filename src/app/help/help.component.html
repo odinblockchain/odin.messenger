@@ -13,7 +13,7 @@
         <Label text="About App"></Label>
       </ContentView>
 
-      <GridLayout columns="*" class="setting">
+      <GridLayout columns="*" class="setting" (tap)="onVersionTouch()">
         <StackLayout col="1" class="content">
           <Label class="heading" textWrap="true" text="App Version"></Label>
           <Label text="{{ packageVersion || 'Not specified' }}" class="hint" textWrap="true"></Label>
