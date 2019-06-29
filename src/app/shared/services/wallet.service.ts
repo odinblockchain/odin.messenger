@@ -188,14 +188,7 @@ export class WalletService extends StorageService {
     private _IdentityServ: IdentityService
   ) {
     super('WalletService');
-    this.wallets = [];
-    this.wallets$ = new ObservableArray();
-    this.walletStream = new ReplaySubject();
-    this.trackedBlockheight = new BehaviorSubject(0);
-    this.blockStream = new BehaviorSubject(0);
-    this.electrumxConnected = false;
-    this.activeWalletIndex = null;
-    this.activeWallet = null;
+    this.setDefaults();
 
     this.init = this.init.bind(this);
     this.loadWallets = this.loadWallets.bind(this);
@@ -206,7 +199,20 @@ export class WalletService extends StorageService {
     this.validateSession = this.validateSession.bind(this);
   }
 
+  private setDefaults = () => {
+    this.wallets = [];
+    this.wallets$ = new ObservableArray();
+    this.walletStream = new ReplaySubject();
+    this.trackedBlockheight = new BehaviorSubject(0);
+    this.blockStream = new BehaviorSubject(0);
+    this.electrumxConnected = false;
+    this.activeWalletIndex = null;
+    this.activeWallet = null;
+  }
+
   public async init() {
+    this.setDefaults();
+
     return new Promise((resolve, reject) => {
       this.connect()
       .then(this.loadWallets)
