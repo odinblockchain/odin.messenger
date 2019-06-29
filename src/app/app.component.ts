@@ -91,6 +91,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   private _sb: any;
   private storageEventListener: any;
   private accountEventListener: any;
+  private refreshMessageDelay: number;
+  private refreshMessageAttempts: number;
 
   public userAccount: any;
   public connected: boolean;
@@ -545,10 +547,28 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this._fetchMessages && ALLOW_AUTO_PULL) {
       console.log('[App] onResume: Start Messages Refresh Timer');
       clearInterval(this._fetchMessages);
+      this.refreshMessageAttempts = 0;
+      this.refreshMessageDelay = 0;
 
       this._fetchMessages = setInterval(() => {
         console.log('[App] refresh: messages');
-        this.fetchRemoteMessages();
+        if (!this.osmServerError) {
+          this.fetchRemoteMessages();
+        } else {
+          if (this.refreshMessageAttempts >= (4 * Math.max(1, this.refreshMessageDelay))) {
+            this.refreshMessageAttempts = 0;
+            this.refreshMessageDelay++;
+            if (this.refreshMessageDelay > 10) this.refreshMessageDelay = 10;
+            this.fetchRemoteMessages();
+          } else {
+            console.log(`[App] Delay message refresh...
+              delay#    ${this.refreshMessageDelay}
+              attempt#  ${this.refreshMessageAttempts}
+            `);
+            this.refreshMessageAttempts++;
+          }
+        }
+        
       }, (MESSENGER_REFRESH_DELAY * 1000));
     }
 
@@ -693,11 +713,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
             identity.fetchRemoteMessages()
             .then(() => {
-              console.log('[App] Messages up to date');
               this.osmServerError = false;
+              this.refreshMessageDelay = 0;
+              this.refreshMessageAttempts = 0;
+              console.log('[App] Messages up to date');
             }).catch((err) => {
-              console.log('[App] Fetch messages error', err.message ? err.message : err);
               this.osmServerError = true;
+              this.refreshMessageAttempts++;
+              console.log('[App] Fetch messages error', err.message ? err.message : err);
             });
           }
         } catch (err) {
