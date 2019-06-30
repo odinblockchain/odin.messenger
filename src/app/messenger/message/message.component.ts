@@ -285,10 +285,14 @@ export class MessageComponent implements OnInit, AfterViewInit {
     });
 
     firebase.analytics.logEvent({
-      key: 'messenger_send_message',
+      key: 'share',
       parameters: [
         {
-          key: 'message_bucket',
+          key: 'method',
+          value: 'message'
+        },
+        {
+          key: 'content_type',
           value: bucket ? Object.keys(bucket)[0] : 'unknown'
         }
       ]
