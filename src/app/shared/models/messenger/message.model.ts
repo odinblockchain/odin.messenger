@@ -35,6 +35,9 @@ export class Message extends Database {
   public status: string;
   private unread: boolean;
 
+  // runtime
+  public shouldDisplayTime: boolean = false;
+
   /**
    * Message
    * @property {string} key

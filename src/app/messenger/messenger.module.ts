@@ -10,6 +10,7 @@ import { MessengerRoutingModule } from './messenger.routing.module';
 /* Components */
 import { MessageComponent } from "./message/message.component";
 import { IndexComponent } from "./index/index.component";
+import { FormatLocalTime } from "../utils/formatLocalTime";
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { IndexComponent } from "./index/index.component";
     MessengerRoutingModule
   ],
   declarations: [
+    FormatLocalTime,
     IndexComponent,
     MessageComponent
   ],

@@ -81,6 +81,10 @@ ListView {
   color: #ff5252;
 }
 
+.info-text {
+  color: #4face0;
+}
+
 .pending-icon {
   font-size: 32;
   color: #4face0;
@@ -104,7 +108,7 @@ ListView {
 
 
 .chatbox {
-  height: 60;
+  height: 70;
   // background-color: blue;
   // background-color: #30A9FF;
 
@@ -113,7 +117,7 @@ ListView {
     margin-top: 1;
     border-top-width: 1;
     border-top-style: solid;
-    border-top-color: #e4e4e4;
+    border-top-color: #666666;
     // margin-bottom: 
     // padding-bottom: 10;
   }
@@ -134,8 +138,14 @@ ListView {
   .chatbox--btn {
     margin-right: 10;
     height: 45;
-    border-radius: 0 4 4 0;
+    // border-radius: 0 4 4 0;
 
+    background-color: transparent;
+
+    border-color: $accent;
+    border-width: 1;
+    border-style: solid;
+    color: $odin-white;
   }
 }
 
