@@ -11,6 +11,7 @@ import { WalletService } from '~/app/shared/services';
 import { Subscription, Observable as ObservableGeneric } from 'rxjs';
 import { Wallet } from '~/app/shared/models/wallet';
 import { SnackBar } from 'nativescript-snackbar';
+import { LogService } from '~/app/shared/services/log.service';
 
 const firebase = require('nativescript-plugin-firebase');
 
@@ -57,7 +58,8 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
     private page: Page,
     private _WalletServ: WalletService,
     private _zone: NgZone,
-    private _snack: SnackBar
+    private _snack: SnackBar,
+    private _Log: LogService
   ) {
 
     this.tabSelectedIndex = 1;
@@ -452,6 +454,8 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
       this._snack.simple('Transaction has been sent! Funds should be delivered within a few minutes.', '#ffffff', '#333333', 4, false);
     })
     .catch(err => {
+      if (err.name) console.log(`Transaction failed... ErrorId:${err.name}`);
+
       if (err.name && err.name === 'InvalidAddress') {
         this._captureSendBadAddress();
 
@@ -466,9 +470,17 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
         alert('Transaction failed, an unexpected error occurred while attempting to send transaction. Please wait and try again later.');
       } else {
         this._captureSendBadOther();
+        if (err.message) {
+          try {
+            const errMessage = err.message.replace(/ *\[[^\]]*]/, '').trim();
+            this._Log.logger(errMessage);
+          } catch (err) {}
+        }
         
-        console.log(err);
         alert('Transaction failed to send');
+        console.log(`Transaction failed to send...
+          Error: ${err.message ? err.message : err}
+        `);
       }
     });
   }

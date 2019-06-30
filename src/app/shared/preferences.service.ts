@@ -95,7 +95,8 @@ export class PreferencesService {
           push: true,
           display: true
         }
-      }
+      },
+      developer: false
     };
   }
 }

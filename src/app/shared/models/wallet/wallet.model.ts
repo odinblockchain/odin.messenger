@@ -470,15 +470,14 @@ export class Wallet extends Database {
       console.log(`...signed tx:${tx.txid}`);
     });
 
-    // // create signed transaction hex
+    // create signed transaction hex
     let signedTx = transaction.build().toHex();
 
-    console.log('~~~ COMPLETE ~~~~', signedTx.length);
+    console.log(`[Wallet Transaction] Generated hex... ${signedTx.length}`);
     console.dir(signedTx.substr(0, 1024));
     console.dir(signedTx.substr(1024, signedTx.length));
 
     const sent = await electrumXClient.blockchainTransaction_broadcast(signedTx);
-    // const sent = '123456_0f5a686fb288c3352784501ec980be9386379fc98b34d91ea68b81ee0';
     if (sent && sent.length >= 64) {
       console.log(`Transaction ID: ${sent}`);
       this.emit('TransactionSent');
@@ -491,8 +490,6 @@ export class Wallet extends Database {
       console.log('set balance to', this.balance_conf);
 
       await this.save();
-
-      // const txid = `1234x${Math.floor(Math.random() * 10000)}`;
       const txid = sent;
 
       console.log(`Before Unspent=${this.unspent$.length}`);
@@ -531,7 +528,6 @@ export class Wallet extends Database {
 
   public refreshWallet() {
     this.log('Refresh Wallet');
-    
   }
 
   /**

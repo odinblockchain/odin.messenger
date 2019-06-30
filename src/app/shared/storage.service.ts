@@ -260,8 +260,6 @@ export class StorageService {
         await this.removeTables();
         await this.clearStorage();
       }
-      
-      console.log('purge?', environment.purgeAll);
 
       if (environment.purgeWallet === true) {
         this.log(`@@@ PURGE — ALL WALLET TABLES`);
@@ -330,6 +328,7 @@ export class StorageService {
         await this.purgeTable('addresses');
         await this.purgeTable('transactions');
         await this.purgeTable('unspent');
+        await this.purgeTable('logs');
 
         this.log('[purgeTables] End');
         this.emit('TablePurgeEnd');

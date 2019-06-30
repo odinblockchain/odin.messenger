@@ -1,6 +1,7 @@
 import { Deserializable } from "./deserializable.model";
 import { Inject, Optional } from "@angular/core";
 import { Subject } from "rxjs";
+import { LogService } from "~/app/shared/services/log.service";
 
 const SqlLite = require('nativescript-sqlite');
 const DatabaseName = 'odin.db';
@@ -9,6 +10,7 @@ export class Database implements Deserializable {
   private eventStream: Subject<string>;
   public db: any;
   private databaseName: string;
+  public logger: LogService;
 
   constructor(
     @Inject('modelId') @Optional() public modelId?: string) {
@@ -52,10 +54,17 @@ export class Database implements Deserializable {
    * `serviceId` to namespace the log output.
    * 
    * @param entry The string to output to the console
+   * @param Store Optional. Whether this log entry should be stored inside the Log table
    */
-  protected log(entry: string): void {
+  protected log(entry: string, store?: boolean): void {
     const subId = (this.modelId === 'Database') ? '::Model' : '';
-    console.log(`[${this.modelId}${subId}] ${entry}`);
+    const logMessage = `[${this.modelId}${subId}] ${entry}`;
+
+    console.log(logMessage);
+
+    if (store && this.logger) {
+      this.logger.logger(logMessage);
+    }
   }
 
   /**

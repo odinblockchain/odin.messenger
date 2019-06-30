@@ -1,0 +1,92 @@
+@import "~/app-variables.scss";
+
+.view {
+  background-color: $app-background;
+  padding-bottom: 30;
+
+  .wrap {
+    padding-bottom: 30;
+    padding-top: 10;
+  }
+}
+
+.container {
+  padding: 0 30;
+}
+
+.heading {
+  font-size: 20;
+  font-family: "Montserrat-SemiBold";
+}
+
+.group-header {
+  margin-bottom: 20;
+  
+  Label {
+    color: $odin-blue-light;
+    font-size: 20;
+  }
+}
+
+.section-list--wrapper {
+  background-color: #181818;
+  padding-top: 10;
+  padding-bottom: 10;
+}
+
+.section-list--logs {
+
+  .content {
+    border-bottom-width: 1;
+    border-bottom-color: #333333;
+    margin-bottom: 15;
+    padding-bottom: 15;
+  }
+
+  .label {
+    font-size: 16;
+    font-family: "Montserrat-SemiBold";
+    margin-bottom: 10;
+  }
+
+  .entry {
+    font-size: 14;
+  }
+}
+
+.section-list--section {
+
+  .content {
+    border-bottom-width: 1;
+    border-bottom-color: #333;
+    margin-bottom: 20;
+    padding-bottom: 20;
+
+    &.last {
+      border-bottom-width: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  .heading {
+    font-size: 16;
+    margin-bottom: 5;
+  }
+
+  .hint {
+    margin-bottom: 0;
+    color: #c4c3c3;
+  }
+
+  .icon {
+    font-size: 28;
+    width: 40;
+    color: #c4c3c3;
+    opacity: 0.5;
+
+    &.red {
+      color: $odin-red;
+      opacity: 0.8;
+    }
+  }
+}
