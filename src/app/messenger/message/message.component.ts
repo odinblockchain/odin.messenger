@@ -218,6 +218,13 @@ export class MessageComponent implements OnInit, AfterViewInit {
     }
   }
 
+  public onTapMessage = async (item: Message) => {
+    if (item) {
+      item.shouldDisplayTime = !item.shouldDisplayTime;
+      // this._contact.updateMessage(item);
+    }
+  }
+
   /**
    * Menu option methods
    */

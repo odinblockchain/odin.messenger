@@ -46,6 +46,7 @@
                     textWrap="true"
                     [text]="item.message"
                     (longPress)="onLongPressMessage(item)"
+                    (tap)="onTapMessage(item)"
                     verticalAlignment="top">
             </Label>
             <Label *ngIf="item.status === 'fail'" style="margin-left: 10" class="fa error-icon" text="&#xf12a;" verticalAlignment="center"></Label>
@@ -56,14 +57,21 @@
           <Label style="margin-left: 10" class="error-text" text="Not Delivered" verticalAlignment="center"></Label>
         </StackLayout>
 
+        <StackLayout style="margin-top: 5" row="1" orientation="horizontal" horizontalAlignment="right">
+          <Label style="margin-left: 10" class="error-text" text="2019-08-02 23:50" verticalAlignment="center"></Label>
+        </StackLayout>
+
+        <StackLayout *ngIf="item.shouldDisplayTime" style="margin-top: 5" row="2" orientation="horizontal" horizontalAlignment="right">
+          <Label style="margin-left: 10" class="info-text" [text]="item.timestamp | formatLocalTime" verticalAlignment="center"></Label>
+        </StackLayout>
+
       </GridLayout>
     </ng-template>
 
     <ng-template tkTemplateKey="me" let-item="item">
-      <GridLayout columns="*" rows="*, auto" class="message me">
+      <GridLayout columns="*" rows="*, auto, auto" class="message me">
         
         <StackLayout row="0" orientation="horizontal" horizontalAlignment="right">
-
           <StackLayout orientation="horizontal">
             <Label  [class.pending]="item.status === 'pending'"
                     [class.failed]="item.status === 'fail'"
@@ -72,6 +80,7 @@
                     textWrap="true"
                     [text]="item.message"
                     (longPress)="onLongPressMessage(item)"
+                    (tap)="onTapMessage(item)"
                     verticalAlignment="top">
             </Label>
             <Label *ngIf="item.status === 'fail'" style="margin-left: 10" class="fa error-icon" text="&#xf12a;" verticalAlignment="center"></Label>
@@ -79,8 +88,12 @@
           </StackLayout>
         </StackLayout>
 
-        <StackLayout *ngIf="item.status === 'fail'"  style="margin-top: 5" row="1" orientation="horizontal" horizontalAlignment="right">
+        <StackLayout *ngIf="item.status === 'fail'" style="margin-top: 5" row="1" orientation="horizontal" horizontalAlignment="right">
           <Label style="margin-left: 10" class="error-text" text="Not Delivered" verticalAlignment="center"></Label>
+        </StackLayout>
+
+        <StackLayout *ngIf="item.shouldDisplayTime" style="margin-top: 5" row="2" orientation="horizontal" horizontalAlignment="right">
+          <Label style="margin-left: 10" class="info-text" [text]="item.timestamp | formatLocalTime" verticalAlignment="center"></Label>
         </StackLayout>
 
       </GridLayout>
