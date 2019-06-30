@@ -37,6 +37,7 @@ export class EditComponent implements OnInit, AfterViewInit {
   private contactUsername: string;
   private contactCopy: Contact;
   private contactSaved: boolean;
+  private goBackTo: string = '';
 
 	constructor(
     private _router: RouterExtensions,
@@ -47,15 +48,18 @@ export class EditComponent implements OnInit, AfterViewInit {
     this.contact = new Contact();
     this.contactSaved = false;
 
-    this._route.params
-    .subscribe(params => {
-      if (!params.hasOwnProperty('contactUsername')) {
+    this._route.params.subscribe(params => {
+      if (!params || !params.hasOwnProperty('contactUsername')) {
         alert('Something went wrong while loading the requested contact');
         this._router.navigate(['/messenger']);
         return;
       }
 
       this.contactUsername = params['contactUsername'];
+    });
+
+    this._route.queryParams.subscribe(params => {
+      if (params && params.hasOwnProperty('goBackTo')) this.goBackTo = params.goBackTo;
     });
     
     if (isAndroid && device.sdkVersion >= '21') {
@@ -145,7 +149,7 @@ export class EditComponent implements OnInit, AfterViewInit {
           .then(saved => {
             console.log('[Edit] contact saved!');
             this._snack.simple('Contact updated!', '#ffffff', '#333333', 3, false);
-            this.navigateBack(true);
+            this.navigateBack();
           })
           .catch(err => {
             console.log('[Edit] contact save error!');
@@ -158,10 +162,14 @@ export class EditComponent implements OnInit, AfterViewInit {
         }
       });
     } else if (this.hasModifiedContact() && this.contactSaved) {
-      this.navigateBack(true);
+      this.navigateBack();
     } else {
       this.navigateBack();
     }
+  }
+
+  public onDeleteContact() {
+    console.log('WIP: delete');
   }
 
   public onTapFriendImage() {
@@ -178,10 +186,16 @@ export class EditComponent implements OnInit, AfterViewInit {
     return (this.contactCopy.name !== this.contact.name);
   }
 
-  private navigateBack(hardNavigate?: boolean) {
-    if (!hardNavigate) {
-      this._router.back();
-    } else {
+  private navigateBack() {
+    const goBackTo = this.goBackTo ? this.goBackTo : 'message';
+
+    if (goBackTo === 'contacts') {
+      this._router.navigate(['/contact/list'], {
+        transition: {
+          name: 'slideRight'
+        }
+      });
+    } else if (goBackTo === 'message') {
       this._router.navigate(['/messenger/message/', this.contact.username], {
         clearHistory: true,
         transition: {

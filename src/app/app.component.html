@@ -18,6 +18,13 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
       <StackLayout class="sidedrawer-content">
         
         <StackLayout class="hr-light"></StackLayout>
+
+        <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Contacts" [class.selected]="isComponentSelected('/contact')" (tap)="onNavItemTap('/contact/list')">
+          <Label row="0" col="0" text="&#xf500;" class="fa sidedrawer-icon"></Label>
+          <Label row="0" col="1" text="Contacts" class="m-l-20 sidedrawer-item"></Label>
+        </GridLayout>
+
+        <StackLayout class="hr-light"></StackLayout>
         
         <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Messages" [class.selected]="isComponentSelected('/messenger')" (tap)="onNavItemTap('/messenger')">
           <Label row="0" col="0" text="&#xf086;" class="fa sidedrawer-icon"></Label>

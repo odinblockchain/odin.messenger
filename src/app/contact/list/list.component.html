@@ -1,0 +1,63 @@
+<ActionBar class="action-bar">
+  <NavigationButton class="action-bar--button" ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
+  <ActionItem class="action-bar--item" icon="res://navigation/menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
+      ios.position="left">
+  </ActionItem>
+  <ActionItem text="Add Contact" ios.position="popup" android.position="popup" (tap)="onAddContact('menu')"></ActionItem>
+  <Label class="action-bar--title" text="Contacts"></Label>
+</ActionBar>
+
+<GridLayout class="page page-content" rows="*, auto" columns="*">
+  <GridLayout row="0" rows="*">
+    <ScrollView #scrollView row="0" scrollBarIndicatorVisible="true">
+      <StackLayout>
+        <StackLayout>
+          <ScrollView #userList row="1" scrollBarIndicatorVisible="false" id="userList">
+            <StackLayout>
+
+              <ContentView *ngIf="!friends.length" class="card">
+                <StackLayout class="card-content">
+                  <Label class="h2" textWrap="true" text="NO CONTACTS"></Label>
+                  <Label class="body" textWrap="true" text="ODIN.chat has an internal contact system which means it cannot use your phone contacts. You will need to add another ODIN.chat contact to begin having secure conversations."></Label>
+                  <Label class="body last" textWrap="true" text="Touch the '+' icon on the bottom of this screen to add your first contact!"></Label>
+                </StackLayout>
+              </ContentView>
+
+              <ContentView *ngIf="!friends.length" class="card">
+                <StackLayout class="card-content">
+                  <Label class="h2" textWrap="true" text="Tip:"></Label>
+                  <Label class="body last" textWrap="true" text="To copy your username at anytime, just click the menu icon (☰) and tap on your username."></Label>
+                </StackLayout>
+              </ContentView>
+
+              <GridLayout *ngFor="let contact of friends" class="contact" rows="*" columns="auto, *" (touch)="onTouchContact($event)" (tap)="onTapContact(contact.username)">
+
+                <FlexboxLayout visibility="visible" class="author" row="0" col="0">
+                  <Label class="innerLabel bold" text="X"></Label>
+                </FlexboxLayout>
+
+                <Label *ngIf="!contact.name" class="innerLabel bold" verticalAlignment="center" row="0" col="1" [text]="contact.username"></Label>
+
+                <GridLayout *ngIf="contact.name" class="contact--wrap" row="0" col="1" rows="auto, auto" columns="*">
+                  <Label class="contact--name regular" row="0" col="0" [text]="contact.name"></Label>
+                  <Label class="contact--meta light" row="1" col="0" [text]="contact.username"></Label>
+                </GridLayout>
+
+              </GridLayout>
+
+            </StackLayout>
+          </ScrollView>
+        </StackLayout>
+
+        
+      </StackLayout>
+    </ScrollView>
+
+    <!-- <StackLayout> -->
+    <FAB row="1" (tap)="onAddContact('fab')" text="+" icon="~/app/images/icon-plus--light.png" rippleColor="#f1f1f1" class="fab-button" swipeAnimation="slideDown" hideOnSwipeOfView="userList" *ngIf="friends.length > 10"></FAB>
+
+    <FAB row="1" (tap)="onAddContact('fab')" text="+" icon="~/app/images/icon-plus--light.png" rippleColor="#f1f1f1" class="fab-button" swipeAnimation="slideDown" *ngIf="friends.length <= 10"></FAB>
+    <!-- </StackLayout> -->
+
+  </GridLayout>
+</GridLayout>
