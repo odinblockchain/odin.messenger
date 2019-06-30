@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { StorageService } from '../storage.service';
 import { Log } from '../models/log.model';
-import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -10,11 +9,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class LogService extends StorageService {
   public logs: Log[] = [];
   public _logs$: BehaviorSubject<Log[]> = new BehaviorSubject([]);
-  public readonly blogs$: Observable<Log[]> = this._logs$.asObservable();
+  public readonly log$: Observable<Log[]> = this._logs$.asObservable();
 
   constructor() {
     super('LogService');
-    
+
     this.init = this.init.bind(this);
     this.loadLogs = this.loadLogs.bind(this);
     this.logger = this.logger.bind(this);

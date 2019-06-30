@@ -16,6 +16,7 @@ import { ObservableArray } from 'tns-core-modules/data/observable-array/observab
 import { fromObject, Observable, fromObjectRecursive } from 'tns-core-modules/data/observable/observable';
 import { HttpResponse, request } from 'tns-core-modules/http/http';
 import { ReplaySubject, BehaviorSubject } from 'rxjs';
+import { LogService } from './log.service';
 // import { Observable } from 'rxjs';
 
 const WalletKey = 'app_wallets';
@@ -185,7 +186,8 @@ export class WalletService extends StorageService {
 
   constructor(
     private _CoinServ: CoinService,
-    private _IdentityServ: IdentityService
+    private _IdentityServ: IdentityService,
+    private _Log: LogService
   ) {
     super('WalletService');
     this.setDefaults();
@@ -244,6 +246,7 @@ export class WalletService extends StorageService {
         while (wallets.length > 0) {
           let wallet = new Wallet(wallets.shift());
           wallet.db = this.odb;
+          wallet.logger = this._Log;
           wallet.observableIndex = this.wallets$.length;
           this.log(`SETTING INDEX TO ${wallet.observableIndex}`);
           await wallet.loadCoinDetails();

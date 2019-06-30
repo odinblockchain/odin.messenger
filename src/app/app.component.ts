@@ -4,7 +4,6 @@ import { RouterExtensions } from 'nativescript-angular/router';
 import { registerElement } from 'nativescript-angular/element-registry';
 import * as app from 'tns-core-modules/application';
 import * as platformModule from 'tns-core-modules/platform';
-import { Observable, Page, PropertyChangeData } from 'tns-core-modules/ui/page/page';
 import { setInterval, clearInterval } from 'tns-core-modules/timer';
 import { isAndroid, isIOS, device, screen } from 'tns-core-modules/platform';
 import { DrawerTransitionBase, RadSideDrawer, SlideInOnTopTransition } from 'nativescript-ui-sidedrawer';
@@ -14,7 +13,7 @@ import { SnackBar } from "nativescript-snackbar";
 import { environment } from '~/environments/environment';
 
 import { PreferencesService } from '~/app/shared/preferences.service';
-import { messaging, Message } from "nativescript-plugin-firebase/messaging";
+import { messaging } from "nativescript-plugin-firebase/messaging";
 
 require('nativescript-platform-css');
 const firebase = require("nativescript-plugin-firebase");
@@ -39,7 +38,6 @@ import {
   uncaughtErrorEvent,
   launchEvent,
   displayedEvent,
-  exitEvent,
   resumeEvent,
   suspendEvent,
   hasListeners,
@@ -557,8 +555,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         } else {
           if (this.refreshMessageAttempts >= (4 * Math.max(1, this.refreshMessageDelay))) {
             this.refreshMessageAttempts = 0;
-            this.refreshMessageDelay++;
-            if (this.refreshMessageDelay > 10) this.refreshMessageDelay = 10;
+            if (this.refreshMessageDelay < 10) this.refreshMessageDelay++;
             this.fetchRemoteMessages();
           } else {
             console.log(`[App] Delay message refresh...

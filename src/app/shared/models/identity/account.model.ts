@@ -521,7 +521,6 @@ export class Account extends Database {
 
     const remoteContactRes: HttpResponse = await request({
       url: `${this.preferences.api_url}/keys/?user=${contact.username}`,
-      // url: 'http://ba272957.ngrok.io',
       method: 'GET',
       timeout: 3000
     });

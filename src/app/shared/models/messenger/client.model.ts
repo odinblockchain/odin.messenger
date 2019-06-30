@@ -1,6 +1,12 @@
 import { Database } from '../database.model';
 import { LibsignalProtocol } from 'nativescript-libsignal-protocol';
-import { SignalClientSerialized, SignalClientContact, PreKeyBundle, LocalContact, SignalAddress, SignalClientPreKey, SignalClient } from '../signal';
+import {
+  SignalClientSerialized,
+  SignalClientContact,
+  PreKeyBundle,
+  SignalClientPreKey,
+  SignalClient
+} from '../signal';
 import { IRemoteContact } from '../identity';
 
 export class Client extends Database {
