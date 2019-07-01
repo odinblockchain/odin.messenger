@@ -6,7 +6,7 @@
 </ActionBar>
 
 <ScrollView class="view">
-  <GridLayout class="wrap" rows="20, auto, auto, auto">
+  <GridLayout class="wrap" rows="20, auto, auto, auto, auto">
 
     <StackLayout row="1" class="settings-list container">
       <ContentView class="group-header">
@@ -20,7 +20,7 @@
         </StackLayout>
       </GridLayout>
 
-      <GridLayout columns="*" class="setting">
+      <GridLayout columns="*" class="setting last">
         <StackLayout col="1" class="content">
           <Label class="heading" textWrap="true" text="Migration version"></Label>
           <Label text="{{ preferences?.migration || 'Not specified' }}" class="hint" textWrap="true"></Label>
@@ -61,13 +61,20 @@
           <Label text="You can also follow us online or visit one of our online communities for other inquiries." class="hint" textWrap="true"></Label>
         </StackLayout>
       </GridLayout>
-
     </StackLayout>
 
     <StackLayout row="3" class="settings-list container">
       <ContentView class="group-header">
         <Label text="Official Links"></Label>
       </ContentView>
+
+      <GridLayout columns="auto, *" class="setting" (tap)="openMedium()">
+        <Label col="0" text="&#xf3c7;" class="fab icon"></Label>
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Medium"></Label>
+          <Label text="Read the latest news and updates about ODIN Blockchain and ODIN.Chat." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
 
       <GridLayout columns="auto, *" class="setting" (tap)="openTwitter()">
         <Label col="0" text="&#xf099;" class="fab icon"></Label>
@@ -77,11 +84,19 @@
         </StackLayout>
       </GridLayout>
 
-      <GridLayout columns="auto, *" class="setting last" (tap)="openFacebook()">
+      <GridLayout columns="auto, *" class="setting" (tap)="openFacebook()">
         <Label col="0" text="&#xf39e;" class="fab icon"></Label>
         <StackLayout col="1" class="content">
           <Label class="heading" textWrap="true" text="Facebook"></Label>
           <Label text="Give us a like or share our platform with friends and family." class="hint" textWrap="true"></Label>
+        </StackLayout>
+      </GridLayout>
+
+      <GridLayout columns="auto, *" class="setting last" (tap)="openBlockfolio()">
+        <Label col="0" text="&#xf032;" class="fas icon"></Label>
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Blockfolio"></Label>
+          <Label text="Find out where to buy ODIN, the cryptocurrency behind ODIN.Chat." class="hint" textWrap="true"></Label>
         </StackLayout>
       </GridLayout>
     </StackLayout>
