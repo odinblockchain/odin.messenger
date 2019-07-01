@@ -102,6 +102,18 @@ export class Message extends Database {
     });
   }
 
+  public isAccepted() {
+    return (this.status === 'accepted');
+  }
+
+  public isPending() {
+    return (this.status === 'pending');
+  }
+
+  public notDelivered() {
+    return (this.status === 'fail');
+  }
+
   /**
    * Executes a SQL `UPDATE` on the current Account user saving the current account back to the table.
    */

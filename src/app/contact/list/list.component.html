@@ -33,7 +33,7 @@
               <GridLayout *ngFor="let contact of friends" class="contact" rows="*" columns="auto, *" (touch)="onTouchContact($event)" (tap)="onTapContact(contact.username)">
 
                 <FlexboxLayout visibility="visible" class="author" row="0" col="0">
-                  <Label class="innerLabel bold" text="X"></Label>
+                  <Label class="innerLabel bold" [text]="contactId(contact)"></Label>
                 </FlexboxLayout>
 
                 <Label *ngIf="!contact.name" class="innerLabel bold" verticalAlignment="center" row="0" col="1" [text]="contact.username"></Label>

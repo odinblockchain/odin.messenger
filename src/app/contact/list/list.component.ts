@@ -73,6 +73,11 @@ export class ListComponent implements OnInit {
     });
   }
 
+  contactId(contact: Contact) {
+    const name = contact.name ? contact.name : contact.username;
+    return name[0].toUpperCase();
+  }
+
   /**
    * Toggles the classname `-active` to the GridLayout DOM element
    * when a user first presses down and lifts up. This provides
