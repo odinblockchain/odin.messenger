@@ -406,19 +406,19 @@ RadSideDrawer {
     padding-left: 30;
     fontSize: 22;
     fontWeight: bold;
-    height: 80;
+    height: 60;
+
+    &.selected {
+      background: linear-gradient(to right, transparent, rgba($odin-blue, 0.3));
+    }
 
     .sidedrawer-icon {
       font-size: 22;
-      border-radius: 50%;
-      border-width: 3;
-      border-color: #393b3f;
       width: 40;
-      height: 40;
-      background-color: #393b3f;
       vertical-align: center;
       color: white;
       text-align: center;
+      padding-bottom: 5;
     }
 
     .sidedrawer-item {

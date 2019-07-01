@@ -24,35 +24,25 @@ http://docs.telerik.com/devtools/nativescript-ui/Controls/NativeScript/SideDrawe
           <Label row="0" col="1" text="Contacts" class="m-l-20 sidedrawer-item"></Label>
         </GridLayout>
 
-        <StackLayout class="hr-light"></StackLayout>
-        
         <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Messages" [class.selected]="isComponentSelected('/messenger')" (tap)="onNavItemTap('/messenger')">
           <Label row="0" col="0" text="&#xf086;" class="fa sidedrawer-icon"></Label>
           <Label row="0" col="1" text="Messages" class="m-l-20 sidedrawer-item"></Label>
         </GridLayout>
 
-        <StackLayout class="hr-light"></StackLayout>
-
         <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Wallet" [class.selected]="isComponentSelected('/wallet')" (tap)="onNavItemTap('/wallet')">
           <Label row="0" col="0" text="&#xf555;" class="fas sidedrawer-icon"></Label>
           <Label row="0" col="1" text="Wallet" class="m-l-20 sidedrawer-item"></Label>
         </GridLayout>
-        
-        <StackLayout class="hr-light"></StackLayout>
 
         <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Settings" [class.selected]="isComponentSelected('/settings')" (tap)="onNavItemTap('/settings')">
           <Label row="0" col="0" text="&#xf013;" class="fa sidedrawer-icon"></Label>
           <Label row="0" col="1" text="Settings" class="m-l-20 sidedrawer-item"></Label>
         </GridLayout>
 
-        <StackLayout class="hr-light"></StackLayout>
-
         <GridLayout columns="auto, *" class="sidedrawer-list-item" title="Help" [class.selected]="isComponentSelected('/help')" (tap)="onNavItemTap('/help')">
           <Label row="0" col="0" text="&#xf129;" class="fas sidedrawer-icon"></Label>
           <Label row="0" col="1" text="Help" class="m-l-20 sidedrawer-item"></Label>
         </GridLayout>
-
-        <StackLayout class="hr-light"></StackLayout>
         
       </StackLayout>
     </ScrollView>

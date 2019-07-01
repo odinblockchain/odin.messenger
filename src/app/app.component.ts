@@ -644,7 +644,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   isComponentSelected(url: string): boolean {
-    return this._activatedUrl === url;
+    return this._activatedUrl.includes(url);
   }
 
   onNavItemTap(navItemRoute: string): void {

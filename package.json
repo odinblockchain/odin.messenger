@@ -74,7 +74,7 @@
     "nativescript-snackbar": "^4.0.0",
     "nativescript-sqlite": "^2.3.3",
     "nativescript-theme-core": "~1.0.4",
-    "nativescript-ui-listview": "^5.2.0",
+    "nativescript-ui-listview": "^6.4.1",
     "nativescript-ui-sidedrawer": "~5.0.0",
     "reflect-metadata": "~0.1.10",
     "rxjs": "~6.3.0",
