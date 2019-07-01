@@ -186,6 +186,33 @@ export class Account extends Database {
   }
 
   /**
+   * Removes a `Contact` from the local client's friend list. Will check if contact
+   * exists already.
+   * 
+   * @param contact The `Contact` to remove 
+   */
+  public async removeFriend(contact: Contact): Promise<boolean> {
+    this.log(`Delete friend [${contact.username}]`);
+
+    if (!this.hasFriend(contact.username)) {
+      return false;
+    }
+
+    try {
+      await this.deleteContact(contact);
+      this.log(`Removed friend [${contact.username}]`);
+      const contactIndex = this.contacts.findIndex(c => c.username === contact.username);
+      if (contactIndex < 0) return true;
+      this.contacts.splice(contactIndex, 1);
+      return true;
+    } catch (err) {
+      this.log(`Failed to remove friend [${contact.username}]`);
+      console.log(err);
+      return false;
+    }
+  }
+
+  /**
    * Finds the local contact matching the provided `message` and sets `unread` to `true` and the
    * `last_contacted` to the message timestamp.
    * 
@@ -226,6 +253,27 @@ export class Account extends Database {
       contact.username,
       contact.name
     ]);
+  }
+
+  /**
+   * Deletes a given `Contact` from the app storage
+   * 
+   * @param contact The `Contact` to delete
+   */
+  public async deleteContact(contact: Contact): Promise<boolean> {
+    if (!await this.dbReady()) {
+      return false;
+    }
+
+    await this.db.all('DELETE FROM contacts WHERE username = ?', [
+      contact.username
+    ]);
+
+    await this.db.all('DELETE FROM messages WHERE contact_username = ?', [
+      contact.username
+    ]);
+
+    return true;
   }
 
   public async countTotalMessages() {

@@ -38,6 +38,8 @@ export class EditComponent implements OnInit, AfterViewInit {
   private contactCopy: Contact;
   private contactSaved: boolean;
   private goBackTo: string = '';
+  private contactName: string = '';
+  private contactRemoved: boolean = false;
 
 	constructor(
     private _router: RouterExtensions,
@@ -84,16 +86,14 @@ export class EditComponent implements OnInit, AfterViewInit {
     .then(contact => {
       this.contact      = contact;
       this.contactCopy  = new Contact(contact);
+      this.contactName  = contact.name ? contact.name : contact.username;
     })
     .catch(err => {
       console.log(`[Edit] Cannot load contact details for ${this.contactUsername}`);
       console.log(err.message ? err.message : err);
       
-      this._router.navigate(['/messenger'], {
-        clearHistory: true,
-        queryParams: {
-          error: `Unable to load contact details for ${this.contactUsername}`
-        }
+      this.navigateBack({
+        error: `Unable to load contact details for ${this.contactUsername}`
       });
     });
   }
@@ -108,11 +108,9 @@ export class EditComponent implements OnInit, AfterViewInit {
     .then(saved => {
       this.processing   = false;
       this.contactSaved = true;
-      console.log('[Edit] contact saved!');
+      this.contactName  = this.contact.name ? this.contact.name : this.contact.username;
 
-      // capture successful friend edit
       this._captureEditFriend();
-
       this._snack.simple('Contact updated!', '#ffffff', '#333333', 3, false);
     })
     .catch(err => {
@@ -120,18 +118,15 @@ export class EditComponent implements OnInit, AfterViewInit {
       console.log('[Edit] contact save error!');
       console.log(err.message ? err.message : err);
 
-      // capture failed friend edit
       this._captureEditFriendFailed();
-
       this._snack.simple('Something went wrong while updating your contact', '#ffffff', '#333333', 3, false);
     });
   }
 
   private async findMatchingContact(contactUsername: string) {
-    const account = this._IdentityServ.getActiveAccount();
-    if (!account.contacts.length) await account.loadContacts();
+    if (!this.activeAccount.contacts.length) await this.activeAccount.loadContacts();
 
-    const matchingContact = account.contacts.find(c => {
+    const matchingContact = this.activeAccount.contacts.find(c => {
       return c.username === contactUsername;
     });
 
@@ -168,17 +163,25 @@ export class EditComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public onDeleteContact() {
-    console.log('WIP: delete');
+  public async onDeleteContact() {
+    console.log('[Edit] Delete contact');
+    const confirmAction = await confirm(`Are you sure you want to delete your contact ${this.contactName} and all their messages?`);
+    if (!confirmAction) return;
+
+    this._captureDeleteFriend();
+    if (await this.activeAccount.removeFriend(this.contact)) {
+      this.contactRemoved = true;
+      this._snack.simple(`Deleted ${this.contactName}`, '#ffffff', '#333333', 3, false);
+      this.navigateBack();
+    }
+    return;
   }
 
   public onTapFriendImage() {
-    // capture event of user tapping image
     this._captureEditFriendTapImage();
   }
 
   public onContactCopy() {
-    // capture event of user tapping image
     this._captureEditFriendCopyUsername();
   }
 
@@ -186,23 +189,27 @@ export class EditComponent implements OnInit, AfterViewInit {
     return (this.contactCopy.name !== this.contact.name);
   }
 
-  private navigateBack() {
+  private navigateBack(optionalParams?: any) {
     const goBackTo = this.goBackTo ? this.goBackTo : 'message';
 
-    if (goBackTo === 'contacts') {
-      this._router.navigate(['/contact/list'], {
-        transition: {
-          name: 'slideRight'
-        }
-      });
-    } else if (goBackTo === 'message') {
-      this._router.navigate(['/messenger/message/', this.contact.username], {
-        clearHistory: true,
-        transition: {
-          name: 'slideRight'
-        },
-      });
-    }
+    let route = ['/messenger'];
+    if (goBackTo === 'contacts') route = ['/contact/list'];
+    if (this.contact && !this.contactRemoved) route = ['/messenger/message/', this.contact.username];
+
+    this._router.navigate(route, {
+      clearHistory: true,
+      transition: {
+        name: 'slideRight'
+      },
+      queryParams: optionalParams
+    });
+  }
+
+  private _captureDeleteFriend() {
+    firebase.analytics.logEvent({
+      key: 'messenger_delete_friend'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Delete Friend'); });
   }
 
   private _captureEditFriend() {

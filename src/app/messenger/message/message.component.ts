@@ -270,6 +270,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
     const confirmAction = await confirm(`Are you sure you want to delete all saved messages for ${this.contactName}?`);
     if (!confirmAction) return;
 
+    this._captureConversationDelete();
     if (await this._contact.deleteAllMessages()) {
       this._snack.simple(`Deleted all messages with ${this.contactName}`, '#ffffff', '#333333', 3, false);
       this._router.navigate(['/messenger'], {
@@ -283,8 +284,6 @@ export class MessageComponent implements OnInit, AfterViewInit {
 
   public onCopyContact(): void {
     console.log('[Message] Copy contact');
-
-    // capture event of user copying their friend's username
     this._captureCopyFriendUsername();
 
     Clipboard.setText(this.contactIdentity)
@@ -307,6 +306,13 @@ export class MessageComponent implements OnInit, AfterViewInit {
     } else {
       console.log('[Message] NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
     }
+  }
+
+  private _captureConversationDelete() {
+    firebase.analytics.logEvent({
+      key: 'messenger_delete_conversation'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Delete Conversation'); });
   }
 
   private _captureMessageSend(messageLength: number) {

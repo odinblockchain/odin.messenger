@@ -6,7 +6,7 @@ import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
 import { RouterExtensions } from 'nativescript-angular/router';
 import { IdentityService } from '~/app/shared/services/identity.service';
-import { Contact, Message } from '~/app/shared/models/messenger';
+import { Contact } from '~/app/shared/models/messenger';
 import { SnackBar } from 'nativescript-snackbar';
 import { device } from 'tns-core-modules/platform/platform';
 

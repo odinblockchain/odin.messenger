@@ -1,5 +1,6 @@
 <ActionBar class="action-bar">
   <NavigationButton class="action-bar--button" android.systemIcon="ic_menu_revert" ios:visibility="collapsed" (tap)="onPreviousView()"></NavigationButton>
+  <ActionItem text="Delete Contact" ios.position="popup" android.position="popup" (tap)="onDeleteContact()"></ActionItem>
   <Label class="action-bar--title" text="Edit Contact"></Label>
 </ActionBar>
 
