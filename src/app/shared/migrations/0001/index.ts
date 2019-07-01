@@ -19,8 +19,10 @@ export default () => {
     ChangeUnspentTypeToText: async (db: any): Promise<boolean> => {
       const storage = new StorageService();
       await storage.connect();
+      await storage.purgeTable('logs')
       await storage.purgeGroup('wallet');
       await storage.createGroup('wallet');
+      await storage.createTable('logs', StorageService.CreateLogsTable);
       return true;
     }
   };
