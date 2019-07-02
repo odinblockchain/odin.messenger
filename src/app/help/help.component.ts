@@ -88,6 +88,15 @@ export class HelpComponent implements OnInit {
     utilityModule.openUrl('https://twitter.com/odinblockchain');
   }
 
+  openMedium() {
+    firebase.analytics.logEvent({
+      key: 'help_open_medium'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Help open medium'); });
+
+    utilityModule.openUrl('https://medium.com/@odinblockchain');
+  }
+
   openFacebook() {
     firebase.analytics.logEvent({
       key: 'help_open_facebook'
@@ -95,6 +104,15 @@ export class HelpComponent implements OnInit {
     .then(() => { console.log('[Analytics] Metric logged >> Help open facebook'); });
 
     utilityModule.openUrl('https://www.facebook.com/OdinBlockchain/');
+  }
+
+  openBlockfolio() {
+    firebase.analytics.logEvent({
+      key: 'help_open_blockfolio'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Help open blockfolio'); });
+
+    utilityModule.openUrl('https://blockfolio.com/coin/ODIN');
   }
 
   openDiscord() {

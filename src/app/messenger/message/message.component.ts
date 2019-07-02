@@ -1,8 +1,8 @@
-import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy  } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, NgZone  } from '@angular/core';
 import { PageRoute } from 'nativescript-angular/router';
 import { RouterExtensions } from 'nativescript-angular/router';
 import { ActivatedRoute } from '@angular/router';
-import { alert } from 'tns-core-modules/ui/dialogs';
+import { alert, confirm } from 'tns-core-modules/ui/dialogs';
 import { ObservableArray } from 'tns-core-modules/data/observable-array';
 
 import * as Clipboard from 'nativescript-clipboard';
@@ -12,6 +12,8 @@ import { IdentityService } from '~/app/shared/services/identity.service';
 import { Account } from '~/app/shared/models/identity';
 import { RadListView } from 'nativescript-ui-listview';
 import { SnackBar } from 'nativescript-snackbar';
+import { Page } from 'tns-core-modules/ui/page/page';
+import { Subscription } from 'rxjs';
 
 const firebase = require('nativescript-plugin-firebase');
 
@@ -30,16 +32,19 @@ export class MessageComponent implements OnInit, AfterViewInit {
 
   public contactIdentity: string;
   public contactName: string;
-  public message: string;
+  public message: string = '';
   public actionBoxActive: boolean;
+
+  public subItems: Message[] = [];
+  private _sub: Subscription;
 
   private _activeAccount: Account;
   private _contact: Contact;
-  private _dataItems: ObservableArray<any>;
   private _timer: any;
+  private _onNavigateEdit: boolean = false;
 
   constructor(
-    private _page: PageRoute,
+    private _page: Page,
     private _router: RouterExtensions,
     private _route: ActivatedRoute,
     private _snack: SnackBar,
@@ -49,43 +54,63 @@ export class MessageComponent implements OnInit, AfterViewInit {
 
     this._route.params
     .subscribe(params => {
-      console.log('[Message] Route params', params);
-
-      if (params.hasOwnProperty('contactId')) {
-        this.contactIdentity = params['contactId'];
-      } else {
+      if (!params.hasOwnProperty('contactId')) {
         alert('Something went wrong while loading the requested messages.');
         this._router.navigate(['/messenger']);
+        return;
       }
+
+      this.contactIdentity = params['contactId'];
     });
 
-    this.message = '';
-    this.sendMessage = this.sendMessage.bind(this);
+    this._page.on(Page.unloadedEvent, event => {
+      this.ngOnDestroy();
+    });
 
     firebase.analytics.setScreenName({
       screenName: 'Messenger Conversation'
     }).then(() => {});
   }
 
+  ngOnDestroy() {
+    this._sub.unsubscribe();
+  }
+
   ngOnInit() {
     console.log(`[Message] Loading Contact ${this.contactIdentity}`);
-    
-    if (this.IdentityServ.getActiveAccount()) {
-      this._activeAccount = this.IdentityServ.getActiveAccount();
-      this._contact = this.IdentityServ.getActiveAccount().findContact(this.contactIdentity);
-
-      if (this._contact) {
-        this._dataItems = this._contact.oMessages$;
-        this.contactName = this._contact.name;
-      } else {
-        console.log('[Message] Unable to load contact');
-        this._dataItems = new ObservableArray();
-        console.log(this.IdentityServ.getActiveAccount().contacts);
-      }
-    } else {
-      console.log('[Message] IdentityService missing active account');
-      this._dataItems = new ObservableArray();
+    if (this._onNavigateEdit) {
+      this._onNavigateEdit = false;
     }
+    
+    if (!this.IdentityServ.getActiveAccount()) {
+      console.log('[Message] IdentityService missing active account');
+      this.subItems = [];
+      return;
+    }
+    
+    this._activeAccount = this.IdentityServ.getActiveAccount();
+    this._contact = this.IdentityServ.getActiveAccount().findContact(this.contactIdentity);
+
+    if (this._contact) {
+      this._sub = this._contact.messageList$.subscribe(messages => {
+        this.subItems = messages; 
+      });
+
+      this.contactName = this._contact.name ? this._contact.name : this._contact.username;
+    } else {
+      console.log('[Message] Unable to load contact');
+      this.subItems = [];
+      console.log(this.IdentityServ.getActiveAccount().contacts);
+    }
+
+    // try {
+    //   console.log('ADD MOCK MESSAGE');
+    //   this._contact.saveMockMessage('sample sample sample')
+    //   .then(() => console.log('saved!!'))
+    //   .catch(err => console.log('bad save', err));
+    // } catch (err) {
+    //   console.log('bad mock', err);
+    // }
   }
 
   ngAfterViewInit() {
@@ -93,25 +118,13 @@ export class MessageComponent implements OnInit, AfterViewInit {
     this.list = this.lv.nativeElement;
   }
 
-  get dataItems(): ObservableArray<Message> {
-    return this._dataItems;
-  }
-
-  public displayName(): string {
-    if (this.contactName && this.contactName.length) {
-      return this.contactName;
-    } else {
-      return this.contactIdentity;
-    }
-  }
-
   /**
    * Event handler for when the RadListView has completed loading
    * @param e 
    */
   public loadedEvent(e) {
-    console.log(`[Message] RadList has been loaded... item count: ${this._dataItems.length}`);
-    this.scrollToIndex(this._dataItems.length - 1);
+    console.log(`[Message] RadList has been loaded... item count: ${this.subItems.length}`);
+    this.scrollToIndex(this.subItems.length - 1);
   }
 
   /**
@@ -149,7 +162,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
    * Attempts to deliver a local `message` to a remote endpoint for the current
    * contact to fetch.
    */
-  public sendMessage() {
+  public sendMessage = () => {
     if (this.message.length == 0) {
       return alert(`Please enter a message to send`);
     }
@@ -162,7 +175,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
       this._activeAccount.sendRemoteMessage(this._contact, this.message)
       .then(() => {
         console.log('[Message] Message delivered successfully');
-        this.scrollToIndex(this._dataItems.length - 1);
+        this.scrollToIndex(this.subItems.length - 1);
 
         // capture the event of a message being sent and the length for
         // an anonymous bucket
@@ -174,7 +187,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
     } catch (err) {
       this.textfield.text = '';
       this.textfield.dismissSoftInput(); // Hide Keyboard.
-      this.scrollToIndex(this._dataItems.length - 1);
+      this.scrollToIndex(this.subItems.length - 1);
 
       console.log(`[Message] Something unexpected happened while delivering...`);
       console.log(err.message ? err.message : err);
@@ -218,11 +231,9 @@ export class MessageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  public onTapMessage = async (item: Message) => {
-    if (item) {
-      item.shouldDisplayTime = !item.shouldDisplayTime;
-      // this._contact.updateMessage(item);
-    }
+  public onTapMessage = (item: Message) => {
+    if (!item) return;
+    item.shouldDisplayTime = !item.shouldDisplayTime;
   }
 
   /**
@@ -242,6 +253,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
 
   public onEditContact(): void {
     console.log('[Message] Edit contact');
+    this._onNavigateEdit = true;
     this._router.navigate(['/contact/edit', this.contactIdentity], {
       transition: {
         name: 'slideLeft'
@@ -249,10 +261,25 @@ export class MessageComponent implements OnInit, AfterViewInit {
     });
   }
 
+  public async onDeleteMessages(): Promise<void> {
+    console.log('[Message] Edit contact');
+    const confirmAction = await confirm(`Are you sure you want to delete all saved messages for ${this.contactName}?`);
+    if (!confirmAction) return;
+
+    this._captureConversationDelete();
+    if (await this._contact.deleteAllMessages()) {
+      this._snack.simple(`Deleted all messages with ${this.contactName}`, '#ffffff', '#333333', 3, false);
+      this._router.navigate(['/messenger'], {
+        transition: {
+          name: 'slideRight'
+        }
+      });
+    }
+    return;
+  }
+
   public onCopyContact(): void {
     console.log('[Message] Copy contact');
-
-    // capture event of user copying their friend's username
     this._captureCopyFriendUsername();
 
     Clipboard.setText(this.contactIdentity)
@@ -275,6 +302,13 @@ export class MessageComponent implements OnInit, AfterViewInit {
     } else {
       console.log('[Message] NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
     }
+  }
+
+  private _captureConversationDelete() {
+    firebase.analytics.logEvent({
+      key: 'messenger_delete_conversation'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Messenger Delete Conversation'); });
   }
 
   private _captureMessageSend(messageLength: number) {

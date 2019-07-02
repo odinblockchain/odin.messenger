@@ -6,7 +6,7 @@ import { TouchGestureEventData } from 'tns-core-modules/ui/gestures';
 import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
 import { RouterExtensions } from 'nativescript-angular/router';
 import { IdentityService } from '~/app/shared/services/identity.service';
-import { Contact } from '~/app/shared/models/messenger';
+import { Contact, Message } from '~/app/shared/models/messenger';
 import { SnackBar } from 'nativescript-snackbar';
 import { device } from 'tns-core-modules/platform/platform';
 
@@ -15,11 +15,11 @@ declare var android: any;
 
 @Component({
 	moduleId: module.id,
-	selector: 'MessengerIndex',
-	templateUrl: './index.component.html',
-	styleUrls: ['./index.component.css']
+	selector: 'ContactList',
+	templateUrl: './list.component.html',
+	styleUrls: ['./list.component.css']
 })
-export class IndexComponent implements OnInit {
+export class ListComponent implements OnInit {
   public friends: Contact[];
 
 	constructor(
@@ -29,8 +29,6 @@ export class IndexComponent implements OnInit {
   ) {
     this.friends = [];
 
-    this.onFetchMessages = this.onFetchMessages.bind(this);
-
     // Span the background under status bar on Android
     if (isAndroid && device.sdkVersion >= '21') {
       const activity = app.android.startActivity;
@@ -39,17 +37,18 @@ export class IndexComponent implements OnInit {
     }
 
     firebase.analytics.setScreenName({
-      screenName: 'Messenger Home'
+      screenName: 'Contact List'
     }).then(() => {});
   }
 
   ngOnInit() {
+    console.log('view >> /contact/list');
     this.IdentityServ.getActiveAccount().loadContacts()
     .then((contacts: Contact[]) => {
-      console.log('[Messenger Index] loaded contacts', contacts.map(c => `${c.username}`).join(','));
+      console.log('[Contact List] loaded contacts', contacts.map(c => `${c.username}`).join(','));
       this.friends = contacts;
     }).catch((err) => {
-      console.log('[Messenger Index] contact load error', err.message ? err.message : err);
+      console.log('[Contact List]  contact load error', err.message ? err.message : err);
     });
   }
   
@@ -63,18 +62,20 @@ export class IndexComponent implements OnInit {
     });
   }
 
-  onViewMessages = async (contact: Contact) => {
-    if (contact.unread) await contact.setUnread(false);
-    
-    this._router.navigate(['/messenger/message', contact.username], {
-      queryParams: {
-        name: 'foobar',
-        id: 123
-      },
+  onTapContact(contactIdentity: string) {
+    this._router.navigate(['/contact/edit', contactIdentity], {
       transition: {
         name: 'slideLeft'
+      },
+      queryParams: {
+        goBackTo: 'contacts'
       }
     });
+  }
+
+  contactId(contact: Contact) {
+    const name = contact.name ? contact.name : contact.username;
+    return name[0].toUpperCase();
   }
 
   /**
@@ -99,33 +100,17 @@ export class IndexComponent implements OnInit {
     sideDrawer.showDrawer();
   }
 
-  onFetchMessages() {
-    if (this.IdentityServ.getActiveAccount()) {
-      this._snack.simple('Fetching new messages', '#ffffff', '#333333', 3, false);
-      this.IdentityServ.getActiveAccount().fetchRemoteMessages()
-      .then(() => {
-        console.log('All messages have been fetched');
-        this._snack.simple('All new messages fetched', '#ffffff', '#333333', 3, false);
-      }).catch((err) => {
-        console.log('Fetch messages error', err.message ? err.message : err);
-        this._snack.simple('Failed to fetch messages', '#ffffff', '#333333', 3, false);
-      });
-    } else {
-      console.log('NO ACTIVE ACCOUNT -- UNABLE TO FETCH MESSAGES');
-    }
-  }
-
   private _captureAddContact(location: string) {
     if (location === 'fab') {
       firebase.analytics.logEvent({
-        key: 'messages_add_friend_fab'
+        key: 'contacts_add_friend_fab'
       })
-      .then(() => { console.log('[Analytics] Metric logged >> Messages Add Friend FAB'); });
+      .then(() => { console.log('[Analytics] Metric logged >> Contacts Add Friend FAB'); });
     } else if (location === 'menu') {
       firebase.analytics.logEvent({
-        key: 'messages_add_friend_menu'
+        key: 'contacts_add_friend_menu'
       })
-      .then(() => { console.log('[Analytics] Metric logged >> Messages Add Friend Menu'); });
+      .then(() => { console.log('[Analytics] Metric logged >> Contacts Add Friend Menu'); });
     }
   }
 }

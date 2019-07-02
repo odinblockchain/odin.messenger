@@ -1,9 +1,6 @@
 @import "~/app-variables.scss";
 
 .backbtn {
-  // background-image: url('https://via.placeholder.com/50');
-  // background-size: contain;
-  // background-repeat: no-repeat;
   z-index: 99;
 
   background: rgb(255,89,162);
@@ -11,36 +8,30 @@
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff59a2', endColorstr='#ffe97b',GradientType=1 );
 }
 
-.contact {
-  padding: 0 15;
+.author {
+  border-radius: 100%;
+  height: 40;
+  width: 40;
+  align-items: center;
+  justify-content: center;
+  background-color: blue;
+  margin-right: 10;
+}
 
-  .unread {
-    border-radius: 100%;
-    height: 20;
-    width: 20;
-    background-color: $odin-blue;
-    margin-right: 10;
-  }
+.innerLabel {
+  color: #ffffff;
+}
+
+.contact {
+  padding: 10 15;
+  align-items: center;
 
   .contact--wrap {
-    border-bottom-width: 2;
-    border-bottom-color: $hr-light-color;
-    border-bottom-style: solid;
-    padding-bottom: 15;
-    padding-top: 15;
-  }
+    align-items: center;
+    justify-content: center;
 
-  .contact--flex {
-    background-color: $primary;
-    color: #ffffff;
-    width: 45;
-    height: 45;
-    margin-right: 15;
-    border-radius: 5;
-
-    Label {
-      vertical-align: center;
-      horizontal-align: center;
+    .contact--name {
+      margin-bottom: 5;
     }
   }
 
@@ -54,7 +45,6 @@
   .contact--name {
     color: $app-text-color;
     font-size: 16;
-    margin-bottom: 5;
   }
 
   .contact--meta {
