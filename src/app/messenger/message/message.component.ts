@@ -32,7 +32,7 @@ export class MessageComponent implements OnInit, AfterViewInit {
 
   public contactIdentity: string;
   public contactName: string;
-  public message: string;
+  public message: string = '';
   public actionBoxActive: boolean;
 
   public subItems: Message[] = [];
@@ -67,9 +67,6 @@ export class MessageComponent implements OnInit, AfterViewInit {
       this.ngOnDestroy();
     });
 
-    this.message = '';
-    // this.sendMessage = this.sendMessage.bind(this);
-
     firebase.analytics.setScreenName({
       screenName: 'Messenger Conversation'
     }).then(() => {});
@@ -82,7 +79,6 @@ export class MessageComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     console.log(`[Message] Loading Contact ${this.contactIdentity}`);
     if (this._onNavigateEdit) {
-      console.log('coming from edit!');
       this._onNavigateEdit = false;
     }
     

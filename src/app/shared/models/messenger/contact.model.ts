@@ -38,6 +38,14 @@ export class Contact extends Database {
   }
 
   deserialize(input?: any) {
+    if (!input || typeof input !== 'object') return this;
+    
+    if (input.hasOwnProperty('unread') && input.unread === 'false') {
+      input.unread = false;
+    } else if (input.hasOwnProperty('unread') && input.unread === 'true') {
+      input.unread = true;
+    } 
+
     Object.assign(this, input);
     return this;
   }
@@ -209,6 +217,7 @@ export class Contact extends Database {
    */
   public async setUnread(status): Promise<Contact> {
     this.unread = status;
+    await this.save();
     return this;
   }
 

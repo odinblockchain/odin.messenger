@@ -44,7 +44,6 @@ export class IndexComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('view >> /messenger');
     this.IdentityServ.getActiveAccount().loadContacts()
     .then((contacts: Contact[]) => {
       console.log('[Messenger Index] loaded contacts', contacts.map(c => `${c.username}`).join(','));
@@ -55,8 +54,6 @@ export class IndexComponent implements OnInit {
   }
   
   onAddContact(location: string) {
-    console.log('CTA::AddContact');
-
     this._captureAddContact(location);
 
     this._router.navigate(['/contact/add'], {
@@ -66,9 +63,10 @@ export class IndexComponent implements OnInit {
     });
   }
 
-  onViewMessages(contactIdentity: string) {
-    console.log('onViewMessage', contactIdentity);
-    this._router.navigate(['/messenger/message', contactIdentity], {
+  onViewMessages = async (contact: Contact) => {
+    if (contact.unread) await contact.setUnread(false);
+    
+    this._router.navigate(['/messenger/message', contact.username], {
       queryParams: {
         name: 'foobar',
         id: 123

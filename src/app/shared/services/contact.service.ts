@@ -56,11 +56,9 @@ export class ContactService extends StorageService {
 
     return new Promise(async (resolve, reject) => {
       try {
-        // this.contacts = [];
-
-        const contacts: Contact[] = await this.odb.all('SELECT * FROM contacts');
+        const contacts = await this.fetchAllContacts();
         while (contacts.length > 0) {
-          const contact: Contact = new Contact(contacts.shift());
+          const contact = contacts.shift();
           contact.db = this.odb;
           await contact.loadMessages();
           this.contacts.push(contact);
@@ -74,6 +72,11 @@ export class ContactService extends StorageService {
         return reject(err);
       }
     });
+  }
+
+  public async fetchAllContacts(): Promise<Contact[]> {
+    const contacts: Contact[] = await this.odb.all('SELECT * FROM contacts');
+    return contacts.map(contact => new Contact(contact));
   }
 
   public async createContact(contact: Contact) {
