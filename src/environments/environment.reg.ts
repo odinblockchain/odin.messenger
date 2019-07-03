@@ -8,5 +8,5 @@ export const environment = {
   purgeMessenger: true,
   purgeAll: true,
   migration: '0001',
-  app_version: '0.4.4'
+  app_version: '0.5.0'
 };
