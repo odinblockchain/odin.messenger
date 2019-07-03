@@ -194,7 +194,7 @@ export class EditComponent implements OnInit, AfterViewInit {
 
     let route = ['/messenger'];
     if (goBackTo === 'contacts') route = ['/contact/list'];
-    if (this.contact && !this.contactRemoved) route = ['/messenger/message/', this.contact.username];
+    else if (this.contact && !this.contactRemoved) route = ['/messenger/message/', this.contact.username];
 
     this._router.navigate(route, {
       clearHistory: true,
