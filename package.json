@@ -1,6 +1,6 @@
 {
   "name": "odin.chat.client",
-  "version": "0.4.3",
+  "version": "0.5.1",
   "description": "ODIN Chat, private conversations with cryptocurrency wallet developed on NativeScript",
   "nativescript": {
     "id": "org.odinblockchain.messenger",

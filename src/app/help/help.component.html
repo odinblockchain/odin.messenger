@@ -47,6 +47,18 @@
         </StackLayout>
       </GridLayout>
 
+      <GridLayout columns="*" class="setting">
+        <StackLayout col="1" class="content">
+          <Label class="heading" textWrap="true" text="Feature requests"></Label>
+          <Label textWrap="true">
+            <FormattedString>
+              <Span text="If you are experiencing any issues or have some ideas you would like to see implemented into ODIN.Chat, you can submit a post on our public community board: "></Span>
+              <Span class="link" text="https://odin.canny.io/chat." (tap)="openCanny()"></Span>
+            </FormattedString>
+          </Label>
+        </StackLayout>
+      </GridLayout>
+
       <GridLayout columns="*" class="setting last">
         <StackLayout col="1" class="content">
           <Label class="heading" textWrap="true" text="More information and support"></Label>

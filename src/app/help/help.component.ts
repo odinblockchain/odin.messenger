@@ -61,6 +61,15 @@ export class HelpComponent implements OnInit {
     sideDrawer.showDrawer();
   }
 
+  openCanny() {
+    firebase.analytics.logEvent({
+      key: 'help_open_canny_web'
+    })
+    .then(() => { console.log('[Analytics] Metric logged >> Help open canny website'); });
+
+    utilityModule.openUrl('https://odin.canny.io/chat');
+  }
+
   openChat() {
     firebase.analytics.logEvent({
       key: 'help_open_chat_web'
