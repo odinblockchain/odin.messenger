@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterExtensions } from 'nativescript-angular/router';
 import { PreferencesService } from '~/app/shared/preferences.service';
 import { messaging } from 'nativescript-plugin-firebase/messaging';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { connectionType, getConnectionType } from 'tns-core-modules/connectivity';
 
@@ -12,7 +12,7 @@ const firebase = require('nativescript-plugin-firebase');
   selector: 'Notifications',
   moduleId: module.id,
   templateUrl: './notifications.component.html',
-  styleUrls: ['./notifications.component.css']
+  styleUrls: ['./notifications.component.scss']
 })
 export class NotificationsComponent {
   public chatPreferences: any;

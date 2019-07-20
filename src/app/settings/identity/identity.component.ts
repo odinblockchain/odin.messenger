@@ -10,7 +10,7 @@ declare var android: any;
   selector: 'IdentityComponent',
   moduleId: module.id,
   templateUrl: './identity.component.html',
-  styleUrls: ['./identity.component.css']
+  styleUrls: ['./identity.component.scss']
 })
 export class IdentityComponent implements OnInit {
   public backupActive: boolean;

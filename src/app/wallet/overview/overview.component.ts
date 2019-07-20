@@ -10,7 +10,7 @@ const firebase = require('nativescript-plugin-firebase');
 	moduleId: module.id,
 	selector: 'Overview',
 	templateUrl: './overview.component.html',
-	styleUrls: ['./overview.component.css']
+	styleUrls: ['./overview.component.scss']
 })
 
 export class OverviewComponent implements OnInit {

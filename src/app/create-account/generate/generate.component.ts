@@ -12,7 +12,7 @@ import { ClientService } from '~/app/shared/services/client.service';
 import { Account } from '~/app/shared/models/identity';
 import { alert } from 'tns-core-modules/ui/dialogs/dialogs';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 import { RouterExtensions } from 'nativescript-angular/router';
 import * as utils from 'tns-core-modules/utils/utils';
 
@@ -22,10 +22,10 @@ const firebase = require('nativescript-plugin-firebase');
   selector: 'GenerateScreen',
   moduleId: module.id,
   templateUrl: './generate.component.html',
-  styleUrls: ['./generate.component.css']
+  styleUrls: ['./generate.component.scss']
 })
 export class GenerateScreenComponent implements OnInit, OnDestroy {
-  @ViewChild('generateLayout') generateLayout: ElementRef;
+  @ViewChild('generateLayout', {static: true}) generateLayout: ElementRef;
 
   public accountGenerated: boolean;
   public entropyCreated: boolean;

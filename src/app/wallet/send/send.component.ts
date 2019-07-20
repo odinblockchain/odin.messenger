@@ -14,7 +14,7 @@ interface TransactionDetails {
 	moduleId: module.id,
 	selector: 'Send',
 	templateUrl: './send.component.html',
-	styleUrls: ['./send.component.css']
+	styleUrls: ['./send.component.scss']
 })
 export class SendComponent implements OnInit, OnChanges, OnDestroy {
   @Input() currentWallet: Wallet;

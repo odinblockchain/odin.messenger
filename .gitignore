@@ -2,6 +2,7 @@
 hooks/
 node_modules/
 platforms/
+.migration_backup/
 
 # NativeScript Template
 *.js.map

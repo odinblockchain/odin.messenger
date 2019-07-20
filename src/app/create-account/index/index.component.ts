@@ -16,10 +16,10 @@ declare var android: any;
   selector: 'CreateAccountIndex',
   moduleId: module.id,
   templateUrl: './index.component.html',
-  styleUrls: ['./index.component.css']
+  styleUrls: ['./index.component.scss']
 })
 export class IndexComponent implements OnInit, AfterViewInit {
-  @ViewChild('slideContent') slideElement: ElementRef;
+  @ViewChild('slideContent', {static: true}) slideElement: ElementRef;
 
   public currentSlideIndex: number;
   public packageVersion: string;

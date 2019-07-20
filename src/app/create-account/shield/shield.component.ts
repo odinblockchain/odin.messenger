@@ -4,7 +4,7 @@ import { Component, Input } from "@angular/core";
   selector: "ShieldConversationScreen, [ShieldConversationScreen]",
   moduleId: module.id,
   templateUrl: "./shield.component.html",
-  styleUrls: ['./shield.component.css']
+  styleUrls: ['./shield.component.scss']
 })
 export class ShieldConversationScreenComponent {
   @Input() active: boolean;

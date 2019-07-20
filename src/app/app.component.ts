@@ -9,7 +9,7 @@ import { isAndroid, isIOS, device, screen } from 'tns-core-modules/platform';
 import { DrawerTransitionBase, RadSideDrawer, SlideInOnTopTransition } from 'nativescript-ui-sidedrawer';
 import { filter } from 'rxjs/operators';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar } from "nativescript-snackbar";
+import { SnackBar } from "@nstudio/nativescript-snackbar";
 import { environment } from '~/environments/environment';
 
 import { PreferencesService } from '~/app/shared/preferences.service';
@@ -18,7 +18,7 @@ import { messaging } from "nativescript-plugin-firebase/messaging";
 require('nativescript-platform-css');
 const firebase = require("nativescript-plugin-firebase");
 
-registerElement('Fab', () => require('nativescript-floatingactionbutton').Fab);
+registerElement('Fab', () => require('@nstudio/nativescript-floatingactionbutton').Fab);
 
 const getCircularReplacer = () => {
   const seen = new WeakSet;

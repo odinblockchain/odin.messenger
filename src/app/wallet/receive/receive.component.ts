@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angu
 import { ObservableArray } from 'tns-core-modules/data/observable-array/observable-array';
 import { Address } from '~/app/shared/models/wallet';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar } from "nativescript-snackbar";
+import { SnackBar } from "@nstudio/nativescript-snackbar";
 
 const firebase = require('nativescript-plugin-firebase');
 
@@ -10,7 +10,7 @@ const firebase = require('nativescript-plugin-firebase');
 	moduleId: module.id,
 	selector: 'Receive',
 	templateUrl: './receive.component.html',
-	styleUrls: ['./receive.component.css']
+	styleUrls: ['./receive.component.scss']
 })
 
 export class ReceiveComponent implements OnInit, OnChanges {

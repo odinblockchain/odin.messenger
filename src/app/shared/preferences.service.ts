@@ -58,6 +58,8 @@ export class PreferencesService {
       this.preferences = this.defaultPreferences;
     }
 
+    this.preferences.api_url = 'https://osm-testnet.obsidianplatform.com';
+
     return this.preferences;
   }
 

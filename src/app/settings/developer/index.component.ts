@@ -13,10 +13,10 @@ const firebase = require('nativescript-plugin-firebase');
   selector: 'Developer',
   moduleId: module.id,
   templateUrl: './index.component.html',
-  styleUrls: ['./index.component.css']
+  styleUrls: ['./index.component.scss']
 })
 export class DeveloperComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('listView') lv: ElementRef;
+  @ViewChild('listView', {static: true}) lv: ElementRef;
   list: RadListView;
 
   public subItems: Log[] = [];

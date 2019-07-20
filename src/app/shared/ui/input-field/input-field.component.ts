@@ -2,13 +2,13 @@ import { Component, Input, forwardRef, Output, EventEmitter } from '@angular/cor
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ReturnKeyType } from 'tns-core-modules/ui/editable-text-base/editable-text-base';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 
 @Component({
   moduleId: module.id,
   selector: 'InputField, [InputField]',
   templateUrl: './input-field.component.html',
-  styleUrls: ['./input-field.component.css'],
+  styleUrls: ['./input-field.component.scss'],
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => InputFieldComponent),

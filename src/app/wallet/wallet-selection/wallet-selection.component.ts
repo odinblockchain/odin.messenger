@@ -7,7 +7,7 @@ import { Wallet } from '~/app/shared/models/wallet';
 	moduleId: module.id,
 	selector: 'WalletSelection',
 	templateUrl: './wallet-selection.component.html',
-	styleUrls: ['./wallet-selection.component.css']
+	styleUrls: ['./wallet-selection.component.scss']
 })
 
 export class WalletSelectionComponent implements OnInit {

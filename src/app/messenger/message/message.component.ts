@@ -11,7 +11,7 @@ import { Contact, Message } from '~/app/shared/models/messenger';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Account } from '~/app/shared/models/identity';
 import { RadListView } from 'nativescript-ui-listview';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 import { Page } from 'tns-core-modules/ui/page/page';
 import { Subscription } from 'rxjs';
 
@@ -21,11 +21,11 @@ const firebase = require('nativescript-plugin-firebase');
 	moduleId: module.id,
 	selector: 'message',
 	templateUrl: './message.component.html',
-	styleUrls: ['./message.component.css']
+	styleUrls: ['./message.component.scss']
 })
 export class MessageComponent implements OnInit, AfterViewInit {
-  @ViewChild('listView') lv: ElementRef;
-  @ViewChild('textfield') tf: ElementRef;
+  @ViewChild('listView', {static: false}) lv: ElementRef;
+  @ViewChild('textfield', {static: false}) tf: ElementRef;
 
   list: RadListView;
   textfield: TextField;

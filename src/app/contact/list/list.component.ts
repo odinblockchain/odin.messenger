@@ -7,7 +7,7 @@ import { GridLayout } from 'tns-core-modules/ui/layouts/grid-layout';
 import { RouterExtensions } from 'nativescript-angular/router';
 import { IdentityService } from '~/app/shared/services/identity.service';
 import { Contact, Message } from '~/app/shared/models/messenger';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 import { device } from 'tns-core-modules/platform/platform';
 
 const firebase = require('nativescript-plugin-firebase');
@@ -17,7 +17,7 @@ declare var android: any;
 	moduleId: module.id,
 	selector: 'ContactList',
 	templateUrl: './list.component.html',
-	styleUrls: ['./list.component.css']
+	styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
   public friends: Contact[];

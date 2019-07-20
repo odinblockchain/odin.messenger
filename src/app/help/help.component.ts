@@ -4,7 +4,7 @@ import * as app from 'tns-core-modules/application';
 import * as utilityModule from 'tns-core-modules/utils/utils';
 import { PreferencesService } from '../shared/preferences.service';
 import { environment } from '~/environments/environment.tns';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 
 const firebase = require('nativescript-plugin-firebase');
 
@@ -12,7 +12,7 @@ const firebase = require('nativescript-plugin-firebase');
 	moduleId: module.id,
 	selector: 'help',
 	templateUrl: './help.component.html',
-	styleUrls: ['./help.component.css']
+	styleUrls: ['./help.component.scss']
 })
 export class HelpComponent implements OnInit {
   private versionTouches: number;

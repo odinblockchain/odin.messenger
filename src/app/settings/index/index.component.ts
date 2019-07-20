@@ -11,7 +11,7 @@ import { IdentityService } from '~/app/shared/services/identity.service';
 import { StorageService } from '~/app/shared';
 import { RouterExtensions } from 'nativescript-angular/router';
 import * as Clipboard from 'nativescript-clipboard';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 
 const firebase = require('nativescript-plugin-firebase');
 declare var android: any;
@@ -21,7 +21,7 @@ declare var java: any;
   selector: 'SettingsIndex',
   moduleId: module.id,
   templateUrl: './index.component.html',
-  styleUrls: ['./index.component.css']
+  styleUrls: ['./index.component.scss']
 })
 export class IndexComponent implements OnInit {
   public preferences: any;
