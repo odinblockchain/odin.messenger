@@ -18,6 +18,9 @@ This plugin provides a wrapper for the [Libsignal Protocol](https://github.com/s
 
 This plugin allows communication between the ODIN Messenger and an [ElectrumX](https://github.com/kyuupichan/electrumx/) instance to utilize core functionalities of a blockchain wallet. Connections to ElectrumX are currently supported over a TCP socket.
 
+## Copyright
+This source code is distributed under a **GNUPLOT** License. For more details, please see the [LICENSE File](LICENSE).
+
 ## Development Setup
 
 You'll need to ensure you have [NodeJS](https://nodejs.org/en/download/) installed as well as NPM, the Node Package Manager. NPM should come installed with any NodeJS installation.
