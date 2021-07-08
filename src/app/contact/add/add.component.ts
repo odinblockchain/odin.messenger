@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterExtensions } from 'nativescript-angular/router';
 
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 import { alert } from 'tns-core-modules/ui/dialogs';
 import { OSMClientService } from '~/app/shared/osm-client.service';
 import * as app from 'tns-core-modules/application';
@@ -22,7 +22,7 @@ export interface IAddContact {
 	moduleId: module.id,
 	selector: 'ContactAdd',
 	templateUrl: './add.component.html',
-	styleUrls: ['./add.component.css']
+	styleUrls: ['./add.component.scss']
 })
 export class AddComponent implements OnInit {
   public contact: IAddContact;

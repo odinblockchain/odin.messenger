@@ -9,7 +9,7 @@ import { Account } from '~/app/shared/models/identity';
     selector: 'Splashscreen',
     moduleId: module.id,
     templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css']
+    styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
   public currentActivity: string;

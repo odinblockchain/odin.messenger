@@ -10,7 +10,7 @@ import { PreferencesService } from './shared/preferences.service';
 import { UserModel } from './shared/user.model';
 import { WalletModel } from './shared/wallet.model';
 import { OSMClientService } from './shared/osm-client.service';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 import { WalletClientService } from './shared/wallet-client.service';
 import { RouteReuseStrategy } from '@angular/router';
 import { CustomRouteReuse } from './custom-route-reuse';

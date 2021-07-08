@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { RouterExtensions } from "nativescript-angular/router";
 
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 import { alert, confirm } from 'tns-core-modules/ui/dialogs';
 import * as app from 'tns-core-modules/application';
 import { IdentityService } from '~/app/shared/services/identity.service';
@@ -24,7 +24,7 @@ export interface IAddContact {
 	moduleId: module.id,
 	selector: 'ContactEdit',
 	templateUrl: './edit.component.html',
-	styleUrls: ['./edit.component.css']
+	styleUrls: ['./edit.component.scss']
 })
 export class EditComponent implements OnInit, AfterViewInit {
 

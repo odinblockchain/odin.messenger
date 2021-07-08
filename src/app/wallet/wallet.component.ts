@@ -10,7 +10,7 @@ import { setTimeout, setInterval, clearInterval } from 'tns-core-modules/timer/t
 import { WalletService } from '~/app/shared/services';
 import { Subscription, Observable as ObservableGeneric } from 'rxjs';
 import { Wallet } from '~/app/shared/models/wallet';
-import { SnackBar } from 'nativescript-snackbar';
+import { SnackBar } from '@nstudio/nativescript-snackbar';
 import { LogService } from '~/app/shared/services/log.service';
 
 const firebase = require('nativescript-plugin-firebase');
@@ -21,10 +21,10 @@ const KEEP_ALIVE_DELAY = 2;
 	moduleId: module.id,
 	selector: 'wallet',
 	templateUrl: './wallet.component.html',
-	styleUrls: ['./wallet.component.css']
+	styleUrls: ['./wallet.component.scss']
 })
 export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('tabView') tabView: ElementRef;
+  @ViewChild('tabView', {static: true}) tabView: ElementRef;
 
   private _keepAliveTimer: any;
   private _walletServiceSub: Subscription;
@@ -50,7 +50,7 @@ export class WalletComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public gridLayout;
 
-  @ViewChild('gridLayoutRef') walletGrid: ElementRef;
+  @ViewChild('gridLayoutRef', {static: true}) walletGrid: ElementRef;
   private gridLayoutRef: any;
   public isLimitedView: boolean;
 

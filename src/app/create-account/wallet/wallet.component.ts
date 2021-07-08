@@ -4,7 +4,7 @@ import { Component, Input } from "@angular/core";
   selector: "WalletConversationScreen, [WalletConversationScreen]",
   moduleId: module.id,
   templateUrl: "./wallet.component.html",
-  styleUrls: ['./wallet.component.css']
+  styleUrls: ['./wallet.component.scss']
 })
 export class WalletConversationScreenComponent {
   @Input() active: boolean;

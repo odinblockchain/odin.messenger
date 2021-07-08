@@ -5,7 +5,7 @@ import { AnimationCurve } from 'tns-core-modules/ui/enums/enums';
   moduleId: module.id,
   selector: 'RoundButton, [RoundButton]',
   templateUrl: './round-button.component.html',
-  styleUrls: ['./round-button.component.css']
+  styleUrls: ['./round-button.component.scss']
 })
 export class RoundButtonComponent implements OnInit, AfterViewInit {
   @Input() row: number;
@@ -17,7 +17,7 @@ export class RoundButtonComponent implements OnInit, AfterViewInit {
   @Input()  theme: string;  
   @Output() tap = new EventEmitter();
 
-  @ViewChild('roundButtonWrap') ctaButton: ElementRef;
+  @ViewChild('roundButtonWrap', {static: true}) ctaButton: ElementRef;
 
   private ctaBtn: any;
 
